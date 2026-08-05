@@ -451,8 +451,11 @@ const FooterActions = ({clearQuoteItems, quoteItems}) => {
           {t('lists.save')}
         </button>
       )}
+      {/* La misma accion tiene que llamarse igual en los dos lados: la barra
+          inferior dice "Revisar presupuesto" y el drawer decia "Ver
+          presupuesto completo". Van al mismo lugar. */}
       <Link className={styles.saveList} to="/presupuesto">
-        {t('quote-page.open')}
+        {t('quote-page.review-short')}
       </Link>
       <button
         type="button"

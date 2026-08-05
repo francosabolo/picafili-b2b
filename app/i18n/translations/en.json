@@ -366,10 +366,10 @@
     "discount-3": "Discount 3",
     "review-and-send": "Review and send →",
     "review": "Review quote →",
-    "open": "Open full quote",
     "list-price": "List price",
     "unit-price": "Unit price",
-    "effective-label": "Effective discount"
+    "effective-label": "Effective discount",
+    "review-short": "Review quote"
   },
   "discounts": {
     "discount-1": "Discount 1",

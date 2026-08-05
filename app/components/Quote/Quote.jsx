@@ -48,10 +48,9 @@ const Quote = () => {
         <IconQuote viewBox="0 0 28 28" />
         <span className={styles.quoteIconQty}>{quoteQty}</span>
       </a>
-      <Aside
-        id={asideID}
-        heading={quoteQty > 0 ? t('general.your_quote') : null}
-      >
+      {/* El drawer se llama igual que la pantalla. Decia "Tu presupuesto" y
+          la pantalla "Presupuesto", como si fueran dos cosas distintas. */}
+      <Aside id={asideID} heading={quoteQty > 0 ? t('quote-page.title') : null}>
         <QuoteAside id={asideID} />
       </Aside>
       {quoteQty > 0 && (

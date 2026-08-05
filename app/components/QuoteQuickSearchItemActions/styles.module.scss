@@ -58,9 +58,9 @@
   display: flex;
   justify-content: center;
   align-items: center;
-  @media screen and (max-width: $breakpoint-lg) {
-    height: 40px;
-  }
+  /* No se encoge por debajo de su texto: si no entra, envuelve. */
+  flex: 1 1 100%;
+  min-width: 0;
 
   .mobileSignIn {
     display: flex;

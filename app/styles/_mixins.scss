@@ -44,15 +44,22 @@ $z-index: (
   }
 }
 @mixin signInButton {
-  font-size: 1rem;
-  line-height: 1.5rem;
+  font-size: var(--text-sm);
+  line-height: 1.3;
   border-radius: var(--button-border-radius);
   color: var(--color-grey-soft);
   background-color: var(--color-black);
-  width: var(--button-width);
-  height: 45px;
+  /* `width: var(--button-width)` con `--button-width` SIN DEFINIR en ningun
+     lado, mas `white-space: nowrap`: como flex item se encogia por debajo de
+     su contenido y el texto se salia por los dos lados. Se vio con "Pendiente
+     de Aprobacion" en una tarjeta de ~230px.
+     Ahora ocupa el ancho que le den y el texto envuelve. */
+  width: 100%;
+  min-height: 2.75rem;
+  padding: var(--space-2) var(--space-3);
   position: static;
-  white-space: nowrap;
+  white-space: normal;
+  text-align: center;
 }
 
 @mixin skeleton(

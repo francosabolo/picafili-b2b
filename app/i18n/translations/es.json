@@ -365,10 +365,10 @@
     "discount-3": "Descuento 3",
     "review-and-send": "Revisar y enviar →",
     "review": "Revisar presupuesto →",
-    "open": "Ver presupuesto completo",
     "list-price": "Precio de lista",
     "unit-price": "Precio unitario",
-    "effective-label": "Descuento efectivo"
+    "effective-label": "Descuento efectivo",
+    "review-short": "Revisar presupuesto"
   },
   "discounts": {
     "discount-1": "Descuento 1",

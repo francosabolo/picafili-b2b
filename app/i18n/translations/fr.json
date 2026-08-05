@@ -364,10 +364,10 @@
     "discount-3": "Remise 3",
     "review-and-send": "Vérifier et envoyer →",
     "review": "Vérifier le devis →",
-    "open": "Voir le devis complet",
     "list-price": "Prix catalogue",
     "unit-price": "Prix unitaire",
-    "effective-label": "Remise effective"
+    "effective-label": "Remise effective",
+    "review-short": "Revoir le devis"
   },
   "discounts": {
     "discount-1": "Remise 1",
