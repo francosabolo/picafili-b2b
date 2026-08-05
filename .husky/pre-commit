@@ -1,0 +1,18 @@
+# Formatea solo lo que entra en el commit.
+#
+# Antes corría `npm run format` sobre el repo completo: ~250 archivos en cada
+# commit, con corridas que llegaron a colgarse por minutos. Además reformateaba
+# archivos ajenos al cambio y ensuciaba el diff.
+#
+# La lista se pipea con -z en vez de pasar por `$(...)`: la sustitución de
+# comandos descarta los NUL y pega los nombres entre sí. Y el chequeo previo
+# existe porque el xargs de macOS, sin entrada, ejecuta igual el comando.
+
+if [ -z "$(git diff --cached --name-only --diff-filter=ACMR)" ]; then
+  exit 0
+fi
+
+git diff --cached --name-only --diff-filter=ACMR -z |
+  xargs -0 npx prettier --write --ignore-unknown
+
+git diff --cached --name-only --diff-filter=ACMR -z | xargs -0 git add

@@ -1,0 +1,6 @@
+---
+description: Desarrollo de storefronts Shopify Hydrogen (Remix + Storefront API + Customer Account API). Usar para CUALQUIER pregunta sobre un storefront Hydrogen — componentes de renderizado (Image, Money, CartForm), caching de loaders, codegen, carrito, cuentas de cliente, cookbook de recipes. No usar para gestión/operación de la tienda (skill `shopify-store-admin`) ni para theme Liquid (skill `shopify-theme`) — Hydrogen es headless, no genera Liquid.
+globs:
+alwaysApply: false
+---
+Leé completo y seguí `.claude/skills/shopify-hydrogen/SKILL.md` antes de actuar. Si referencia archivos en `references/`, leé los que apliquen a la tarea.

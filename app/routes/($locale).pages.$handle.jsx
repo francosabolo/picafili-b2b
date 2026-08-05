@@ -1,0 +1,70 @@
+import {json, redirect} from '@shopify/remix-oxygen';
+import {useLoaderData} from '@remix-run/react';
+import {pageTitle} from '~/lib/utils.js';
+
+/**
+ * @type {function({data: *}): [{title: string}]}
+ */
+export const meta = ({data, matches}) => {
+  return [{title: pageTitle(matches, data?.page?.title ?? '')}];
+};
+
+/**
+ * @param {LoaderFunctionArgs}
+ */
+export async function loader({params, context}) {
+  if (!params.handle) {
+    throw new Error('Missing page handle');
+  }
+
+  const {page} = await context.storefront.query(PAGE_QUERY, {
+    variables: {
+      handle: params.handle,
+    },
+  });
+
+  if (!page) {
+    throw new Response('Not Found', {status: 404});
+  }
+
+  const publicStoreDomain = context.env.PUBLIC_STORE_DOMAIN;
+
+  return redirect(`https://${publicStoreDomain}/pages/${params.handle}`);
+}
+
+export default function Page() {
+  /** @type {LoaderReturnData} */
+  const {page} = useLoaderData();
+
+  return (
+    <div className="page">
+      <header>
+        <h1>{page.title}</h1>
+      </header>
+      <main dangerouslySetInnerHTML={{__html: page.body}} />
+    </div>
+  );
+}
+
+const PAGE_QUERY = `#graphql
+  query Page(
+    $language: LanguageCode,
+    $country: CountryCode,
+    $handle: String!
+  )
+  @inContext(language: $language, country: $country) {
+    page(handle: $handle) {
+      id
+      title
+      body
+      seo {
+        description
+        title
+      }
+    }
+  }
+`;
+
+/** @typedef {import('@shopify/remix-oxygen').LoaderFunctionArgs} LoaderFunctionArgs */
+/** @template T @typedef {import('@remix-run/react').MetaFunction<T>} MetaFunction */
+/** @typedef {import('@shopify/remix-oxygen').SerializeFrom<typeof loader>} LoaderReturnData */

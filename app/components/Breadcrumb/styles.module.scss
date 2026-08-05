@@ -1,0 +1,19 @@
+.breadcrumb {
+  display: flex;
+  gap: 5px;
+  position: absolute;
+  top: 1.25rem;
+  left: 1.25rem;
+  font-size: var(--text-sm);
+  line-height: 1.5rem;
+  font-weight: 400;
+  color: var(--color-grey-soft);
+  @media screen and (min-width: $breakpoint-sm) {
+    top: 4.375rem;
+    left: 3%;
+    font-size: var(--text-base);
+    .breadcrumbProductTitle {
+      display: none;
+    }
+  }
+}

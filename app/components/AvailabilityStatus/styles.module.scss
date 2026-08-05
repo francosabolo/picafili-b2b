@@ -1,0 +1,50 @@
+.availabilityBadge {
+  @include availability-bullet(true);
+  &.available {
+    --badgeColor: #c8ef88;
+  }
+
+  &.delayed {
+    --badgeColor: #efde88;
+  }
+
+  &.outOfStock {
+    --badgeColor: #ef8888;
+  }
+
+  /* Es una señal de estado, no un botón: a 1rem con 8px de padding competía
+     con el precio y el título de la tarjeta. */
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-size: var(--text-xs);
+  font-weight: 600;
+  line-height: 1;
+  width: max-content;
+  border-radius: var(--radius-pill);
+  gap: var(--space-1);
+  background-color: var(--badgeColor);
+  padding: var(--space-1) var(--space-2);
+
+  .availabilityIcon {
+    width: 0.75rem;
+    height: 0.75rem;
+  }
+}
+.quoteAvailabilityBullet {
+  .availabilityBadge {
+    @include availability-bullet(false);
+  }
+}
+
+/* El texto va SIEMPRE, y el icono nunca.
+   Antes en mobile se escondia el texto y quedaba solo un circulo de color, con
+   el argumento de que el espacio era escaso. Medido a 390px: la fila tiene
+   316px y el SKU ocupa 58 — el espacio no era el problema. Y un circulo sin
+   etiqueta obliga a aprender una leyenda (verde/amarillo/rojo) justo para el
+   dato que decide si se pide o no: "En stock" contra "No disponible".
+   El icono queda oculto en todos los anchos porque, con el texto presente,
+   solo suma ruido — que ya era el criterio en escritorio. */
+.availabilityBadge .availabilityIcon {
+  display: none;
+}

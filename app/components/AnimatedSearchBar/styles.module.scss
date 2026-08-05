@@ -1,0 +1,208 @@
+.animatedSearchBarToggle {
+  --color-transparent-white: #8a8989e3;
+
+  --animation-duration: 0.5s;
+  --animation-timing-function: linear;
+  position: relative;
+  background-color: var(--background-color);
+  cursor: pointer;
+
+  .icon {
+    @include header-icon;
+    position: relative;
+
+    animation-timing-function: var(--animation-timing-function);
+    animation-duration: var(--animation-duration);
+
+    border-top-right-radius: var(--button-border-radius);
+    border-bottom-right-radius: var(--button-border-radius);
+    border-top: 1px solid var(--border-color);
+    border-bottom: 1px solid var(--border-color);
+    border-right: 1px solid var(--border-color);
+  }
+
+  &[open] {
+    .icon {
+      --background-color: var(--color-transparent-white);
+      --border-color: var(--color-grey-soft);
+    }
+  }
+
+  .animatedSearchBarWrapper {
+    position: absolute;
+    width: 215px;
+    opacity: 1;
+    right: 100%;
+    top: 0;
+
+    color: var(--color-black);
+
+    animation-timing-function: var(--animation-timing-function);
+    animation-duration: var(--animation-duration);
+    animation-fill-mode: forwards;
+
+    border-top-left-radius: var(--button-border-radius);
+    border-bottom-left-radius: var(--button-border-radius);
+
+    p {
+      background-color: transparent;
+    }
+
+    .predictiveSearchForm {
+      background-color: transparent;
+      position: relative;
+      border-radius: var(--radius-md);
+      z-index: 5;
+
+      .animatedSearchBarInput {
+        max-height: 44px;
+        border-radius: 0;
+        color: var(--color-grey-soft);
+        // background-color: var(--background-color);
+        background-color: transparent;
+        padding: var(--space-3);
+
+        border-top: 1px solid var(--border-color);
+        border-bottom: 1px solid var(--border-color);
+        border-left: 1px solid var(--border-color);
+
+        border-top-left-radius: var(--button-border-radius);
+        border-bottom-left-radius: var(--button-border-radius);
+        width: 100%;
+
+        &::placeholder {
+          color: var(--color-grey-soft);
+          opacity: 1; /* Firefox */
+        }
+
+        &::-ms-input-placeholder {
+          /* Edge 12 -18 */
+          color: var(--color-grey-soft);
+        }
+      }
+    }
+
+    &::before {
+      content: '';
+      padding: var(--space-3);
+      line-height: 24px;
+      min-height: calc(100%);
+      width: calc(100% + 44px);
+      top: 0;
+      left: 0;
+      display: block;
+      position: absolute;
+      background-color: var(--background-color);
+      border-radius: var(--radius-md);
+      // backdrop-filter: blur(10px);
+      filter: blur(1px);
+      z-index: -1;
+    }
+
+    .predictiveSearchResults {
+      padding: var(--space-4);
+      width: calc(100% + 44px);
+      top: calc(100% + 4px);
+      position: absolute;
+      border-radius: var(--radius-sm);
+      white-space: nowrap;
+      overflow: hidden;
+      color: var(--border-color);
+      border: 1px solid var(--border-color);
+      // backdrop-filter: blur(10px);
+      // filter: blur(1px);
+
+      &::before {
+        content: '';
+        padding: var(--space-3);
+        line-height: 24px;
+        min-height: calc(100%);
+        width: calc(100% + 44px);
+        top: 0;
+        left: 0;
+        display: block;
+        position: absolute;
+        background-color: var(--color-transparent-white);
+        // backdrop-filter: blur(10px);
+        filter: blur(1px);
+        z-index: -1;
+      }
+
+      img {
+        min-width: 50px;
+      }
+    }
+  }
+}
+
+@keyframes openBar {
+  from {
+    width: 0;
+    opacity: 0;
+    visibility: hidden;
+    --background-color: var(--background);
+    --border-color: var(--background);
+  }
+
+  98% {
+    width: 210.7px;
+    opacity: 0.98;
+    visibility: visible;
+  }
+
+  to {
+    width: 215px;
+    opacity: 1;
+    visibility: visible;
+    --background-color: var(--color-transparent-white);
+    --border-color: var(--color-grey-soft);
+  }
+}
+
+@keyframes closeBar {
+  from {
+    width: 215px;
+    opacity: 1;
+    visibility: visible;
+    --background-color: var(--color-transparent-white);
+    --border-color: var(--color-grey-soft);
+  }
+  2% {
+    width: 210.7px;
+    opacity: 0.98;
+    visibility: visible;
+  }
+  to {
+    width: 0;
+    opacity: 0;
+    visibility: hidden;
+    --background-color: var(--background);
+    --border-color: var(--background);
+  }
+}
+
+@keyframes openIcon {
+  from {
+    opacity: 0;
+    --background-color: var(--background);
+    --border-color: var(--background);
+  }
+  to {
+    opacity: 1;
+    --background-color: var(--color-transparent-white);
+    --border-color: var(--color-grey-soft);
+  }
+}
+
+@keyframes closeIcon {
+  from {
+    opacity: 1;
+    --background-color: var(--color-transparent-white);
+    --border-color: var(--color-grey-soft);
+  }
+  to {
+    opacity: 0;
+    --background-color: var(--background);
+    --border-color: var(--background);
+  }
+}

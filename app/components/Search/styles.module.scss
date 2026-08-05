@@ -1,0 +1,78 @@
+.predictiveSearchResults {
+  padding: var(--space-3);
+}
+
+.searchForm {
+  display: flex;
+  gap: 5px;
+  margin-bottom: 4.5rem;
+}
+
+.predictiveSearchResult {
+  h5 {
+    text-transform: capitalize;
+    font-weight: bold;
+    margin-bottom: 0.8rem;
+  }
+}
+
+.productInfo {
+  display: flex;
+  flex-direction: column;
+  align-items: start;
+}
+
+.itemTitle {
+  font-weight: 600;
+  font-size: var(--text-sm);
+}
+
+.predictiveSearchResultItem {
+  margin-bottom: var(--space-2);
+
+  a {
+    align-items: center;
+    display: flex;
+  }
+
+  img {
+    margin-right: var(--space-3);
+    height: 100%;
+  }
+}
+
+.searchFormButton {
+  --color-dark: var(--color-primary);
+  @include btn-primary(rgb(53 54 53 / 65%), white);
+  align-items: center;
+  font-size: var(--text-lg);
+  background: var(--brand-petrol);
+  font-weight: 400;
+  line-height: normal;
+  padding: var(--space-3) var(--space-8);
+}
+
+.searchFormInput {
+  background-color: var(--color-grey-soft);
+  border-radius: var(--radius-md);
+}
+
+/* Barra de resultados de la busqueda: conteo + selector de vista.
+   Antes no habia ninguno de los dos — la busqueda mostraba tarjetas y nada
+   mas, sin decir cuantas ni permitir compararlas en tabla. */
+.resultsBar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-4);
+  margin: var(--space-6) 0 var(--space-3);
+  padding-bottom: var(--space-3);
+  border-bottom: 1px solid var(--color-grey-alt);
+}
+
+.resultsCount {
+  font-size: var(--text-sm);
+  color: var(--brand-petrol);
+  opacity: 0.7;
+  font-variant-numeric: tabular-nums;
+}

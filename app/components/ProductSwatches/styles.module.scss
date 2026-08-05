@@ -1,0 +1,14 @@
+.productOptions {
+  display: flex;
+  flex-direction: column;
+}
+
+.productOptionItem {
+  border-radius: var(--radius-lg);
+}
+
+.productOptionsGrid {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-3);
+}

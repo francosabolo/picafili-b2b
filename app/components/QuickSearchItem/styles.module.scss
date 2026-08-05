@@ -1,0 +1,408 @@
+.downloadsLink {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  font-size: var(--text-base);
+  line-height: 1.5rem;
+  color: var(--color-grey-dark);
+  text-decoration: none;
+  &:hover {
+    text-decoration: underline;
+  }
+}
+
+.attributeValue {
+  display: flex;
+  flex-direction: column;
+  position: relative;
+  background: #bb60371f;
+  color: var(--brand-petrol);
+  border-radius: var(--radius-sm);
+  padding: 5px;
+  /* 12px es el piso de la escala. Este badge estaba en 9px en mobile y 13px de
+     lg para arriba: texto mas chico justo en la pantalla mas chica, y en la
+     pantalla donde el mayorista carga el pedido. Un solo tamaño, en escala. */
+  font-size: var(--text-xs);
+
+  @media screen and (min-width: $breakpoint-lg) {
+    &:first-child:before {
+      content: none;
+    }
+  }
+}
+
+.QuickSearchItemWrapper {
+  --background: var(--color-black);
+  .QuickSearchItem {
+    flex-grow: 1;
+  }
+}
+
+.productImage {
+  max-height: 77px;
+  position: relative;
+  margin: auto;
+  @media screen and (max-width: $breakpoint-lg) {
+    max-height: 55px;
+  }
+}
+
+/* Fila del configurador: alineada al mismo padding que el encabezado, con
+   hairline de separación y hover. Antes cada fila era una tarjeta suelta
+   con fondo propio, y el conjunto se leía como un listado desordenado. */
+.cardWrapper {
+  display: flex;
+  position: relative;
+  height: 100%;
+  gap: var(--space-3);
+  align-items: center;
+  padding: var(--space-3) var(--space-6);
+  border-bottom: 1px solid var(--color-grey-alt);
+  transition: background 0.15s ease;
+
+  &:hover {
+    background: var(--b2b-surface);
+  }
+
+  &:last-child {
+    border-bottom: none;
+  }
+  img {
+    width: 64px;
+    min-width: 64px;
+    height: 64px;
+    object-fit: cover;
+    border-radius: 12px;
+    @media screen and (max-width: $breakpoint-lg) {
+      width: auto;
+      min-width: 55px;
+      max-height: 55px;
+    }
+  }
+}
+
+.productInformation {
+  background-color: transparent;
+  border-radius: 0;
+  padding: 0;
+  flex-grow: 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  max-width: 88rem;
+  margin-right: var(--space-3);
+
+  @media screen and (max-width: $breakpoint-lg) {
+    max-width: unset;
+    margin: 0;
+    position: relative;
+    padding: 0 0.6875rem;
+  }
+}
+.mobileAddtoQuote {
+  width: 100%;
+}
+
+/* Columna de acciones: parte de la fila, no una tarjeta aparte. El fondo
+   propio y el padding la hacían desbordar por fuera del contenedor. */
+.productActions {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+  border: none;
+  padding: 0;
+  text-align: center;
+  background-color: transparent;
+  font-weight: normal;
+  justify-content: center;
+  align-items: stretch;
+  flex-shrink: 0;
+  width: 18.5rem;
+
+  @media screen and (max-width: $breakpoint-lg) {
+    display: none;
+  }
+}
+
+.outOfStockButton {
+  width: 100%;
+  max-width: var(--pdp-selector-size);
+  border-radius: var(--radius-lg);
+  border: none;
+  background-color: var(--background);
+  color: var(--color);
+}
+
+.productBadge {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 30px;
+  max-width: 40px;
+  line-height: 11px;
+  border-radius: 5px;
+  background-color: var(--color-grey-dark);
+  padding: 5px 10px;
+  color: white;
+  position: absolute;
+  font-size: var(--text-xs);
+  bottom: 0;
+
+  @media screen and (max-width: $breakpoint-lg) {
+    display: none;
+  }
+}
+
+.availabilityBadge {
+  &.available {
+    --badgeColor: var(--color-green);
+  }
+
+  &.delayed {
+    --badgeColor: var(--color-yellow);
+  }
+
+  &.outOfStock {
+    --badgeColor: var(--color-red);
+  }
+
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-size: var(--text-base);
+  line-height: normal;
+  width: 100%;
+  border-radius: var(--radius-md);
+  gap: var(--space-2);
+  background-color: var(--badgeColor);
+  padding: var(--space-2) var(--space-3);
+
+  .availabilityIcon {
+    width: 0.875rem;
+    height: 0.875rem;
+  }
+}
+
+.productAttributes {
+  display: grid;
+  grid-template-areas: 'sku description attributes price badge';
+  align-items: center;
+  justify-content: space-between;
+  // Sin columna de descargas (vacía en este catálogo): el espacio va a
+  // variante, que es lo que diferencia una fila de otra.
+  grid-template-columns: 15% 22% 18% 24% 15%;
+  gap: 5px;
+
+  @media screen and (max-width: $breakpoint-lg) {
+    display: flex;
+    justify-content: flex-end;
+  }
+}
+
+.skuWrapper {
+  grid-area: sku;
+  display: flex;
+  width: 100%;
+  word-break: break-all;
+  align-items: center;
+  gap: var(--space-2);
+  font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+  font-size: var(--text-xs);
+  letter-spacing: 0.02em;
+
+  @media screen and (max-width: $breakpoint-lg) {
+    span {
+      /* 0.6rem = 9.6px: por debajo del piso de la escala. */
+      font-size: var(--text-xs);
+      line-height: 1.2;
+    }
+    position: absolute;
+    left: 0.6875rem;
+    max-width: max-content;
+  }
+  @media screen and (max-width: 380px) {
+    span {
+      font-size: 0.55rem;
+      line-height: 0.55rem;
+    }
+  }
+}
+
+.priceWrapper {
+  grid-area: price;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+  flex-wrap: wrap;
+
+  @media screen and (max-width: $breakpoint-lg) {
+    display: none;
+  }
+}
+
+.descriptionWrapper {
+  grid-area: description;
+  display: flex;
+  width: 100%;
+  align-items: center;
+
+  .productDescription {
+    overflow: hidden;
+    display: -webkit-box;
+    max-width: 90%;
+    -webkit-line-clamp: 2; /* number of lines to show */
+    line-clamp: 2;
+    -webkit-box-orient: vertical;
+
+    @media screen and (max-width: $breakpoint-lg) {
+      -webkit-line-clamp: 4; /* number of lines to show */
+      line-clamp: 4;
+    }
+  }
+  svg {
+    min-width: 24px;
+  }
+
+  @media screen and (max-width: $breakpoint-lg) {
+    display: none;
+  }
+}
+
+.attributesWrapper {
+  grid-area: attributes;
+  display: flex;
+  flex-direction: row;
+  gap: 0.2rem;
+  flex-wrap: wrap;
+  white-space: nowrap;
+  justify-content: start;
+
+  &.mobile {
+    display: none;
+  }
+
+  @media screen and (max-width: $breakpoint-lg) {
+    &.mobile {
+      display: flex;
+      padding-bottom: 5px;
+    }
+    &.desktop {
+      display: none;
+    }
+  }
+}
+
+.downloadsWrapper {
+  grid-area: downloads;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100%;
+  .downloadsLink {
+    position: relative;
+    height: 100%;
+    svg {
+      cursor: pointer;
+    }
+  }
+
+  @media screen and (max-width: $breakpoint-lg) {
+    display: none;
+  }
+}
+
+.stockBadgeWrapper {
+  justify-content: end;
+  display: flex;
+  grid-area: badge;
+
+  @media screen and (max-width: $breakpoint-lg) {
+    display: none;
+  }
+}
+
+.mobileCardWrapper {
+  @media screen and (min-width: $breakpoint-lg) {
+    display: none;
+  }
+}
+
+//Download modal
+@keyframes openModal {
+  from {
+    visibility: hidden;
+    transform: scaleX(0);
+    opacity: 0;
+    transform-origin: right;
+  }
+  to {
+    visibility: visible;
+    transform: scaleX(1); // Empieza desde fuera del viewport a la derecha
+    transform-origin: right;
+    opacity: 1;
+  }
+}
+
+@keyframes closeModal {
+  from {
+    transform: scaleX(1);
+    visibility: visible;
+    opacity: 1;
+    transform-origin: right;
+  }
+  to {
+    visibility: hidden;
+    transform: scaleX(0);
+    transform-origin: right;
+    opacity: 0;
+  }
+}
+
+.downloadsModalWrapper {
+  background-color: white;
+  max-width: 100%; // Esto asegura que el modal no se extienda más allá del ancho de la pantalla.
+  width: auto;
+  min-width: 250px;
+  visibility: visible;
+  animation-duration: 0.5s;
+  position: absolute;
+  padding: 10px 10px 10px 30px;
+  top: calc(50% - 32px);
+  right: -10px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  box-shadow: 0px 0px 10px 5px #e5e4e4;
+  height: 64px;
+  border-radius: var(--radius-lg);
+}
+
+.downloadsModalWrapperIcons {
+  display: flex;
+  gap: var(--space-2);
+  justify-content: center;
+  margin: 0 auto;
+}
+
+.downloadsToggle {
+  background: none;
+  border: none;
+  padding: 0;
+  cursor: pointer;
+  color: inherit;
+}
+
+/* Valores de variante (Color, Talle) como chips: se leen de un vistazo al
+   comparar filas del mismo producto. */
+.attributesWrapper .variantOption {
+  display: inline-flex;
+  align-items: center;
+  background: var(--brand-cream);
+  border: 1px solid var(--color-grey-alt);
+  border-radius: var(--radius-pill);
+  padding: 0.1875rem 0.625rem;
+  font-size: var(--text-xs);
+  color: var(--brand-petrol);
+  margin: 0 var(--space-1) var(--space-1) 0;
+}

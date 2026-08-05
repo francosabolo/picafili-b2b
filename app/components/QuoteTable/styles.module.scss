@@ -1,0 +1,95 @@
+.draftOrders {
+  @media screen and (max-width: $breakpoint-sm) {
+    margin-bottom: 6.5rem;
+  }
+}
+
+.headingRow {
+  display: grid;
+  grid-template-columns: repeat(6, 1fr);
+  border-radius: var(--radius-sm);
+  padding: var(--space-4);
+  font-size: var(--text-base);
+  font-weight: bold;
+  margin-bottom: var(--space-3);
+  @media (max-width: $breakpoint-sm) {
+    grid-template-columns: repeat(5, 1fr);
+    padding: 0;
+  }
+}
+
+.headingCell {
+  text-align: left;
+}
+
+.fieldsContainer {
+  display: grid;
+  grid-template-columns: repeat(6, 1fr);
+  background-color: var(--color-grey-soft);
+  border-radius: var(--radius-sm);
+  padding: var(--space-4);
+  font-size: var(--text-base);
+  margin-bottom: var(--space-3);
+
+  @media (max-width: $breakpoint-sm) {
+    grid-template-columns: repeat(5, 1fr);
+    padding: 0;
+    &.desktop {
+      display: none;
+    }
+
+    &.mobile {
+      display: flex;
+      justify-content: center;
+    }
+  }
+}
+
+@media (max-width: $breakpoint-sm) {
+  .field,
+  .headingCell {
+    margin-left: 0.6rem;
+  }
+}
+
+.field {
+  display: flex;
+  justify-content: left;
+  align-items: center;
+}
+
+.menuPill {
+  @include menu-pill(var(--color-grey-dark), var(--color-grey-soft));
+  justify-self: end;
+  font-size: var(--text-base);
+
+  &.viewIcon {
+    padding: var(--space-2);
+    border-radius: 100%;
+  }
+}
+
+.desktop {
+  display: flex;
+}
+
+.mobile {
+  display: none;
+}
+
+@media (max-width: $breakpoint-sm) {
+  .desktop {
+    display: none;
+  }
+
+  .mobile {
+    display: block;
+  }
+
+  .fieldsContainer {
+    .mobile {
+      display: flex;
+      justify-content: center;
+    }
+  }
+}

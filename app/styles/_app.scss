@@ -1,0 +1,1089 @@
+:root {
+  /* ---------------------------------------------------------------------
+     Marca Picafili — tokens tomados del theme vivo de picafili.com.ar.
+     Los nombres legacy (--color-grey-dark, --color-grey-soft, etc.) se
+     mantienen como alias porque los usan ~40 archivos de componentes:
+     cambia el valor, no el contrato.
+     --------------------------------------------------------------------- */
+  --brand-cream: #ffefd8; // superficie base
+  --brand-cream-deep: #f7e2c4; // crema un tono abajo, para separar bloques
+  --brand-magenta: #e72475; // marca / links / acentos
+  --brand-magenta-deep: #7e0e3c; // contraste sobre magenta
+  --brand-teal: #00a8be; // CTA primario
+  --brand-petrol: #00373f; // tinta y superficies oscuras
+  --brand-orange: #f08220;
+  --brand-amber: #ffbb59;
+
+  /* Zona B2B — el guiño de "estás adentro" */
+  --b2b-accent: var(--brand-magenta);
+  --b2b-surface: #fff8ee; // panel privilegiado sobre crema
+  --b2b-ink: var(--brand-petrol);
+  --b2b-savings: #1f7a3d; // verde de ahorro, contraste AA sobre crema
+
+  /* Alias legacy */
+  --color-black: #002b31;
+  --color-grey: #8a9a9d;
+  --color-grey-dark: var(--brand-petrol);
+  --color-grey-alt: #e6d9c6;
+  --color-grey-soft: var(--brand-cream);
+  --aside-width: 30rem;
+  --color-red: #d64545;
+  --color-yellow: var(--brand-amber);
+  --color-green: #b4cd73;
+  --color-orange: var(--brand-orange);
+  --color-violet: var(--brand-magenta);
+  --color-pink: #f9c9dc;
+  --color-blue: var(--brand-teal);
+  --color-transparent-white: #00373f26;
+  --grid-item-width: 355px;
+
+  //Product grid variables
+  /* Ancho minimo de tarjeta. La cantidad de columnas ya NO es un token: iba
+     como repeat(var(--n), ...), que no es CSS valido: el contador de
+     repeat() tiene que ser un entero literal, no una custom property. El
+     parser de CSS del dev server abortaba el bundle entero en esa linea y la
+     pagina se servia SIN estilos (sintoma: el sitio en Times New Roman). El
+     build de produccion no se quejaba, asi que solo aparecia en desarrollo. */
+  --product-item-min-width: 150px;
+  --header-height: 105px;
+  --pdp-selector-size: 16.875rem;
+  /* ─────────────────────────────────────────────────────────────────────
+     ESCALAS — ver DESIGN.md
+
+     El CSS del proyecto llego a tener 51 tamanos de fuente, 26 radios y 134
+     valores de espaciado distintos. Nadie decidio eso: se acumulo eligiendo
+     un valor a ojo por componente. El resultado es lo que se ve como
+     "interfaz fragil" — cosas que casi se alinean.
+
+     Codigo nuevo usa SOLO estas escalas. `scripts/check-design-tokens.mjs`
+     lo verifica en las lineas nuevas, igual que el lint.
+     ───────────────────────────────────────────────────────────────────── */
+
+  /* Tipografia — razon ~1.2, sin pasos intermedios a ojo */
+  --text-xs: 0.75rem; /* 12px — badges, metadatos, SKU */
+  --text-sm: 0.875rem; /* 14px — texto secundario, botones chicos */
+  --text-base: 1rem; /* 16px — cuerpo */
+  --text-lg: 1.125rem; /* 18px — destacados, totales */
+  --text-xl: 1.5rem; /* 24px — titulos de seccion */
+  --text-2xl: 2rem; /* 32px — titulos de pagina */
+  --text-display: clamp(2rem, 5vw, 3.5rem); /* heroes */
+
+  /* Espaciado — base 4px. Todo padding, margin y gap sale de aca */
+  --space-1: 0.25rem;
+  --space-2: 0.5rem;
+  --space-3: 0.75rem;
+  --space-4: 1rem;
+  --space-6: 1.5rem;
+  --space-8: 2rem;
+  --space-12: 3rem;
+  --space-16: 4rem;
+
+  /* Superficies. `#fff` aparecia crudo en 14 archivos: el token dice que es
+     una superficie elevada sobre la crema, no "blanco". */
+  --surface-raised: #fff;
+  /* Texto sobre un color de marca saturado (magenta, teal). Es un rol
+     distinto de --surface-raised aunque hoy compartan el valor: uno es
+     "el fondo de una tarjeta", el otro es "la tinta sobre magenta". */
+  --text-on-brand: #fff;
+  /* Rojo de accion destructiva (borrar linea, vaciar). Estaba crudo como
+     #c95252 en varios componentes. */
+  --color-danger: #c95252;
+  /* Fondos y tinta de los avisos de resultado. Estaban como hex crudos
+     repetidos en cada componente que muestra un exito o un error. */
+  --surface-success: #e7f3ea;
+  --surface-error: #fbe6e6;
+  --text-error: #a02c2c;
+  --surface-base: var(--brand-cream);
+
+  /* Radios — cuatro, no veintiseis */
+  --radius-sm: 10px; /* inputs, chips */
+  --radius-md: 18px; /* botones */
+  --radius-lg: 20px; /* tarjetas, media */
+  --radius-pill: 999px; /* badges */
+
+  --border-radius: 20px; // media/cards — Picafili usa 20px
+  --button-border-radius: 18px; // botones — Picafili usa 18px
+  --input-border-radius: 10px;
+  --color-dark: var(--brand-petrol);
+  --color-light: var(--brand-cream);
+  --background-light: var(--brand-cream); // Light mode background
+  --background-dark: var(--brand-petrol); // Dark mode background
+  --color: var(--color-light); // Default to dark mode
+  --background: var(--background-light); // Default to light mode
+  --font-body: 'Montserrat', -apple-system, BlinkMacSystemFont, 'Segoe UI',
+    sans-serif;
+  --font-heading: var(--font-body);
+  --font-herlighting: var(--font-body);
+  --font-weight-body: 500;
+  --font-weight-bold: 800;
+  --color-primary: var(--brand-magenta);
+  --primary-color: var(--brand-teal);
+
+  @media (max-width: $breakpoint-md) {
+    --header-height: 85px;
+    --aside-width: 96%;
+  }
+}
+
+img {
+  border-radius: 12px;
+}
+
+/* Tipografía de marca: Montserrat, body 500 / bold 800, igual que picafili.com.ar */
+/* Pie pegado abajo con flex, no forzando alto.
+   Antes habia un `min-height: 130vh` sobre el <main>: en una pagina corta
+   —/listas vacio, un 404, una coleccion de un producto— el contenido media
+   485px y el main quedaba en 1066, o sea **819px de scroll vacio**, un
+   viewport entero de nada. Lo que se buscaba (que el footer no flote a media
+   pantalla) se resuelve con flex y sin inventar alto. */
+body {
+  font-family: var(--font-body);
+  font-weight: var(--font-weight-body);
+  color: var(--brand-petrol);
+  background: var(--brand-cream);
+  display: flex;
+  flex-direction: column;
+  min-height: 100dvh;
+}
+
+body > main:not(aside main) {
+  flex: 1 0 auto;
+}
+
+h1,
+h2,
+h3,
+h4,
+h5,
+h6,
+strong,
+b {
+  font-family: var(--font-heading);
+  font-weight: var(--font-weight-bold);
+}
+
+// Max-width
+:root {
+  --page-width: 90rem;
+}
+
+.loader {
+  background: rgba(0, 0, 0, 0.73);
+  flex-direction: column;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 100vh;
+  z-index: 9;
+  top: 0;
+  width: 100%;
+}
+
+.page-width {
+  max-width: var(--page-width);
+  padding-left: 20px;
+  padding-right: 20px;
+  margin: 0 auto;
+}
+
+/*
+* --------------------------------------------------
+* components/Aside
+* --------------------------------------------------
+*/
+aside {
+  background: var(--color-light);
+  box-shadow: 0 0 50px rgba(0, 0, 0, 0.3);
+  height: 100dvh;
+  max-width: var(--aside-width);
+  min-width: var(--aside-width);
+  position: fixed;
+  right: calc(-1 * var(--aside-width));
+  top: 0;
+  transition: transform 200ms ease-in-out;
+  padding: 2rem 1.3125rem;
+  @media (max-width: $breakpoint-md) {
+    padding: 2rem 7dvw 2rem 1.3125rem;
+  }
+}
+
+#mobile-menu-aside aside {
+  padding: 1rem 2rem;
+  main {
+    margin: 0;
+  }
+}
+
+input {
+  min-height: 1rem;
+  padding: 1rem;
+  border-radius: var(--border-radius);
+}
+
+aside header {
+  @media screen and (min-width: $breakpoint-md) {
+    align-items: center;
+    display: flex;
+    justify-content: space-between;
+  }
+}
+
+aside header h3 {
+  margin: 0;
+  font-size: 2rem;
+  font-weight: 500;
+  color: var(--color-grey-dark);
+}
+
+aside header .close {
+  font-weight: bold;
+  opacity: 0.8;
+  text-decoration: none;
+  transition: all 200ms;
+  width: 1.25rem;
+  display: flex;
+  align-items: center;
+  margin-left: auto;
+}
+
+aside header .close:hover {
+  opacity: 1;
+}
+
+aside header h2 {
+  margin-bottom: 0.6rem;
+  margin-top: 0;
+}
+
+/* El <main> del drawer toma el alto que sobra despues del header, no el 100%
+   del aside: con `height: 100%` pedia los 100dvh completos ignorando que el
+   header ya se comio su parte, asi que el contenido desbordaba por abajo y la
+   lista de items quedaba aplastada mientras sobraba espacio en blanco. */
+aside main {
+  flex: 1 1 auto;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+}
+
+aside p {
+  margin: 0 0 0.25rem;
+}
+
+aside p:last-child {
+  margin: 0;
+}
+
+aside li {
+  margin-bottom: 0.125rem;
+}
+
+.overlay {
+  background: rgba(0, 0, 0, 0.2);
+  bottom: 0;
+  left: 0;
+  opacity: 0;
+  pointer-events: none;
+  position: fixed;
+  right: 0;
+  top: 0;
+  transition: opacity 400ms ease-in-out;
+  transition: opacity 400ms;
+  visibility: hidden;
+  z-index: 10;
+}
+
+.overlay .close-outside {
+  background: transparent;
+  border: none;
+  color: transparent;
+  height: 100%;
+  left: 0;
+  position: absolute;
+  top: 0;
+  width: calc(100dvw - var(--aside-width));
+}
+
+.overlay .light {
+  background: rgba(255, 255, 255, 0.5);
+}
+
+.overlay .cancel {
+  cursor: default;
+  height: 100%;
+  position: absolute;
+  width: 100%;
+}
+
+.overlay:target {
+  opacity: 1;
+  pointer-events: auto;
+  visibility: visible;
+}
+
+/* reveal aside */
+.overlay:target aside {
+  transform: translateX(calc(var(--aside-width) * -1));
+}
+
+/*
+* --------------------------------------------------
+* components/Header
+* --------------------------------------------------
+*/
+.header {
+  align-items: center;
+  background: #fff;
+  display: flex;
+  padding: 0 1rem;
+  position: sticky;
+  top: 0;
+  z-index: 1;
+}
+
+.header-menu-mobile-toggle {
+  @media (min-width: $breakpoint-sm) {
+    display: none;
+  }
+}
+
+.header-menu-mobile {
+  display: flex;
+  flex-direction: column;
+  grid-gap: 1rem;
+}
+
+.header-menu-desktop {
+  display: none;
+  grid-gap: 1rem;
+  @media (min-width: 48em) {
+    display: flex;
+    grid-gap: 1rem;
+    margin-left: 3rem;
+  }
+}
+
+.header-menu-item {
+  cursor: pointer;
+}
+
+.header-ctas {
+  align-items: center;
+  display: flex;
+  grid-gap: 1rem;
+  margin-left: auto;
+}
+
+/*
+* --------------------------------------------------
+* components/Footer
+* --------------------------------------------------
+*/
+.footer {
+  background: var(--color-dark);
+  margin-top: auto;
+}
+
+.footer-menu {
+  align-items: center;
+  display: flex;
+  grid-gap: 1rem;
+  padding: 1rem;
+}
+
+.footer-menu a {
+  color: var(--color-dark);
+}
+
+/*
+* --------------------------------------------------
+* components/Cart
+* --------------------------------------------------
+*/
+
+.cart-subtotal {
+  align-items: center;
+  display: flex;
+}
+
+/*
+* --------------------------------------------------
+* components/Search
+* --------------------------------------------------
+*/
+// Removed Close icon rendered by the browser
+input[type='search']::-webkit-search-decoration,
+input[type='search']::-webkit-search-cancel-button,
+input[type='search']::-webkit-search-results-button,
+input[type='search']::-webkit-search-results-decoration {
+  filter: invert(0%) sepia(0%) saturate(0%);
+  cursor: pointer;
+}
+
+.search-title {
+  font-size: 2rem;
+  line-height: 3rem;
+  font-weight: 700;
+  margin-bottom: 1rem;
+  padding: 1rem 0;
+}
+
+.predictive-search {
+  height: calc(100vh - var(--header-height) - 40px);
+  overflow-y: auto;
+}
+
+.predictive-search-form {
+  background: var(--color-light);
+  position: sticky;
+  top: 0;
+}
+
+.predictive-search-result {
+  margin-bottom: 2rem;
+}
+
+.search-result {
+  margin-bottom: 1.5rem;
+}
+
+.search-results-item {
+  margin-bottom: 0.5rem;
+}
+
+.search-results-item a {
+  display: flex;
+  flex: row;
+  align-items: center;
+  gap: 1rem;
+}
+
+/* Header Picafili: barra crema con tinta petróleo, no la barra negra del fork */
+header {
+  width: 100%;
+  --background: var(--brand-cream);
+  background-color: var(--brand-cream);
+  color: var(--brand-petrol);
+  border-bottom: 1px solid var(--color-grey-alt);
+
+  @media screen and (min-width: $breakpoint-md) {
+    top: 0;
+  }
+
+  a,
+  span,
+  strong {
+    color: inherit;
+  }
+
+  svg {
+    fill: currentColor;
+  }
+}
+
+body.index > header,
+body:not(.not-found-404).collection > header {
+  z-index: 1;
+}
+
+body.product-page header,
+body.account header {
+  position: relative;
+}
+
+/*
+* --------------------------------------------------
+* routes/__index
+* --------------------------------------------------
+*/
+.featured-collection {
+  display: block;
+  margin-bottom: 2rem;
+  position: relative;
+}
+
+.featured-collection-image {
+  aspect-ratio: 1 / 1;
+  @media (min-width: 45em) {
+    aspect-ratio: 16 / 9;
+  }
+}
+
+.featured-collection img {
+  height: auto;
+  max-height: 100%;
+  object-fit: cover;
+}
+
+.recommended-products-grid {
+  display: grid;
+  grid-gap: 1.5rem;
+  grid-template-columns: repeat(4, minmax(75%, 1fr));
+  overflow-x: hidden;
+  @media (min-width: 45em) {
+    grid-template-columns: repeat(4, 1fr);
+  }
+}
+
+.recommended-product img {
+  height: auto;
+}
+
+/*
+* --------------------------------------------------
+* routes/collections._index.tsx
+* --------------------------------------------------
+*/
+.collections-grid {
+  display: grid;
+  grid-gap: 1.5rem;
+  grid-template-columns: repeat(auto-fit, minmax(var(--grid-item-width), 1fr));
+  margin-bottom: 2rem;
+}
+
+.collection-item img {
+  height: auto;
+}
+
+/*
+* --------------------------------------------------
+* routes/collections.$handle.tsx
+* --------------------------------------------------
+*/
+.collection-description {
+  margin-bottom: 1rem;
+  max-width: 95%;
+  @media (min-width: 45em) {
+    max-width: 600px;
+  }
+}
+
+/* Barra del selector de vista (tarjetas / tabla). Va alineada a la derecha y
+   arriba del listado: es una preferencia de lectura, no un filtro, y meterlo
+   entre los filtros lo haría parecer uno. */
+.listViewBar {
+  display: flex;
+  justify-content: flex-end;
+  margin-top: var(--space-6);
+}
+
+/* En vista de tabla el margen superior de la grilla no aplica, asi que la
+   tabla se pega a la barra. */
+.listViewBar + [class*='scroller'] {
+  margin-top: var(--space-3);
+}
+
+/* Las tarjetas se estiran a la altura de la fila: sin esto, un título de dos
+   líneas hacía que esa tarjeta fuera más alta que sus vecinas y la fila
+   quedaba desprolija. */
+.products-grid {
+  display: grid;
+  align-items: stretch;
+  row-gap: 2rem;
+  column-gap: 1rem;
+  grid-template-columns: repeat(1, minmax(var(--product-item-min-width), 100%));
+  margin-bottom: 2rem;
+  margin-top: 3rem;
+  justify-content: center;
+
+  @media screen and (min-width: $breakpoint-md) {
+    column-gap: 1.25rem;
+    row-gap: 5rem;
+    grid-template-columns: repeat(
+      4,
+      minmax(var(--product-item-min-width), calc(100% / 4))
+    );
+  }
+}
+
+.collection {
+  .loadMoreButton {
+    margin-bottom: 4rem;
+  }
+}
+
+.product-item img {
+  height: auto;
+  width: 100%;
+}
+
+.loadLessButton {
+  margin-top: 3rem;
+  @include loadMoreLessButton;
+}
+.loadMoreButton {
+  @include loadMoreLessButton;
+  margin-top: 3rem;
+}
+
+/*
+* --------------------------------------------------
+* routes/products.$handle.tsx
+* --------------------------------------------------
+*/
+/* La galeria dejo de sangrar a pantalla completa, asi que el grid necesita el
+   mismo respiro lateral que el resto de la pagina. */
+.product {
+  display: grid;
+  position: relative;
+  max-width: var(--page-width);
+  margin: 0 auto;
+  padding: 2rem 1.25rem 0;
+  @media (min-width: 45em) {
+    grid-template-columns: 1fr 1fr;
+    grid-gap: 4rem;
+  }
+}
+
+.product h1 {
+  font-size: 2.4rem;
+  margin-top: 0;
+}
+
+.product-image img {
+  height: auto;
+  width: 100%;
+  border-radius: 0;
+}
+
+.product-main {
+  align-self: start;
+  position: sticky;
+  top: 6rem;
+}
+
+.product-price-on-sale {
+  display: flex;
+  grid-gap: 0.5rem;
+}
+
+.product-price-on-sale s {
+  opacity: 0.5;
+}
+
+.product-options-grid {
+  display: flex;
+  flex-wrap: wrap;
+  grid-gap: 0.75rem;
+}
+
+.product-options-item {
+  padding: 0.25rem 0.5rem;
+}
+
+/*
+* --------------------------------------------------
+* 404
+* --------------------------------------------------
+*/
+body.not-found-404 main:not(aside main) {
+  min-height: calc(100vh - 32rem);
+  margin-top: 2rem;
+}
+
+.route-error {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-direction: column;
+  margin: 70px 0 70px 0;
+}
+
+.route-error h1 {
+  font-size: 40px;
+  line-height: 52px;
+  margin: 50px 0 30px 0;
+  @media screen and (max-width: $breakpoint-sm) {
+    font-size: 30px;
+    margin: 30px 0 20px 0;
+    line-height: 39px;
+  }
+}
+
+/* El CTA del error usa la marca, no negro puro. `black` no esta en ninguna
+   paleta del proyecto —ni siquiera es --brand-petrol— y quedaba como el unico
+   boton negro del sitio, justo en la pantalla donde alguien ya esta perdido. */
+.route-error .return-to-store {
+  @include btn-primary(
+    var(--brand-magenta),
+    var(--brand-cream),
+    transparent,
+    var(--brand-magenta-deep)
+  );
+  margin-top: 20px;
+  cursor: pointer;
+  font-size: 15px;
+  padding: 14px 30px;
+  font-weight: 400;
+  letter-spacing: 1px;
+  line-height: 18px;
+  @media screen and (max-width: $breakpoint-sm) {
+    margin-top: 10px;
+  }
+}
+.route-error-lead {
+  max-width: 46ch;
+  text-align: center;
+  font-size: var(--text-base);
+  opacity: 0.8;
+}
+
+.route-error-actions {
+  display: flex;
+  align-items: center;
+  gap: var(--space-6);
+  flex-wrap: wrap;
+  justify-content: center;
+  margin-top: var(--space-4);
+}
+
+.route-error-secondary {
+  font-size: var(--text-sm);
+  font-weight: var(--font-weight-bold);
+  color: var(--brand-petrol);
+  text-decoration: underline;
+}
+
+/* El detalle tecnico existe pero no interrumpe. */
+.route-error-detail {
+  margin-top: var(--space-8);
+  max-width: 60ch;
+  font-size: var(--text-sm);
+
+  summary {
+    cursor: pointer;
+    opacity: 0.6;
+  }
+
+  pre {
+    margin-top: var(--space-2);
+    padding: var(--space-3);
+    background: var(--surface-raised);
+    border-radius: var(--radius-sm);
+    overflow-x: auto;
+    font-size: var(--text-xs);
+  }
+}
+
+/*
+* --------------------------------------------------
+* routes/blog._index.tsx
+* --------------------------------------------------
+*/
+.blog-grid {
+  display: grid;
+  grid-gap: 1.5rem;
+  grid-template-columns: repeat(auto-fit, minmax(var(--grid-item-width), 1fr));
+  margin-bottom: 2rem;
+}
+
+.blog-article-image {
+  aspect-ratio: 3/2;
+  display: block;
+}
+
+.blog-article-image img {
+  height: 100%;
+}
+
+/*
+* --------------------------------------------------
+* routes/blog.$articlehandle.tsx
+* --------------------------------------------------
+*/
+.article img {
+  height: auto;
+  width: 100%;
+}
+
+/*
+* --------------------------------------------------
+* routes/account
+* --------------------------------------------------
+*/
+
+.account-logout {
+  display: inline-block;
+}
+
+body.account main:not(aside main) {
+  min-height: calc(100vh - 32rem);
+  margin-top: 2rem;
+
+  @media screen and (min-width: $breakpoint-md) {
+    padding: 4rem;
+  }
+
+  .extensibleTab {
+    display: flex;
+    width: fit-content;
+    align-items: center;
+    min-width: 30%;
+    margin-bottom: 3rem;
+    button {
+      margin-left: 1rem;
+      svg {
+        margin-top: 8px;
+      }
+    }
+  }
+
+  legend {
+    margin-bottom: 3rem;
+  }
+
+  .account-heading {
+    margin-bottom: 3rem;
+    font-size: 2.75rem;
+    @media screen and (max-width: $breakpoint-md) {
+      margin-top: 3.625rem;
+      max-width: 80%;
+      line-height: 1;
+    }
+  }
+
+  .customerInactiveMenu {
+    display: flex;
+    gap: 1rem;
+    flex-direction: column;
+    form[action='/account/logout'] {
+      align-self: flex-end;
+    }
+  }
+
+  h1,
+  h2 {
+    color: var(--color-grey-dark);
+  }
+
+  .fieldsContainer {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 3rem;
+    input {
+      opacity: 0;
+    }
+    input:focus,
+    input:not(:placeholder-shown) {
+      opacity: 1;
+    }
+    .field {
+      border-bottom: 1px solid;
+    }
+  }
+  input {
+    border-bottom: 1px solid;
+  }
+
+  h2 {
+    text-transform: capitalize;
+    font-size: 2rem;
+    margin-bottom: 2rem;
+  }
+
+  .account-profile {
+    padding: 2rem;
+    border: 1px solid;
+    border-radius: 32px;
+  }
+
+  .accountBtnSubmit {
+    @include btn-primary(
+      white,
+      var(--color-grey-dark),
+      var(--color-grey-dark),
+      var(--color-grey-dark)
+    );
+    padding: 1rem 2rem;
+    font-weight: 400;
+  }
+
+  .message {
+    display: flex;
+    align-items: center;
+    padding: 1rem 2rem 1rem 0;
+    font-weight: 400;
+    transition: all 0.3s ease;
+    color: var(--color-grey-dark);
+    animation: translate 0.3s ease-in-out;
+    max-width: 25rem;
+
+    &.error {
+      color: #ef8888;
+      svg {
+        fill: #ef8888;
+        margin-top: 0px;
+      }
+    }
+
+    svg {
+      margin-top: -7px;
+      margin-right: 1.2rem;
+      overflow: visible;
+      path {
+        fill: var(--color-grey-dark);
+      }
+    }
+  }
+
+  .addressBtnContainer {
+    display: flex;
+    justify-content: space-between;
+    margin-top: 1rem;
+    max-width: fit-content;
+    gap: 20px;
+  }
+}
+
+.emptyAddressWrapper {
+  p {
+    padding-left: 16px;
+    margin-bottom: 25px;
+  }
+}
+
+.addressWrapper {
+  border: 1px solid;
+  border-radius: 2rem;
+  padding: 1rem;
+  margin-bottom: 2rem;
+
+  @media screen and (min-width: $breakpoint-md) {
+    padding: 3rem;
+  }
+  form {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 2rem;
+    margin-bottom: 4rem;
+  }
+}
+
+.defaultCheckboxContainer {
+  margin: 1.3rem 0rem;
+
+  #defaultAddress[type='checkbox'] {
+    display: none;
+    & + label {
+      position: relative;
+      padding-left: 35px;
+      cursor: pointer;
+
+      &::before {
+        content: '';
+        position: absolute;
+        left: 0;
+        top: -3px;
+        width: 25px;
+        height: 25px;
+        border: 2px solid #000;
+        border-radius: 30%;
+        background: #fff;
+      }
+
+      &::after {
+        content: '';
+        position: absolute;
+        top: 2px;
+        left: 9px;
+        width: 8px;
+        height: 14px;
+        border: solid #000;
+        border-width: 0 3px 3px 0;
+        transform: rotate(45deg);
+        display: none;
+      }
+    }
+
+    &:checked + label::after {
+      display: block;
+    }
+  }
+}
+
+.field {
+  position: relative;
+  margin-bottom: 2rem;
+  max-width: 20rem;
+
+  &.active {
+    label {
+      color: var(--color-grey-dark);
+      top: -1rem;
+      left: 0;
+      font-size: var(--text-xs);
+    }
+  }
+
+  label,
+  input {
+    padding: 6px 0;
+  }
+
+  label {
+    position: absolute;
+    top: 0;
+    left: 0;
+    bottom: 0;
+    color: #aaa;
+    pointer-events: none;
+    transition: all 0.2s ease;
+  }
+
+  input {
+    margin: 0;
+    width: 100%;
+    box-sizing: border-box;
+    border-radius: 0;
+  }
+}
+
+@keyframes translate {
+  0% {
+    transform: translateX(100%);
+    opacity: 0;
+  }
+  100% {
+    transform: translateX(0);
+    opacity: 1;
+  }
+}
+
+.iconWithText {
+  position: relative;
+  span {
+    bottom: 6px;
+    left: 3px;
+    width: 100%;
+    line-height: normal;
+    position: absolute;
+    font-size: var(--text-xs);
+    color: var(--color-grey-dark);
+    font-weight: 700;
+  }
+}
+
+.customerInactiveMessage {
+  background-color: var(--color-yellow);
+  border-radius: 5px;
+  padding: 1rem 2rem;
+  text-align: left;
+  color: #51450a;
+  h3 {
+    font-size: 1.3rem;
+  }
+}
+
+// Chat widget
+#shopify-chat inbox-online-store-chat {
+  z-index: 2 !important;
+}
+
+/* La barra de resumen de la nota de pedido es fixed: sin este colchón tapaba
+   el final de la página.
+   Va acotado al <main> de la página: sin el `:not(aside main)` también se lo
+   comía el <main> de los drawers, que le robaba 96px de alto útil a la lista
+   de ítems (y la barra fija no tapa nada dentro de un drawer). */
+main:not(aside main) {
+  padding-bottom: 6rem;
+}

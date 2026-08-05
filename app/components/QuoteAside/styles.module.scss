@@ -1,0 +1,706 @@
+aside main:has(.quoteBasket.submit) {
+  overflow: auto;
+}
+
+aside header {
+  position: relative;
+  background-color: transparent;
+  display: flex;
+  padding-top: 1.125rem;
+  justify-content: end;
+  padding-bottom: 2.3125rem;
+  justify-content: space-between;
+}
+
+.quoteBasket {
+  display: flex;
+  flex: 1 1 auto;
+  min-height: 0;
+  width: 100%;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+.msgContainer {
+  display: flex;
+  flex-direction: column;
+  margin-bottom: clamp(16px, 20dvh, 266px);
+  text-align: center;
+
+  .quoteResponse {
+    margin: auto;
+    padding: var(--space-4) var(--space-8);
+    opacity: 0;
+    font-size: var(--text-base);
+
+    a {
+      color: var(--color-grey-dark);
+      font-weight: 500;
+      text-decoration: underline;
+    }
+  }
+
+  h3 {
+    font-size: 1.8rem;
+    font-weight: 600;
+    line-height: 2rem;
+    color: var(--color-grey-dark);
+    text-align: center;
+    padding: 0 var(--space-12);
+  }
+}
+
+.quoteRequestBtn {
+  @include btn-primary(var(--color-black), var(--color-grey-soft));
+  /* 1.5rem de padding daba un boton de 72px de alto dentro de un pie que ya
+     se comia la mitad del drawer. */
+  padding: 1rem 1.5rem !important;
+  border-radius: 3rem !important;
+  width: 100% !important;
+  max-height: 3.5rem;
+  position: relative;
+}
+
+.quoteEmail::placeholder {
+  color: var(--color-black);
+}
+
+.quoteEmail:focus::placeholder {
+  color: #dadada;
+}
+
+.quoteNote:focus {
+  animation-name: quote-note;
+  animation-duration: 0.6s;
+  animation-fill-mode: forwards;
+  animation-delay: 0.2s;
+}
+
+@keyframes quote-note {
+  0% {
+    height: 3rem;
+  }
+  100% {
+    height: 8rem;
+  }
+}
+
+.submitContainer {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+}
+
+.quoteTotals {
+  display: flex;
+  justify-content: space-between;
+  margin-top: var(--space-8);
+  font-weight: bold;
+  font-size: var(--text-xl);
+}
+
+.noItems {
+  font-size: var(--text-lg);
+  padding: var(--space-4) 0;
+  color: var(--color-grey-dark);
+}
+
+/* La lista ocupa el alto disponible y scrollea; el total queda fijo abajo.
+   Con `max-height: 90%` los últimos ítems quedaban tapados por el total. */
+.quoteBasketList {
+  flex: 1 1 auto;
+  min-height: 0;
+  width: 100%;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  padding-top: var(--space-4);
+
+  .quoteBasketItem:first-child {
+    padding-top: 0;
+  }
+}
+
+.warning {
+  color: #48490f;
+  background: #c7c5a2;
+}
+/* El contenedor no puede desbordar: la lista scrollea y el bloque de totales
+   queda anclado abajo. Con `justify-content: flex-end` y sin overflow, el
+   total se montaba encima del último ítem. */
+/* Cadena de alto del drawer: aside(100dvh) > main > .quoteBasket > este.
+   Cada eslabon tiene que ser un flex item que crece; un `height: 100%` en el
+   medio no resuelve contra un padre sin alto definido y el eslabon colapsa al
+   alto de su contenido — sintoma: la lista mostraba 1 item de 3 y sobraba
+   espacio en blanco abajo. */
+.quoteBasketContainer {
+  flex-direction: column;
+  display: flex;
+  justify-content: flex-start;
+  flex: 1 1 auto;
+  min-height: 0;
+  overflow: hidden;
+  &.emptyQuote {
+    justify-content: center;
+    .msgContainer {
+      margin-bottom: 0;
+    }
+  }
+}
+
+.quoteBasketItemAttributes,
+.quoteBasketItemActions {
+  margin-left: 0;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: var(--space-2);
+  flex: 1;
+  min-width: 0;
+}
+
+.quoteBasketItemActions {
+  align-items: flex-end;
+  flex: 0 0 auto;
+  margin-left: auto;
+  margin-right: 0;
+  white-space: nowrap;
+}
+
+.quoteBasketItemRemove {
+  cursor: pointer;
+  color: var(--color-danger);
+  font-size: var(--text-xs);
+  margin-left: var(--space-4);
+  display: flex;
+  justify-content: end;
+  vertical-align: bottom;
+}
+/* Filas compactas: un pedido mayorista tiene 10 o 20 líneas, no 2. Con 2rem de
+   padding y miniatura grande entraban dos ítems en pantalla. */
+.quoteBasketItem {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  border-bottom: 1px solid var(--color-grey-alt);
+  padding: var(--space-3) 0;
+  flex-wrap: nowrap;
+
+  img {
+    width: 48px;
+    min-width: 48px;
+    height: 48px;
+    object-fit: cover;
+    border-radius: var(--radius-sm);
+  }
+}
+
+.quoteIemImage {
+  width: 5rem;
+  border-radius: var(--radius-sm);
+}
+
+/* SKU, estado de stock y bulto en una linea.
+   Antes el estado era un tooltip: el texto vivia oculto y solo aparecia al
+   pasar el mouse, asi que en la fila compacta quedaba un puntito de color sin
+   explicacion — y en tactil no habia forma de leerlo. El badge ya es chico
+   (0.75rem), entra al lado del SKU. */
+.quoteAvailabilityBullet {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: var(--space-2);
+  line-height: 1.2;
+}
+
+.quoteRequestBtn {
+  display: flex;
+  text-align: center;
+}
+
+.quoteRequestBtnIcon {
+  display: inline-block;
+  height: 28px;
+  width: 28px;
+  opacity: 0;
+}
+
+.responseText {
+  opacity: 0;
+  flex: 1;
+}
+
+.buttonMessage {
+  position: absolute;
+  left: 50%;
+  height: 100%;
+  width: 60%;
+  top: 0;
+  bottom: 0;
+  display: flex;
+  align-items: center;
+}
+
+.quoteRequestBtn {
+  &.success {
+    background: linear-gradient(
+      to right,
+      transparent 50%,
+      var(--color-grey-dark) 50%
+    );
+    background-size: 200% 100%;
+    background-position: right bottom;
+    transition: all 0.3s ease;
+
+    .quoteRequestBtnText {
+      visibility: hidden;
+    }
+
+    .quoteRequestBtnIcon {
+      overflow: visible;
+      animation-name: icon-animation-increase, icon-animation-move;
+      animation-duration: 0.5s, 0.3s;
+      animation-fill-mode: forwards;
+      animation-delay: 0.6s, 2s;
+    }
+    .buttonMessage {
+      animation-name: textAnim;
+      animation-delay: 2s;
+      animation-duration: 0.6s;
+      animation-fill-mode: forwards;
+
+      .responseText {
+        animation-name: apparence;
+        animation-delay: 2.2s;
+        animation-duration: 0.6s;
+        animation-fill-mode: forwards;
+      }
+    }
+  }
+  &.error {
+    background: white;
+    border: 2px solid var(--color-grey-dark);
+    background-size: 200% 100%;
+    background-position: right bottom;
+    transition: all 0.3s ease;
+
+    .quoteRequestBtnText {
+      visibility: hidden;
+    }
+
+    .responseText {
+      color: var(--brand-petrol);
+      font-weight: 400;
+    }
+
+    .quoteRequestBtnIcon {
+      overflow: visible;
+      animation-name: icon-animation-increase, icon-animation-move;
+      animation-duration: 0.5s, 0.3s;
+      animation-fill-mode: forwards;
+      animation-delay: 0.6s, 2s;
+    }
+    .buttonMessage {
+      animation-name: textAnim;
+      animation-delay: 2s;
+      animation-duration: 0.6s;
+      animation-fill-mode: forwards;
+
+      .responseText {
+        animation-name: apparence;
+        animation-delay: 2.2s;
+        animation-duration: 0.6s;
+        animation-fill-mode: forwards;
+      }
+    }
+  }
+}
+
+.error,
+.success {
+  .quoteBasketList,
+  .quoteTotals,
+  .quoteNote {
+    display: none;
+  }
+  .quoteResponse {
+    animation-name: apparence;
+    animation-delay: 2s;
+    animation-fill-mode: forwards;
+    animation-duration: 0.6s;
+  }
+}
+
+@keyframes apparence {
+  0% {
+    opacity: 0;
+    transform: translateX(150%);
+  }
+
+  100% {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+@keyframes icon-animation-increase {
+  0% {
+    opacity: 0;
+    transform: scale(0);
+  }
+  50% {
+    transform: scale(1.5);
+    opacity: 0.8;
+  }
+  100% {
+    opacity: 1;
+    margin-top: -14px;
+    margin-left: -14px;
+    transform: scale(1.2);
+  }
+}
+
+@keyframes icon-animation-move {
+  0% {
+    transform: scale(1.2);
+    margin-top: -14px;
+    margin-left: -14px;
+  }
+
+  100% {
+    transform: scale(0.7);
+    margin-top: -8px;
+  }
+}
+
+@keyframes textAnim {
+  0% {
+    left: 50%;
+  }
+  100% {
+    left: 20%;
+  }
+}
+
+/* Fila del drawer: nombre + SKU + stock arriba, cantidad abajo, total a la
+   derecha. Antes solo se veia el SKU y el precio unitario, que no alcanza para
+   revisar un pedido de 15 lineas. */
+.itemTitle {
+  font-weight: 800;
+  font-size: var(--text-sm);
+  line-height: 1.2;
+  color: var(--brand-petrol);
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.itemSku {
+  font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+  font-size: var(--text-xs);
+  opacity: 0.7;
+}
+
+.lineTotal {
+  font-weight: 800;
+  font-size: var(--text-sm);
+  color: var(--brand-petrol);
+  white-space: nowrap;
+}
+
+/* Pie del drawer: se queda abajo mientras la lista scrollea */
+/* El pie llegó a ocupar 345px de los 604 del drawer: más de la mitad del alto
+   para totales + email + botón, dejando 2 ítems visibles en un pedido de 15.
+   Los espacios van ajustados a propósito. */
+.quoteFooter {
+  margin-top: auto;
+  flex-shrink: 0;
+  border-top: 1px solid var(--color-grey-alt);
+  padding-top: var(--space-3);
+  background: var(--brand-cream);
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+}
+
+.emailControl {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  background: var(--surface-raised);
+  border: 1px solid var(--color-grey-alt);
+  border-radius: var(--radius-sm);
+  padding: 0 var(--space-3);
+
+  &:focus-within {
+    border-color: var(--brand-magenta);
+    box-shadow: 0 0 0 1px var(--brand-magenta);
+  }
+
+  input {
+    flex: 1;
+    min-width: 0;
+    border: none;
+    background: none;
+    padding: var(--space-3) 0;
+    font-family: inherit;
+    font-size: var(--text-base);
+    color: var(--brand-petrol);
+
+    &:focus {
+      outline: none;
+    }
+  }
+}
+
+.emailIcon {
+  width: 1.125rem;
+  height: 1.125rem;
+  flex-shrink: 0;
+  opacity: 0.6;
+}
+
+/* ── Drawer de presupuesto: piezas traídas del prototipo ─────────────────── */
+
+/* "Pedido a nombre de X". Va arriba de todo y fijo: es la primera pregunta que
+   se hace un comprador que administra más de una cuenta. */
+.buyingFor {
+  flex-shrink: 0;
+  background: var(--b2b-surface);
+  border: 1px solid var(--color-grey-alt);
+  border-radius: var(--radius-sm);
+  padding: var(--space-3) var(--space-3);
+  font-size: var(--text-sm);
+  color: var(--brand-petrol);
+  margin-bottom: var(--space-1);
+}
+
+/* Cómo se vende la línea ("caja x6 u."): al lado del SKU, no debajo del
+   título, porque se lee junto con el SKU al chequear un pedido. */
+.itemPackaging {
+  font-size: var(--text-xs);
+  color: var(--brand-petrol);
+  opacity: 0.65;
+  white-space: nowrap;
+
+  &::before {
+    content: '·';
+    margin: 0 var(--space-2);
+    opacity: 0.6;
+  }
+}
+
+/* Desglose. Antes era una sola línea "Total": en mayorista el comprador
+   controla unidades y subtotal antes de mirar el total. */
+.totalsBlock {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+}
+
+.totalsRow {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  gap: var(--space-4);
+  font-size: var(--text-sm);
+  color: var(--brand-petrol);
+}
+
+.totalsGrand {
+  border-top: 1px solid var(--color-grey-alt);
+  padding-top: var(--space-2);
+  margin-top: 0;
+  font-size: var(--text-lg);
+  font-weight: 800;
+}
+
+/* Las dos salidas del drawer. Debajo del CTA y en peso bajo: son escapes, no
+   acciones principales. */
+.footerActions {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: var(--space-4);
+  padding-bottom: var(--space-1);
+}
+
+.keepShopping,
+.clearQuote {
+  background: none;
+  border: 0;
+  padding: 0;
+  font-family: inherit;
+  font-size: var(--text-sm);
+  cursor: pointer;
+  color: var(--brand-petrol);
+  opacity: 0.75;
+  text-decoration: none;
+
+  &:hover {
+    opacity: 1;
+    text-decoration: underline;
+  }
+}
+
+.clearQuote {
+  color: var(--color-danger);
+}
+
+/* Guardar como lista de reposicion (E6). Peso bajo: es una accion util pero
+   secundaria frente a enviar el pedido. */
+.saveList {
+  background: none;
+  border: 0;
+  padding: 0;
+  font-family: inherit;
+  font-size: var(--text-sm);
+  font-weight: 600;
+  cursor: pointer;
+  color: var(--brand-magenta);
+
+  &:hover:not(:disabled) {
+    text-decoration: underline;
+  }
+
+  &:disabled {
+    color: var(--b2b-savings);
+    cursor: default;
+  }
+}
+
+/* Nombrar la lista sin salir del drawer. */
+.saveListForm {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  padding-bottom: var(--space-1);
+}
+
+.saveListInput {
+  flex: 1 1 auto;
+  min-width: 0;
+  border: 1px solid var(--color-grey-alt);
+  border-radius: var(--radius-sm);
+  background: var(--surface-raised);
+  padding: var(--space-2) var(--space-3);
+  font-family: inherit;
+  font-size: var(--text-sm);
+  color: var(--brand-petrol);
+
+  &:focus {
+    outline: 2px solid var(--brand-magenta);
+    outline-offset: 1px;
+  }
+}
+
+/* ── Mobile ──────────────────────────────────────────────────────────────
+   En telefono el drawer ocupa el 96% del ancho (--aside-width), o sea ~375px
+   en un 390. Estas filas se armaron mirando desktop y ahi no entran. */
+@media screen and (max-width: $breakpoint-sm) {
+  /* Etiqueta + input en una linea: la etiqueta sola ("Orden de compra
+     (opcional)") se lleva casi la mitad del ancho y al input le quedan 150px
+     para un numero de OC. */
+  .poField {
+    flex-direction: column;
+    align-items: stretch;
+    gap: var(--space-1);
+  }
+
+  /* Input + Guardar + Cancelar en fila son tres cosas peleando por 375px: el
+     input queda inusable. El input toma la fila y los botones van debajo. */
+  .saveListForm {
+    flex-wrap: wrap;
+  }
+
+  .saveListInput {
+    flex: 1 1 100%;
+  }
+
+  /* El total de linea y el boton de borrar comparten columna con el stepper:
+     con el titulo a dos lineas la fila se apretaba. */
+  .quoteBasketItem {
+    gap: var(--space-3);
+  }
+}
+
+/* ── Campos del pie ──────────────────────────────────────────────────────
+   Un solo patron para email y orden de compra. Antes eran dos: el email con
+   etiqueta grande e input alto, la OC con etiqueta chiquita al costado y un
+   input apretado. Dos formularios distintos pegados uno arriba del otro se
+   leen como un error. */
+.field {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-1);
+}
+
+.fieldLabel {
+  font-size: var(--text-xs);
+  font-weight: var(--font-weight-bold);
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  opacity: 0.7;
+  color: var(--brand-petrol);
+}
+
+.fieldInput {
+  width: 100%;
+  min-width: 0;
+  border: 1px solid var(--color-grey-alt);
+  border-radius: var(--radius-sm);
+  background: var(--surface-raised);
+  padding: var(--space-3);
+  font-family: inherit;
+  font-size: var(--text-sm);
+  color: var(--brand-petrol);
+
+  &::placeholder {
+    color: var(--brand-petrol);
+    opacity: 0.45;
+  }
+
+  &:focus {
+    outline: 2px solid var(--brand-magenta);
+    outline-offset: 1px;
+  }
+}
+
+.fieldHelp {
+  font-size: var(--text-xs);
+  color: var(--brand-petrol);
+  opacity: 0.65;
+}
+
+/* La OC arranca plegada: la pide una minoria y ocupaba el lugar mas caro del
+   drawer, justo arriba del boton de enviar. */
+.poToggle {
+  align-self: flex-start;
+  background: none;
+  border: 0;
+  padding: 0;
+  font-family: inherit;
+  font-size: var(--text-sm);
+  color: var(--brand-magenta);
+  cursor: pointer;
+
+  &:hover {
+    text-decoration: underline;
+  }
+}
+
+/* Descuento efectivo de la linea. Es un enlace al presupuesto completo, que es
+   donde esta el desglose: el drawer dice CUANTO, la pantalla dice POR QUE. */
+.lineDiscount {
+  display: inline-block;
+  font-size: var(--text-xs);
+  font-weight: var(--font-weight-bold);
+  color: var(--b2b-savings);
+  text-decoration: none;
+
+  &:hover {
+    text-decoration: underline;
+  }
+}

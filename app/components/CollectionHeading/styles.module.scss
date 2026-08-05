@@ -1,0 +1,114 @@
+.collectionHeading {
+  position: relative;
+}
+
+.collectionImage {
+  position: relative;
+  @media screen and (max-width: $breakpoint-xl) {
+    height: 613px;
+    display: flex;
+    align-items: stretch;
+    justify-content: center;
+    overflow: hidden;
+    img {
+      display: flex;
+      height: 100%;
+      width: max-content !important;
+      max-width: none;
+    }
+  }
+}
+
+.bannerContent {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  width: 100%;
+  justify-content: center;
+  align-items: center;
+  left: 0;
+  top: 0;
+  /* 48vh de degrade sin imagen es media pantalla de nada antes del catalogo.
+     Medido: el hero ocupaba 361px y, sumado a la descripcion, la grilla
+     arrancaba en y=1583 — dos viewports de scroll para ver un producto.
+     Con imagen la banda se sigue estirando (la imagen manda el alto); sin
+     imagen alcanza con una banda de titulo. */
+  min-height: var(--space-16);
+  padding: var(--space-12) var(--space-4);
+  background-size: cover;
+  background-repeat: no-repeat;
+  /* Degradé de marca: crema cálido con un lavado magenta/ámbar */
+  background-image: radial-gradient(
+      120% 90% at 12% 0%,
+      rgb(255 187 89 / 45%) 0%,
+      rgb(255 187 89 / 0%) 60%
+    ),
+    radial-gradient(
+      110% 100% at 95% 100%,
+      rgb(231 36 117 / 30%) 0%,
+      rgb(231 36 117 / 0%) 55%
+    ),
+    linear-gradient(180deg, var(--brand-cream) 0%, var(--brand-cream-deep) 100%);
+}
+
+.collectionTitle {
+  color: var(--brand-petrol);
+  margin-top: auto;
+  text-align: center;
+  font-weight: 800;
+  /* Sin override de tamaño: usa el h1 de la escala (--text-display, fluido).
+     Habia aca un `font-size: 3.75rem` SOLO para mobile, puesto para achicar el
+     h1 de 100px del reset. Con el h1 ya fluido quedaba al reves: 60px en el
+     telefono contra 56px en escritorio. */
+  text-wrap: balance;
+}
+
+.collectionNavigationBar {
+  display: flex;
+  flex-direction: row;
+  justify-content: flex-start;
+  gap: var(--space-2);
+  margin-top: auto;
+  margin-bottom: var(--space-8);
+  max-width: 100%;
+  align-items: center;
+  font-size: var(--text-base);
+  line-height: 1.5rem;
+  color: var(--brand-petrol);
+  overflow-x: scroll;
+  padding: 0px 20px;
+
+  -ms-overflow-style: none; /* Internet Explorer 10+ */
+  scrollbar-width: none; /* Firefox */
+
+  &::-webkit-scrollbar {
+    display: none; /* Safari and Chrome */
+  }
+  @media screen and (max-width: $breakpoint-md) {
+    margin-bottom: var(--space-6);
+  }
+}
+
+.collectionButton {
+  @include btn-primary(
+    rgb(255 255 255 / 55%),
+    var(--brand-petrol),
+    transparent,
+    var(--brand-magenta)
+  );
+  align-items: center;
+  font-size: var(--text-base);
+  font-weight: 400;
+  line-height: normal;
+  padding: var(--space-3) var(--space-8);
+  white-space: nowrap;
+  backdrop-filter: blur(20px);
+
+  @media screen and (max-width: $breakpoint-md) {
+    font-size: var(--text-xs);
+    font-weight: 400;
+    line-height: normal;
+    padding: var(--space-2) var(--space-3);
+  }
+}

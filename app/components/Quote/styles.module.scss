@@ -1,0 +1,173 @@
+.loginCta {
+  @include btn-primary(
+    transparent,
+    var(--color-grey-dark),
+    transparent,
+    transparent
+  );
+  border: 1.5px solid var(--color-grey-dark);
+  margin-top: var(--space-4);
+  font-weight: 500;
+  position: relative;
+  overflow: hidden;
+  z-index: 1;
+}
+
+.iconHelp {
+  display: none;
+}
+.quoteIcon {
+  cursor: pointer;
+  position: relative;
+  @include header-icon;
+  align-items: center;
+}
+/* Barra de resumen de la nota de pedido.
+   Antes era una tarjeta flotante anclada a `right: 11rem` con ancho máximo:
+   quedaba colgada en un lugar arbitrario de la pantalla. Ahora es una barra
+   de ancho completo pegada al borde inferior — el patrón de "resumen de
+   pedido" que espera cualquiera que compre por cantidad. */
+.bottomBar {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  z-index: 3;
+  padding: var(--space-3) 0;
+  background: var(--brand-cream);
+  border-top: 1px solid var(--color-grey-alt);
+  box-shadow: 0 -8px 24px -16px rgb(0 55 63 / 45%);
+
+  .bottomBarInner {
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    gap: var(--space-6);
+    flex-wrap: wrap;
+    width: 100%;
+    max-width: var(--page-width);
+    margin: 0 auto;
+    padding: 0 var(--space-6);
+  }
+
+  .summary {
+    margin-right: auto;
+    display: flex;
+    align-items: baseline;
+    gap: var(--space-3);
+    line-height: 1.2;
+  }
+
+  .text {
+    color: var(--brand-petrol);
+    font-size: var(--text-sm);
+    font-weight: 500;
+    opacity: 0.8;
+  }
+
+  .total {
+    color: var(--brand-petrol);
+    font-size: 1.375rem;
+    font-weight: 800;
+  }
+
+  .cta {
+    justify-content: center;
+    display: flex;
+    background-color: var(--brand-magenta);
+    color: var(--brand-cream);
+    padding: 0.875rem 1.75rem;
+    border-radius: var(--radius-md);
+    font-weight: 600;
+    width: auto;
+    white-space: nowrap;
+
+    &:hover {
+      background-color: var(--brand-magenta-deep);
+    }
+  }
+
+  @media screen and (max-width: $breakpoint-md) {
+    justify-content: space-between;
+    gap: var(--space-3);
+  }
+}
+
+.quoteIconQty {
+  background: var(--color-danger);
+  text-align: center;
+  position: absolute;
+  width: 15px;
+  height: 15px;
+  line-height: 15px;
+  font-size: var(--text-xs);
+  border-radius: 100%;
+  right: 5px;
+  bottom: 6px;
+}
+
+.tooltipLogin {
+  padding: var(--space-8) var(--space-6) var(--space-4) var(--space-6);
+  font-size: var(--text-xl);
+  position: absolute;
+  top: 100%;
+  right: 0;
+  color: var(--color-black);
+  background-color: var(--color-grey-soft);
+  width: 18.4rem;
+  border-radius: 1.375rem;
+  height: 19rem;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+
+  &.tooltipInactiveUser {
+    justify-content: center;
+    .loginCaption {
+      text-align: center;
+    }
+    .loginCaption:hover {
+      text-decoration: underline;
+    }
+    .iconHelp {
+      display: block;
+      margin: 0 auto;
+      width: 50px;
+      height: 50px;
+    }
+  }
+}
+
+.loginCaption {
+  font-weight: 700;
+  line-height: 1.875rem;
+}
+
+.containerQuoteLogin {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  border-radius: 22px;
+}
+
+.loginCta::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: var(--color-grey-dark); /* Color al hacer hover */
+  transform: translateX(-100%);
+  transition: transform 0.5s ease;
+  z-index: -1; /* Para asegurarse de que el texto esté por encima del pseudo-elemento */
+}
+
+.loginCta:hover::before {
+  transform: translateX(0);
+}
+
+.loginCta:hover {
+  color: var(--color-light); /* Cambiar el color del texto al hacer hover */
+  transition: color 0.5s ease; /* Para suavizar el cambio de color del texto */
+}

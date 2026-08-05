@@ -1,0 +1,133 @@
+.appliedFilters {
+  display: flex;
+}
+
+.clearFilters {
+  text-decoration: underline;
+  align-items: center;
+  min-width: 15%;
+  display: flex;
+  justify-content: end;
+}
+
+:global(.collection) .clearFilters {
+  display: none;
+}
+
+.filtersBar {
+  flex-direction: column;
+  display: none;
+  @media screen and (min-width: $breakpoint-md) {
+    flex-direction: row;
+    justify-content: space-between;
+    display: flex;
+    margin-bottom: var(--space-6);
+    .filtersDrawerContainer {
+      flex-grow: 1;
+    }
+  }
+}
+
+.filtersDrawerContainer .filtersContainer {
+  display: flex;
+  justify-content: space-between;
+}
+
+.filtersWrapper {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  gap: var(--space-4);
+
+  @media screen and (min-width: $breakpoint-md) {
+    display: flex;
+    flex-direction: row;
+    justify-content: start;
+    align-items: center;
+    flex-wrap: wrap;
+  }
+}
+
+:global(.product-page) .filtersDrawerContainer .filtersWrapper {
+  width: max-content;
+  max-width: 100%;
+}
+
+:global(.product-page) .filtersDrawerContainer .filtersContainer {
+  .clearFilters:empty {
+    display: none;
+  }
+}
+
+.filtersDrawerContainer {
+  max-width: 100%;
+  display: flex;
+  flex-direction: column;
+}
+
+/* "Filtrar por:" — sin esto el control quedaba como un "Color ⌄" suelto que no
+   se entendía si era un dato del producto o un filtro. */
+.filterTitle {
+  font-size: var(--text-xs);
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--brand-petrol);
+  opacity: 0.7;
+  padding: 0 0 var(--space-2);
+  margin: 0;
+}
+
+.filtersAside {
+  .toggleContainer {
+    display: flex;
+    justify-content: space-around;
+    align-items: flex-end;
+    gap: var(--space-6);
+  }
+
+  header {
+    h3 {
+      font-weight: 700;
+      font-size: var(--text-xl);
+      padding-right: var(--space-3);
+    }
+  }
+
+  .sortMenuWrapper {
+    width: 50%;
+  }
+
+  .filersToggle {
+    display: flex;
+    justify-content: center;
+    flex-grow: 1;
+    padding: var(--space-3) var(--space-8) var(--space-3) var(--space-8);
+    border-radius: var(--radius-md);
+    border: 1px solid;
+    font-size: var(--text-lg);
+    font-weight: 700;
+  }
+
+  .filtersAsideWrapper {
+    background-color: white;
+    overflow: auto;
+
+    .filterTitle {
+      display: none;
+    }
+
+    .filterElement {
+      @include filter-select(var(--color-grey-soft));
+      flex-grow: 1;
+    }
+
+    .clearFilters {
+      justify-content: start;
+      margin-top: 25px;
+    }
+  }
+  @media screen and (min-width: $breakpoint-md) {
+    display: none;
+  }
+}

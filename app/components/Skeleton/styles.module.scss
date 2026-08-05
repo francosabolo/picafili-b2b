@@ -1,0 +1,12 @@
+.skeleton {
+  border-radius: var(--radius-sm);
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+}
+.skeletonImage {
+  @include skeleton(100%, 22rem, #f4f4f4);
+}
+.skeletonText {
+  @include skeleton(75%, 2rem);
+}

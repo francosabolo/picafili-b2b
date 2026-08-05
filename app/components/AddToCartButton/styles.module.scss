@@ -1,0 +1,46 @@
+.addToCart {
+  @include btn-primary;
+}
+
+.addToCart:has(.QuantitySelector) {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+  max-width: var(--pdp-selector-size);
+  padding: 1.75rem 1.5625rem;
+}
+
+.AddToCartButton {
+  font-size: var(--text-base);
+  line-height: 1.5rem;
+  border-radius: var(--radius-md);
+  color: var(--color-black);
+  background-color: var(--color-grey-soft);
+  display: block;
+  padding: 10.5px;
+}
+
+.qtyAction {
+  font-size: var(--text-base);
+}
+
+.quantitySelector {
+  @include qty-selector(var(--brand-petrol), white);
+  width: 9.3rem;
+}
+
+/* Estado confirmado: tilde y, si hay mas de una unidad, cuantas. El numero es
+   la diferencia entre "lo agregue" y "tengo N" — en reposicion mayorista la
+   segunda es la que importa. */
+.confirmed {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-1);
+  line-height: 1;
+}
+
+.confirmedCount {
+  font-size: var(--text-xs);
+  font-weight: var(--font-weight-bold);
+  font-variant-numeric: tabular-nums;
+}

@@ -1,0 +1,319 @@
+.page {
+  padding: var(--space-8) 0 var(--space-16);
+}
+
+.head {
+  margin-bottom: var(--space-6);
+
+  h1 {
+    font-size: var(--text-2xl);
+    line-height: 1.1;
+    margin: 0 0 var(--space-1);
+  }
+}
+
+.forCompany,
+.lead {
+  margin: 0;
+  color: var(--brand-petrol);
+  opacity: 0.75;
+}
+
+/* Aviso al vendedor: lo que toca acá lo ve el cliente en su presupuesto. */
+.repNotice {
+  background: var(--b2b-surface);
+  border: 1px solid var(--color-grey-alt);
+  border-radius: var(--radius-sm);
+  padding: var(--space-3);
+  margin: 0 0 var(--space-6);
+  font-size: var(--text-sm);
+  color: var(--brand-petrol);
+}
+
+.lines {
+  list-style: none;
+  margin: 0 0 var(--space-8);
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+}
+
+/* Cuatro columnas: producto · descuentos · totales, con la imagen al frente.
+   Los descuentos tienen columna propia porque son lo que se revisa. */
+.line {
+  display: grid;
+  grid-template-columns: 72px minmax(0, 2fr) minmax(0, 1.4fr) auto;
+  gap: var(--space-4);
+  align-items: start;
+  background: var(--surface-raised);
+  border: 1px solid var(--color-grey-alt);
+  border-radius: var(--radius-lg);
+  padding: var(--space-4);
+}
+
+.lineImage {
+  width: 72px;
+  height: 72px;
+  object-fit: cover;
+  border-radius: var(--radius-sm);
+}
+
+.lineBody {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-1);
+  min-width: 0;
+}
+
+.lineTitle {
+  font-weight: var(--font-weight-bold);
+  font-size: var(--text-base);
+  color: var(--brand-petrol);
+}
+
+.lineMeta {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  flex-wrap: wrap;
+}
+
+.lineSku {
+  font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+  font-size: var(--text-xs);
+  opacity: 0.7;
+}
+
+/* Cadena de descuentos */
+.lineDiscounts {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+  min-width: 0;
+}
+
+/* Desglose de la linea: se lee como una cuenta, de arriba hacia abajo.
+   Precio de lista -> un renglon por descuento -> efectivo (si hay mas de uno)
+   -> precio unitario. Cada concepto aparece UNA vez: el que el vendedor puede
+   editar trae el input en el lugar del porcentaje, en vez de repetirse abajo
+   como un campo aparte. */
+.breakdown {
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-1);
+  font-size: var(--text-xs);
+  color: var(--brand-petrol);
+}
+
+.breakdownRow {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-3);
+  border-left: 3px solid transparent;
+  padding-left: var(--space-2);
+
+  dt,
+  dd {
+    margin: 0;
+  }
+
+  dd {
+    font-variant-numeric: tabular-nums;
+    white-space: nowrap;
+  }
+}
+
+/* El origen se distingue por color: de donde sale el descuento es la primera
+   pregunta del comprador. */
+.customer {
+  border-left-color: var(--brand-teal);
+}
+
+.category {
+  border-left-color: var(--brand-amber);
+}
+
+.quote {
+  border-left-color: var(--brand-magenta);
+}
+
+.effectiveRow {
+  font-weight: var(--font-weight-bold);
+  color: var(--b2b-savings);
+  border-top: 1px solid var(--color-grey-alt);
+  padding-top: var(--space-1);
+}
+
+.unitRow {
+  font-weight: var(--font-weight-bold);
+  font-size: var(--text-sm);
+  border-top: 1px solid var(--color-grey-alt);
+  padding-top: var(--space-1);
+}
+
+.repInputWrap {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-1);
+  border: 1px solid var(--brand-magenta);
+  border-radius: var(--radius-sm);
+  background: var(--surface-raised);
+  padding: 0 var(--space-2);
+  max-width: 5rem;
+
+  input {
+    width: 100%;
+    min-width: 0;
+    border: 0;
+    background: none;
+    font-family: inherit;
+    font-size: var(--text-sm);
+    text-align: right;
+    color: var(--brand-petrol);
+
+    /* `_app.scss` tiene un `input { padding: 1rem }` global. En un campo de
+       48px de ancho eso deja 16px de caja de contenido: el porcentaje que el
+       vendedor escribia quedaba recortado y el campo se veia VACIO, aunque el
+       precio unitario de abajo si mostraba el descuento aplicado. */
+    padding: var(--space-2) 0;
+
+    &:focus {
+      outline: none;
+    }
+  }
+}
+
+.lineTotals {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: var(--space-1);
+  white-space: nowrap;
+}
+
+.lineTotal {
+  font-weight: var(--font-weight-bold);
+  font-size: var(--text-lg);
+  color: var(--brand-petrol);
+}
+
+.lineWas {
+  font-size: var(--text-xs);
+  opacity: 0.6;
+  text-decoration: line-through;
+}
+
+.remove {
+  background: none;
+  border: 0;
+  padding: 0;
+  font-family: inherit;
+  font-size: var(--text-xs);
+  color: var(--color-danger);
+  cursor: pointer;
+
+  &:hover {
+    text-decoration: underline;
+  }
+}
+
+/* Resumen */
+.summary {
+  border-top: 1px solid var(--color-grey-alt);
+  padding-top: var(--space-4);
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+  margin-left: auto;
+  max-width: 26rem;
+}
+
+.summaryRow {
+  display: flex;
+  justify-content: space-between;
+  gap: var(--space-4);
+  font-size: var(--text-base);
+  color: var(--brand-petrol);
+}
+
+.grandTotal {
+  font-size: var(--text-xl);
+  font-weight: var(--font-weight-bold);
+}
+
+.summaryActions {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-4);
+  margin-top: var(--space-2);
+}
+
+.submit,
+.primaryLink {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--brand-petrol);
+  color: var(--brand-cream);
+  border-radius: var(--radius-pill);
+  padding: var(--space-3) var(--space-6);
+  font-weight: var(--font-weight-bold);
+  text-decoration: none;
+
+  &:hover {
+    background: var(--brand-magenta);
+    text-decoration: none;
+  }
+}
+
+.clear {
+  background: none;
+  border: 0;
+  padding: 0;
+  font-family: inherit;
+  font-size: var(--text-sm);
+  color: var(--color-danger);
+  cursor: pointer;
+}
+
+.empty {
+  background: var(--surface-raised);
+  border: 1px dashed var(--color-grey-alt);
+  border-radius: var(--radius-lg);
+  padding: var(--space-12) var(--space-6);
+  text-align: center;
+
+  p {
+    margin: 0 0 var(--space-4);
+    color: var(--brand-petrol);
+    opacity: 0.75;
+  }
+}
+
+/* En mobile la grilla de cuatro columnas no entra: pasa a bloques apilados. */
+@media screen and (max-width: $breakpoint-sm) {
+  .line {
+    grid-template-columns: 56px minmax(0, 1fr);
+    gap: var(--space-3);
+  }
+
+  .lineDiscounts,
+  .lineTotals {
+    grid-column: 1 / -1;
+  }
+
+  .lineTotals {
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+    width: 100%;
+  }
+
+  .summary {
+    max-width: none;
+  }
+}

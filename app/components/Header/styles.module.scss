@@ -1,0 +1,416 @@
+.headerWrapper {
+  align-items: center;
+  position: sticky;
+  top: 0;
+  z-index: 1;
+  color: var(--brand-petrol);
+  display: grid;
+  column-gap: var(--space-1);
+  grid-template-areas: 'logo icons menu';
+  grid-template-columns: 2fr auto auto;
+  padding: 0.8125rem 1.25rem;
+  max-height: max-content;
+  height: auto;
+  background: var(--brand-cream);
+  @media (min-width: $breakpoint-md) {
+    height: 100%;
+    grid-template-areas: 'logo menu icons';
+    /* El menu se lleva el espacio sobrante y las columnas laterales miden lo
+       que ocupan. Con `0.4fr 1fr 0.4fr` el menu tenia un ancho fijo aunque el
+       logo y los iconos no lo usaran, y al sumar el quinto link ("Mis listas")
+       la barra se partia en dos filas con la pantalla medio vacia. */
+    grid-template-columns: auto minmax(0, 1fr) auto;
+    padding: var(--space-6) var(--space-6);
+    column-gap: var(--space-6);
+    background: transparent;
+  }
+}
+
+.mobileMenu {
+  grid-area: menu;
+  font-size: var(--text-lg);
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  gap: var(--space-3);
+
+  @media (min-width: $breakpoint-md) {
+    display: none;
+  }
+
+  .mobileLinks {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-2);
+    justify-content: end;
+    align-items: end;
+    --active-background: var(--color-grey-dark);
+    --active-color: var(--color-grey-soft);
+
+    .headerMenuItem {
+      font-size: var(--text-lg);
+      font-weight: 400;
+      cursor: pointer;
+      line-height: 1.35rem;
+      padding: var(--space-4) 0;
+      display: flex;
+      gap: var(--space-3);
+      align-items: center;
+
+      &.active {
+        color: var(--color-orange);
+        border-radius: var(--radius-pill);
+      }
+    }
+  }
+}
+
+.menuMobileFooter {
+  display: flex;
+  flex-direction: column;
+}
+
+.menuMobileSearchBarWrapper {
+  position: relative;
+
+  .predictiveSearchResults {
+    padding: var(--space-4);
+    background-color: var(--color-grey-soft);
+    width: 100%;
+    position: absolute;
+    border-radius: var(--radius-sm);
+    bottom: 100%;
+    overflow-y: auto;
+    max-height: calc(60vh);
+    box-shadow: 2px 2px 6px -1px rgb(0 0 0 / 35%);
+  }
+
+  .predictiveSearchForm {
+    .searchBar {
+      display: flex;
+      align-items: center;
+      justify-content: end;
+      border: 1px solid;
+      border-radius: var(--radius-pill);
+
+      input {
+        flex-grow: 1;
+        background-color: transparent;
+        padding: 0 0 0 35px;
+        min-height: 56px;
+        width: 100%;
+      }
+
+      .icon {
+        min-width: 55px;
+      }
+    }
+  }
+}
+
+/* Acceso a Compra rápida: solo aparece con la cuenta habilitada */
+.quickOrderLink {
+  white-space: nowrap;
+  font-weight: 600 !important;
+}
+
+/* Wordmark Picafili + firma de zona mayorista (co-branding con PowerB2X) */
+.brandMark {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-3);
+  line-height: 1;
+}
+
+.brandName {
+  font-family: var(--font-heading);
+  font-weight: 800;
+  font-size: var(--text-xl);
+  letter-spacing: 0.06em;
+  color: var(--brand-magenta);
+}
+
+.brandDivider {
+  width: 1px;
+  height: 1.5rem;
+  background: var(--color-grey-alt);
+}
+
+.brandB2b {
+  font-size: var(--text-xs);
+  font-weight: 600;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--brand-teal);
+}
+
+.headerMenuMobileToggle {
+  grid-area: menu;
+  margin-right: auto;
+  @media (min-width: $breakpoint-md) {
+    display: none;
+  }
+}
+
+.desktopMenu {
+  display: none;
+  @media (min-width: $breakpoint-md) {
+    display: flex;
+    justify-content: center;
+    gap: var(--space-3);
+
+    a.headerMenuItem {
+      --color-dark: var(--brand-petrol);
+      @include btn-primary(
+        transparent,
+        var(--brand-petrol),
+        transparent,
+        var(--brand-magenta)
+      );
+      align-items: center;
+      font-size: var(--text-lg);
+      font-weight: 500;
+      line-height: normal;
+      padding: 0.875rem 1.125rem;
+
+      &.active {
+        background: var(--brand-magenta);
+        color: var(--brand-cream);
+        border: 1px solid var(--brand-magenta);
+        &:hover {
+          background: var(--brand-magenta-deep);
+          color: var(--brand-cream);
+        }
+      }
+    }
+
+    .headerLinks {
+      display: flex;
+      justify-content: center;
+      gap: var(--space-3);
+      --active-background: var(--color-transparent-white);
+      --active-color: currentColor;
+      flex-wrap: wrap;
+    }
+  }
+}
+
+.headerDownloadButton {
+  display: flex;
+  gap: var(--space-3);
+  justify-content: center;
+  align-items: center;
+  border: 1px solid var(--color-grey-dark);
+  border-radius: var(--radius-pill);
+  padding: var(--space-4);
+  color: var(--color-grey-dark);
+  font-size: var(--text-lg);
+  font-weight: 400;
+
+  @media (min-width: $breakpoint-md) {
+    background: none;
+    border: none;
+    color: var(--brand-petrol);
+  }
+
+  @media screen and (max-width: $breakpoint-md) {
+    display: flex;
+    gap: var(--space-3);
+    justify-content: center;
+    align-items: center;
+    @include btn-primary(transparent, var(--color-grey-dark));
+    border: 1px solid var(--color-grey-dark);
+    font-weight: 400;
+    padding: 0.625rem 2.138rem;
+  }
+}
+
+.headerIcons {
+  grid-area: icons;
+  align-items: center;
+  display: flex;
+  margin-left: auto;
+  gap: var(--space-3);
+  align-items: stretch;
+
+  .icon {
+    @include header-icon;
+  }
+
+  @media (max-width: $breakpoint-md) {
+    grid-gap: 0;
+    padding-right: var(--space-2);
+  }
+
+  .accountIcon {
+    display: flex;
+    align-items: center;
+  }
+
+  .accountIcon,
+  .searchIcon,
+  .languageSelector {
+    @media (max-width: $breakpoint-md) {
+      display: none;
+    }
+  }
+}
+
+.logo {
+  grid-area: logo;
+  margin-right: 7.5px;
+  color: var(--color);
+
+  img {
+    max-width: 140px;
+  }
+
+  @media (max-width: $breakpoint-md) {
+    min-width: 100%;
+    margin: 0 auto;
+    img {
+      max-width: 127px;
+    }
+  }
+}
+
+.themeSwitcher {
+  display: flex;
+  margin-left: var(--space-4);
+}
+
+.header-menu-item {
+  color: var(--color);
+  cursor: pointer;
+}
+
+.activeLink {
+  font-weight: bold;
+  text-decoration: underline;
+}
+
+.pendingLink {
+  color: grey;
+}
+
+/* Acceso al carrito. La burbuja del contador estaba a 7px sobre un circulo de
+   10px: ilegible, y por debajo del minimo de la escala tipografica. */
+.cartLink {
+  display: inline-flex;
+  align-items: center;
+  color: var(--brand-petrol);
+}
+
+.iconCartWrapper {
+  position: relative;
+  display: inline-flex;
+
+  .cartBubble {
+    position: absolute;
+    top: -4px;
+    right: -6px;
+    min-width: 1.125rem;
+    height: 1.125rem;
+    padding: 0 var(--space-1);
+    border-radius: var(--radius-pill);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-size: var(--text-xs);
+    font-weight: var(--font-weight-bold);
+    line-height: 1;
+    color: var(--text-on-brand);
+    background-color: var(--brand-magenta);
+  }
+}
+
+.hello {
+  display: block;
+}
+
+.signIn {
+  @media screen and (min-width: $breakpoint-md) {
+    span {
+      display: none;
+    }
+  }
+  @media screen and (max-width: $breakpoint-md) {
+    text-decoration: underline;
+    border-bottom: none;
+    color: var(--color-grey-dark);
+    display: flex;
+    align-items: center;
+    justify-content: end;
+    gap: var(--space-3);
+
+    svg {
+      margin-top: var(--space-2);
+    }
+  }
+}
+
+.userName {
+  text-transform: capitalize;
+
+  @media screen and (max-width: $breakpoint-md) {
+    strong {
+      text-decoration: underline;
+    }
+  }
+}
+
+.menuMobileHeading {
+  span {
+    display: flex;
+    font-size: var(--text-xl);
+    gap: var(--space-2);
+    justify-content: end;
+    align-items: center;
+    line-height: 3.0625rem;
+
+    svg {
+      margin-left: var(--space-2);
+    }
+  }
+
+  .icon {
+    width: 1.25rem;
+  }
+}
+
+.topBar {
+  display: flex;
+  background-color: var(--color-grey-soft);
+  color: var(--color-grey-dark);
+}
+
+.topBarContentItem {
+  display: flex;
+}
+
+.topBarContentItem {
+  display: flex;
+}
+
+.topBarContent {
+  max-width: var(--page-width);
+  margin: 0 auto;
+  display: flex;
+  gap: var(--space-4);
+  flex-direction: row;
+  padding: var(--space-2) var(--space-4);
+  width: 100%;
+  font-size: var(--text-sm);
+}
+
+/* Logo real de la tienda cuando Shopify tiene uno cargado. Se limita por
+   altura y no por ancho: los logos de Shopify vienen con relaciones de aspecto
+   muy distintas y fijar el ancho deformaba los apaisados. */
+.brandLogo {
+  display: block;
+  height: 2.25rem;
+  width: auto;
+  max-width: 11rem;
+  object-fit: contain;
+}

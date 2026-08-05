@@ -1,0 +1,225 @@
+/* Barra superior de la zona mayorista */
+.bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-4);
+  flex-wrap: wrap;
+  background: var(--brand-petrol);
+  color: var(--brand-cream);
+  padding: var(--space-3) var(--space-6);
+  font-size: var(--text-xs);
+  position: relative;
+  z-index: 3;
+}
+
+.claim {
+  letter-spacing: 0.01em;
+}
+
+.switcher {
+  position: relative;
+}
+
+.switcherToggle {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-2);
+  background: rgb(255 239 216 / 12%);
+  color: var(--brand-cream);
+  border: 1px solid rgb(255 239 216 / 30%);
+  border-radius: var(--radius-pill);
+  padding: var(--space-2) var(--space-3);
+  font-size: var(--text-xs);
+  cursor: pointer;
+
+  &:hover {
+    background: rgb(255 239 216 / 20%);
+  }
+}
+
+.switcherLabel {
+  opacity: 0.8;
+}
+
+/* El caret es decorativo, pero 0.625rem = 10px igual queda fuera de escala
+   y no hay razon para que no sea el piso. */
+.caret {
+  font-size: var(--text-xs);
+}
+
+.menu {
+  position: absolute;
+  right: 0;
+  top: calc(100% + 0.5rem);
+  width: 22rem;
+  max-width: calc(100vw - 2rem);
+  background: var(--surface-raised);
+  color: var(--brand-petrol);
+  border: 1px solid var(--color-grey-alt);
+  border-radius: var(--radius-lg);
+  box-shadow: 0 12px 32px -12px rgb(0 55 63 / 35%);
+  overflow: hidden;
+  z-index: 4;
+}
+
+.menuHeading {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-1);
+  padding: var(--space-3) var(--space-4);
+  border-bottom: 1px solid var(--color-grey-alt);
+  font-size: var(--text-xs);
+
+  span {
+    opacity: 0.7;
+  }
+}
+
+.option {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: var(--space-1);
+  width: 100%;
+  padding: var(--space-3) var(--space-4);
+  background: none;
+  border: none;
+  border-bottom: 1px solid var(--color-grey-alt);
+  text-align: left;
+  cursor: pointer;
+  color: inherit;
+
+  &:last-child {
+    border-bottom: none;
+  }
+
+  &:hover {
+    background: var(--b2b-surface);
+  }
+}
+
+.optionSelected {
+  background: var(--b2b-surface);
+
+  .optionLabel::after {
+    content: ' ✓';
+    color: var(--b2b-savings);
+  }
+}
+
+.optionLabel {
+  font-weight: 800;
+  font-size: var(--text-xs);
+  background: var(--brand-cream);
+  border-radius: var(--radius-pill);
+  padding: var(--space-1) var(--space-3);
+}
+
+.optionDescription {
+  font-size: var(--text-xs);
+  opacity: 0.75;
+}
+
+/* Modo vendedor */
+.repBar {
+  display: flex;
+  align-items: center;
+  gap: var(--space-4);
+  flex-wrap: wrap;
+  padding: var(--space-3) var(--space-6);
+  background: var(--b2b-surface);
+  border-bottom: 1px solid var(--color-grey-alt);
+  font-size: var(--text-sm);
+  color: var(--brand-petrol);
+}
+
+.repMode {
+  font-weight: 800;
+  text-transform: uppercase;
+  /* 0.6875rem = 11px, y encima en mayusculas con letter-spacing: era el texto
+     mas dificil de leer de la barra que identifica al vendedor. */
+  font-size: var(--text-xs);
+  letter-spacing: 0.12em;
+  opacity: 0.7;
+}
+
+.repTarget {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-2);
+  background: var(--surface-raised);
+  border: 1px solid var(--color-grey-alt);
+  border-radius: var(--radius-pill);
+  padding: var(--space-2) var(--space-3);
+}
+
+.repBadge {
+  background: var(--brand-cream);
+  border-radius: var(--radius-pill);
+  padding: var(--space-1) var(--space-3);
+  font-size: var(--text-xs);
+  font-weight: 600;
+}
+
+/* Banners por estado */
+.banner {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-6);
+  flex-wrap: wrap;
+  margin: var(--space-6) auto;
+  max-width: calc(var(--page-width) - 2.5rem);
+  padding: var(--space-4) var(--space-6);
+  border-radius: var(--radius-lg);
+  border: 1px solid;
+  font-size: var(--text-sm);
+
+  p {
+    margin: var(--space-1) 0 0;
+    opacity: 0.85;
+  }
+}
+
+/* Solo el título va en bloque: los <strong> dentro del párrafo son inline */
+.bannerTitle {
+  display: block;
+}
+
+.bannerGuest {
+  background: var(--b2b-surface);
+  border-color: var(--color-grey-alt);
+  color: var(--brand-petrol);
+}
+
+.bannerPending {
+  background: rgb(255 187 89 / 18%);
+  border-color: rgb(240 130 32 / 45%);
+  color: var(--brand-petrol);
+}
+
+.bannerApproved {
+  background: rgb(31 122 61 / 10%);
+  border-color: rgb(31 122 61 / 35%);
+  color: var(--brand-petrol);
+}
+
+.bannerCta {
+  background: var(--brand-magenta);
+  color: var(--brand-cream);
+  border-radius: var(--radius-md);
+  padding: var(--space-3) var(--space-6);
+  font-weight: 600;
+  white-space: nowrap;
+
+  &:hover {
+    background: var(--brand-magenta-deep);
+  }
+}
+
+/* Empresa · grupo de precios. Línea propia porque es dato, no prosa. */
+.bannerMeta {
+  font-size: var(--text-sm);
+  margin-bottom: var(--space-1);
+}

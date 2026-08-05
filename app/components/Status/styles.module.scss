@@ -1,0 +1,16 @@
+.statusCompleted {
+  background-color: var(--color-green);
+}
+
+.statusInvoiceSent {
+  background-color: var(--color-yellow);
+  max-width: fit-content;
+}
+
+.statusUnknown {
+  background-color: var(--color-red);
+}
+
+.statusOpen {
+  background-color: var(--color-grey);
+}

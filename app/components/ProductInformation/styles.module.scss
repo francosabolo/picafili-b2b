@@ -1,0 +1,118 @@
+.productInformation {
+  align-self: start;
+  position: sticky;
+  top: 0rem;
+  padding-top: 3.375rem;
+  max-width: 825px;
+  padding-right: var(--space-6);
+  /* Sin esto el bloque reclama el ancho de su contenido —medido: 479px dentro
+     de un viewport de 360— y queda recortado por un ancestro, o sea texto que
+     no se puede ni leer ni alcanzar scrolleando. */
+  min-width: 0;
+
+  .productType {
+    font-weight: 400;
+    font-size: var(--text-base);
+    line-height: 1.5rem;
+    color: var(--color-grey);
+    margin-bottom: var(--space-6);
+  }
+
+  .productTitle {
+    /* Eran 4.5rem = 72px FIJOS. En un telefono de 360px una sola palabra del
+       nombre no entra: el titulo se cortaba contra el borde. `--text-display`
+       es el token de heroes y baja a 32px en pantalla chica. */
+    font-size: var(--text-display);
+    font-weight: 700;
+    line-height: 1.05;
+    margin-bottom: var(--space-8);
+    text-wrap: balance;
+  }
+
+  @media screen and (max-width: $breakpoint-lg) {
+    padding: 2.375rem 1.25rem 0;
+  }
+}
+
+.featuresAccordionContent {
+  display: flex;
+  flex-direction: row;
+  /* Envuelve: sus hijos usan `width: max-content` y con un gap de 4rem fijo
+     empujaban la ficha fuera de la pantalla. */
+  flex-wrap: wrap;
+  gap: var(--space-6) var(--space-16);
+  margin: var(--space-6) 0 var(--space-8);
+  //Main features
+  .productAttributesRange {
+    display: grid;
+    grid-template-areas: 'first separator last';
+    gap: 5px;
+    width: max-content;
+    #firstElement {
+      grid-area: first;
+    }
+    #separator {
+      grid-area: separator;
+    }
+    #lastElement {
+      grid-area: last;
+    }
+  }
+  .productColors {
+    max-width: 110px;
+    ul {
+      display: flex;
+      flex-wrap: wrap;
+      gap: var(--space-2);
+    }
+    .colorCircle {
+      width: 1.25rem;
+      height: 1.25rem;
+      border: 1px solid var(--brand-petrol);
+      border-radius: 100%;
+    }
+  }
+}
+
+.productFeatures {
+  .featureTitle {
+    @include title(h4);
+    margin-bottom: var(--space-6);
+  }
+}
+
+.productCertificates {
+  display: flex;
+  margin: var(--space-8) 0;
+  width: 100%;
+  flex-wrap: wrap;
+  gap: var(--space-3);
+}
+
+.descriptionAccordionContent {
+  margin: var(--space-6) 0 var(--space-8);
+}
+
+.productDownloadButtons {
+  display: flex;
+  gap: var(--space-2);
+  margin-top: 1.875rem;
+  flex-wrap: wrap;
+  max-width: max-content;
+}
+
+.productDownloadButton {
+  @include btn-primary(white, var(--color-black));
+  @media screen and (max-width: $breakpoint-md) {
+    @include btn-primary(var(--color-grey-soft), var(--color-black));
+    padding: 0.625rem 1.6875rem;
+    font-weight: 400;
+  }
+  gap: var(--space-3);
+  font-size: var(--text-base);
+  font-weight: 400;
+  padding: 0.625rem 1.6875rem;
+  border: 1px solid var(--color-black);
+  cursor: pointer;
+  flex-grow: 1;
+}

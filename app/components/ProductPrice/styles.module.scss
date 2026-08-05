@@ -1,0 +1,78 @@
+.priceContainer {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  font-weight: 400;
+  font-size: var(--text-xl);
+  line-height: 1.5rem;
+  color: var(--color-black);
+  position: relative;
+  .currency {
+    position: absolute;
+    left: 100%;
+    margin-left: 3px;
+  }
+}
+
+/* Estado bloqueado: ocupa el lugar del precio y explica por qué no está.
+   nowrap para que no se apile en la columna angosta de la tabla del PDP;
+   en mobile se deja partir en dos líneas. */
+.priceLocked {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-2);
+  width: max-content;
+  max-width: 100%;
+  background: var(--b2b-surface);
+  border: 1px solid var(--color-grey-alt);
+  border-radius: var(--radius-md);
+  padding: 0.4375rem 0.75rem;
+  font-size: var(--text-xs);
+  line-height: 1.125rem;
+  color: var(--brand-petrol);
+  /* Envuelve dentro de su celda en vez de montarse sobre la columna de
+     Descargas: la columna de acciones creció y el nowrap dejó de entrar. */
+  white-space: normal;
+  text-wrap: balance;
+}
+
+.signIn {
+  text-decoration: underline;
+  color: #7e7e7e;
+}
+
+.priceLabel {
+  font-weight: 400;
+  font-size: var(--text-base);
+  line-height: 2rem;
+}
+
+.compareAtPrice {
+  font-weight: 400;
+  font-size: var(--text-base);
+  line-height: 1.5rem;
+  text-decoration: line-through red;
+}
+
+.signInButton {
+  max-width: max-content;
+}
+
+.signInButton:hover {
+  text-decoration: underline;
+}
+
+/* Ahorro contra el precio de lista (E2). Verde de ahorro con contraste AA
+   sobre crema: es un dato a favor del comprador, no una alerta. */
+.savings {
+  display: inline-flex;
+  align-items: center;
+  background: color-mix(in srgb, var(--b2b-savings) 12%, transparent);
+  color: var(--b2b-savings);
+  font-size: var(--text-xs);
+  font-weight: 800;
+  line-height: 1;
+  padding: 0.25rem 0.4375rem;
+  border-radius: var(--radius-pill);
+  white-space: nowrap;
+}

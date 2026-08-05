@@ -1,0 +1,14 @@
+{
+  "cartInput": {
+    "lines": [
+      {
+        "quantity": 1,
+        "merchandiseId": "gid://shopify/ProductVariant/123"
+      }
+    ],
+    "attributes": {
+      "key": "cart_attribute_key",
+      "value": "This is a cart attribute value"
+    }
+  }
+}

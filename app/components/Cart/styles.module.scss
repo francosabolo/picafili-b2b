@@ -1,0 +1,233 @@
+/* Drawer de carrito.
+   Misma estructura que el de presupuesto: lista que scrollea y pie fijo con
+   totales y CTA. El del fork tenia el resumen en `position: absolute` con un
+   alto fijo por variable, asi que los totales y el boton de checkout quedaban
+   fuera del area visible — el drawer se veia sin CTA. */
+.cart {
+  display: flex;
+  flex-direction: column;
+  flex: 1 1 auto;
+  min-height: 0;
+}
+
+.lines {
+  flex: 1 1 auto;
+  min-height: 0;
+  overflow-y: auto;
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.line {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--space-3);
+  padding: var(--space-3) 0;
+  border-bottom: 1px solid var(--color-grey-alt);
+
+  img {
+    width: 64px;
+    min-width: 64px;
+    height: 64px;
+    object-fit: cover;
+    border-radius: var(--radius-sm);
+    display: block;
+  }
+}
+
+.lineBody {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-1);
+  flex: 1;
+  min-width: 0;
+}
+
+.lineTitle {
+  font-weight: var(--font-weight-bold);
+  font-size: var(--text-sm);
+  line-height: 1.3;
+  color: var(--brand-petrol);
+  text-decoration: none;
+
+  &:hover {
+    text-decoration: underline;
+  }
+}
+
+.lineOptions {
+  font-size: var(--text-xs);
+  color: var(--brand-petrol);
+  opacity: 0.7;
+}
+
+.linePrice {
+  font-weight: var(--font-weight-bold);
+  font-size: var(--text-sm);
+  color: var(--brand-petrol);
+  white-space: nowrap;
+}
+
+/* Stepper: mismo control que en el presupuesto, para que sumar de a uno se
+   sienta igual en los dos flujos. */
+.quantity {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  margin-top: var(--space-1);
+}
+
+.stepper {
+  display: inline-flex;
+  align-items: center;
+  border: 1px solid var(--color-grey-alt);
+  border-radius: var(--radius-pill);
+  background: var(--surface-raised);
+  overflow: hidden;
+
+  button {
+    width: 2rem;
+    height: 2rem;
+    border: 0;
+    background: none;
+    cursor: pointer;
+    font-size: var(--text-base);
+    line-height: 1;
+    color: var(--brand-petrol);
+
+    &:disabled {
+      opacity: 0.35;
+      cursor: not-allowed;
+    }
+
+    &:hover:not(:disabled) {
+      background: var(--brand-cream);
+    }
+  }
+}
+
+.quantityValue {
+  min-width: 1.5rem;
+  text-align: center;
+  font-size: var(--text-sm);
+  font-weight: var(--font-weight-bold);
+  color: var(--brand-petrol);
+}
+
+.remove {
+  background: none;
+  border: 0;
+  padding: var(--space-1);
+  cursor: pointer;
+  color: var(--color-danger);
+  display: inline-flex;
+  align-items: center;
+
+  svg {
+    width: 1rem;
+    height: 1rem;
+  }
+
+  &:hover {
+    opacity: 0.75;
+  }
+}
+
+/* Pie fijo */
+.summary {
+  flex-shrink: 0;
+  border-top: 1px solid var(--color-grey-alt);
+  padding-top: var(--space-3);
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+}
+
+.totalRow {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  gap: var(--space-4);
+  font-size: var(--text-lg);
+  font-weight: var(--font-weight-bold);
+  color: var(--brand-petrol);
+}
+
+.checkout {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--brand-petrol);
+  color: var(--brand-cream);
+  border-radius: var(--radius-pill);
+  padding: var(--space-3) var(--space-6);
+  font-weight: var(--font-weight-bold);
+  text-decoration: none;
+
+  &:hover {
+    background: var(--brand-magenta);
+    text-decoration: none;
+  }
+}
+
+.discountRow {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+
+  input {
+    flex: 1 1 auto;
+    min-width: 0;
+    border: 1px solid var(--color-grey-alt);
+    border-radius: var(--radius-sm);
+    background: var(--surface-raised);
+    padding: var(--space-2) var(--space-3);
+    font-family: inherit;
+    font-size: var(--text-sm);
+    color: var(--brand-petrol);
+  }
+
+  button {
+    background: none;
+    border: 0;
+    padding: 0;
+    font-family: inherit;
+    font-size: var(--text-sm);
+    font-weight: var(--font-weight-bold);
+    color: var(--brand-magenta);
+    cursor: pointer;
+  }
+}
+
+.appliedDiscount {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  font-size: var(--text-sm);
+  color: var(--brand-petrol);
+}
+
+.empty {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: var(--space-4);
+  padding-top: var(--space-8);
+
+  p {
+    margin: 0;
+    color: var(--brand-petrol);
+    opacity: 0.75;
+  }
+}
+
+.emptyLink {
+  color: var(--brand-magenta);
+  font-weight: var(--font-weight-bold);
+  text-decoration: none;
+
+  &:hover {
+    text-decoration: underline;
+  }
+}

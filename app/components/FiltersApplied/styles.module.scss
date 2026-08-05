@@ -1,0 +1,22 @@
+.filterElement {
+  @include filter-select;
+}
+
+.filterBullet {
+  @include filter-applied;
+}
+
+.appliedFilters {
+  display: flex;
+  padding: var(--space-4) 0;
+}
+
+.clearFilters {
+  text-decoration: underline;
+  align-items: center;
+}
+
+:global(.product-page) .appliedFilters,
+:global(.collection) .appliedFilters {
+  display: none;
+}

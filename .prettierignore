@@ -1,0 +1,19 @@
+node_modules
+dist
+build
+.cache
+public/build
+.shopify
+.hydrogen
+.idea
+
+# Generados por codegen — no formatear a mano
+*.generated.d.ts
+
+# Vendored por ai-skills (install.sh los regenera; formatearlos ensucia el diff)
+.claude/
+.cursor/
+
+# Reportes de herramientas
+qodana.sarif.json
+package-lock.json

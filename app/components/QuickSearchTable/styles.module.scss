@@ -1,0 +1,79 @@
+/* Bloque "Configurá tu pedido": tarjeta blanca sobre la crema de la página.
+   Antes el encabezado tenía `margin: 0 229px 0 82px` fijos, así que los títulos
+   de columna nunca coincidían con el contenido. Ahora encabezado y filas
+   comparten el mismo padding y la misma grilla. */
+.wrapper {
+  display: grid;
+  margin-top: var(--space-8);
+  margin-bottom: var(--space-8);
+  background: var(--surface-raised);
+  border: 1px solid var(--color-grey-alt);
+  border-radius: var(--radius-lg);
+  /* `overflow: hidden` estaba para recortar las esquinas contra el radio, pero
+     recortaba tambien el ancho: medido a 360px, la tabla mide 380 y quedaban
+     **60px de filas inalcanzables** — no se podian ver ni scrolleando, porque
+     `hidden` no deja scrollear. En el eje vertical no hay nada que recortar,
+     asi que el horizontal pasa a `auto` y el redondeo se mantiene. */
+  overflow-x: auto;
+  overflow-y: hidden;
+}
+
+/* El encabezado alinea contra el mismo tramo que ocupa `.productInformation`
+   dentro de la fila: hay que descontar la miniatura a la izquierda y la
+   columna de acciones a la derecha, que viven fuera de esa grilla. */
+.tableHeading {
+  --thumb-track: calc(64px + 0.875rem);
+  --actions-track: calc(18.5rem + 0.875rem);
+
+  padding: 0.875rem calc(1.5rem + var(--actions-track)) 0.875rem
+    calc(1.5rem + var(--thumb-track));
+  background: var(--brand-cream);
+  border-bottom: 1px solid var(--color-grey-alt);
+
+  @media screen and (max-width: $breakpoint-lg) {
+    display: none;
+  }
+}
+
+.header {
+  width: 100%;
+  display: grid;
+  font-size: var(--text-xs);
+  font-weight: 800;
+  line-height: 1rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--brand-petrol);
+  grid-template-areas: 'sku description attributes price badge';
+  justify-content: space-between;
+  // Sin columna de descargas (vacía en este catálogo): el espacio va a
+  // variante, que es lo que diferencia una fila de otra.
+  grid-template-columns: 15% 22% 18% 24% 15%;
+  gap: 5px;
+
+  #sku {
+    grid-area: sku;
+  }
+  #price {
+    grid-area: price;
+    display: flex;
+    justify-content: center;
+  }
+  #downloads {
+    grid-area: downloads;
+    display: flex;
+    justify-content: center;
+  }
+  #badge {
+    grid-area: badge;
+    display: flex;
+    justify-content: center;
+  }
+  #atributos {
+    grid-area: attributes;
+  }
+}
+
+.tableItems {
+  display: grid;
+}

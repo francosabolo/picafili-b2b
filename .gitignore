@@ -1,0 +1,12 @@
+node_modules
+/.cache
+/build
+/dist
+/public/build
+/.mf
+.env
+.shopify
+.vercel
+
+# Config local de Claude Code (permisos por máquina, no compartir)
+.claude/settings.local.json

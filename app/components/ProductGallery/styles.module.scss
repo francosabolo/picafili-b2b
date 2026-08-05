@@ -1,0 +1,145 @@
+/* Galeria B2B: miniaturas al costado, imagen en caja contenida.
+   Antes era una foto a sangre con miniaturas debajo — se leia editorial y
+   obligaba a hacer scroll para ver que otras vistas habia. */
+.gallery {
+  display: flex;
+  gap: var(--space-3);
+  align-items: flex-start;
+  width: 100%;
+  /* Un flex item no baja de su ancho de contenido salvo que se lo permitas:
+     `min-width: auto` es el default. Sin esto, la tira de miniaturas —seis de
+     88px— estiraba la galeria a 668px dentro de un viewport de 360, y la
+     PAGINA ENTERA se corria de costado. Es la misma familia que el gotcha de
+     `min-height: 0` en los drawers que ya esta en AGENTS.md, en el otro eje. */
+  min-width: 0;
+
+  @media screen and (max-width: $breakpoint-md) {
+    flex-direction: column-reverse;
+  }
+}
+
+.thumbs {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+  flex-shrink: 0;
+  max-height: 34rem;
+  overflow-y: auto;
+  padding-right: var(--space-1);
+
+  @media screen and (max-width: $breakpoint-md) {
+    flex-direction: row;
+    max-height: none;
+    overflow-x: auto;
+    /* `width: 100%` no alcanza: sin `min-width: 0` el item igual reclama el
+       ancho de sus miniaturas y el `overflow-x` nunca llega a activarse. */
+    width: 100%;
+    min-width: 0;
+  }
+}
+
+.thumb {
+  width: 88px;
+  min-width: 88px;
+  height: 88px;
+  padding: 0;
+  background: var(--surface-raised);
+  border: 1px solid var(--color-grey-alt);
+  border-radius: 12px;
+  overflow: hidden;
+  cursor: pointer;
+  transition: border-color 0.15s ease, box-shadow 0.15s ease;
+
+  img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    border-radius: 0;
+    display: block;
+  }
+
+  &:hover {
+    border-color: var(--brand-petrol);
+  }
+}
+
+/* La miniatura activa se marca con el magenta de la marca: sin esto no se
+   sabe cual de las vistas se esta mirando. */
+.thumbActive {
+  border-color: var(--brand-magenta);
+  box-shadow: 0 0 0 1px var(--brand-magenta);
+}
+
+.stage {
+  position: relative;
+  flex: 1;
+  min-width: 0;
+  background: var(--surface-raised);
+  border: 1px solid var(--color-grey-alt);
+  border-radius: var(--radius-lg);
+  overflow: hidden;
+  aspect-ratio: 1 / 1;
+
+  /* La imagen se posiciona absoluta dentro de la caja: el <Image> de Hydrogen
+     trae su propio aspect-ratio inline y colapsaba a altura 0. */
+  img {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+    border-radius: 0;
+    display: block;
+  }
+}
+
+/* Flechas como botones con superficie propia: sobre una foto clara, un caret
+   suelto desaparece. */
+.arrow {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 2.75rem;
+  height: 2.75rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgb(255 255 255 / 92%);
+  border: 1px solid var(--color-grey-alt);
+  border-radius: var(--radius-pill);
+  cursor: pointer;
+  color: var(--brand-petrol);
+
+  svg {
+    width: 1.25rem;
+    height: 1.25rem;
+  }
+
+  &:hover {
+    background: var(--surface-raised);
+    border-color: var(--brand-petrol);
+  }
+}
+
+.arrowPrev {
+  left: 0.75rem;
+}
+
+/* Sin transform propia: el icono ya rota por su prop `direction`, y una
+   transform en CSS la pisa y lo deja apuntando a cualquier lado. */
+.arrowNext {
+  right: 0.75rem;
+}
+
+.counter {
+  position: absolute;
+  bottom: 0.75rem;
+  right: 0.75rem;
+  background: rgb(0 55 63 / 85%);
+  color: var(--brand-cream);
+  border-radius: var(--radius-pill);
+  padding: var(--space-1) var(--space-3);
+  font-size: var(--text-xs);
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+}

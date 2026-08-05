@@ -1,0 +1,32 @@
+.wrapper {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: var(--space-2);
+}
+
+/* El clamp lo aplica el componente por estilo inline (la cantidad de lineas es
+   configurable). Aca va todo lo que no depende de ese numero. */
+.text {
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  max-width: 70ch;
+}
+
+.open {
+  display: block;
+  overflow: visible;
+}
+
+.toggle {
+  border: 0;
+  background: none;
+  padding: 0;
+  font-family: inherit;
+  font-size: var(--text-sm);
+  font-weight: var(--font-weight-bold);
+  color: var(--brand-magenta);
+  text-decoration: underline;
+  cursor: pointer;
+}

@@ -1,0 +1,160 @@
+.productIcon {
+  width: 3.25rem;
+  position: relative;
+  span.iconValue {
+    position: absolute;
+    transform: translate(10px, -24px);
+    width: 52px;
+    font-size: var(--text-xs);
+  }
+  span.cutValue {
+    color: var(--brand-petrol);
+    position: absolute;
+    top: 0;
+    right: 0;
+    left: 0;
+    text-align: center;
+    font-size: var(--text-base);
+  }
+}
+
+.st0 {
+  fill: none;
+  stroke: var(--brand-petrol);
+  stroke-miterlimit: 10;
+}
+
+.st1 {
+  stroke: var(--brand-petrol);
+  stroke-miterlimit: 10;
+}
+
+.st0B {
+  fill-rule: evenodd;
+  clip-rule: evenodd;
+  fill: none;
+  stroke: var(--brand-petrol);
+  stroke-miterlimit: 10;
+}
+.st1B {
+  fill: none;
+  stroke: var(--brand-petrol);
+  stroke-miterlimit: 10;
+}
+.st2 {
+  fill-rule: evenodd;
+  clip-rule: evenodd;
+  fill: #ffffff;
+  stroke: var(--brand-petrol);
+  stroke-miterlimit: 10;
+}
+.st3 {
+  fill: none;
+  stroke: var(--brand-petrol);
+  stroke-miterlimit: 22.9256;
+}
+.st4 {
+  fill-rule: evenodd;
+  clip-rule: evenodd;
+}
+.st5B {
+  fill: none;
+  stroke: var(--brand-petrol);
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  stroke-miterlimit: 10;
+  stroke-dasharray: 2, 2;
+}
+.st5C {
+  fill: #ffffff !important;
+  stroke: var(--brand-petrol);
+  stroke-miterlimit: 10;
+}
+.st6 {
+  font-size: 25px;
+}
+.st6B {
+  fill: #bdbcbc !important;
+}
+.st6C {
+  font-size: 21.5336px;
+}
+.st7 {
+  fill: #0095da !important;
+}
+
+.fontStyles {
+  font-size: 16.3176px;
+}
+
+.cls1,
+.clsb1 {
+  font-size: 16.3px;
+}
+
+.cls1,
+.cls2,
+.clsb1,
+.clsb3 {
+  font-weight: 300;
+}
+
+.cls1,
+.cls2,
+.cls3 {
+  fill: var(--brand-petrol);
+}
+
+.cls4,
+.cls5,
+.cls6,
+.cls7,
+.clsb4,
+.clsb5,
+.clsb6,
+.clsb7 {
+  stroke: var(--brand-petrol);
+}
+
+.cls4,
+.cls5,
+.cls7,
+.clsb4,
+.clsb5,
+.clsb7 {
+  stroke-miterlimit: 10;
+}
+
+.cls4,
+.cls3,
+.clsb4,
+.clsb2 {
+  fill-rule: evenodd;
+}
+
+.cls4,
+.cls6,
+.cls7,
+.clsb4,
+.clsb6,
+.clsb7 {
+  fill: none;
+}
+
+.cls5,
+.clsb5 {
+  fill: #fff;
+}
+
+.cls2 {
+  font-size: 12.2px;
+}
+
+.cls6,
+.clsb6 {
+  stroke-miterlimit: 22.9;
+}
+
+.clsb3 {
+  font-size: 12.3px;
+}

@@ -1,0 +1,406 @@
+$breakpoint-xxs: 300px;
+$breakpoint-xs: 480px;
+$breakpoint-sm: 768px;
+$breakpoint-md: 960px;
+$breakpoint-lg: 1200px;
+$breakpoint-xl: 1440px;
+$breakpoint-xxl: 1920px;
+
+$z-index: (
+  slick-arrows: 1,
+  mega-menu: 2,
+);
+
+/* Paginación del catálogo. Era un pill gris translúcido heredado del fork, sin
+   relación con la marca: ahora es un botón secundario Picafili — blanco sobre
+   crema, borde petróleo, y magenta al hover. */
+@mixin loadMoreLessButton {
+  display: flex;
+  justify-content: center;
+  margin: 2.5rem 0;
+
+  span {
+    text-decoration: none;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    background: #fff;
+    color: var(--brand-petrol);
+    border-radius: var(--button-border-radius);
+    font-size: 1rem;
+    font-weight: 600;
+    line-height: 1.5rem;
+    padding: 0.875rem 2.5rem;
+    width: max-content;
+    border: 1px solid var(--brand-petrol);
+    transition: background 0.15s ease, color 0.15s ease, border-color 0.15s ease;
+  }
+
+  &:hover span {
+    background: var(--brand-magenta);
+    border-color: var(--brand-magenta);
+    color: var(--brand-cream);
+  }
+}
+@mixin signInButton {
+  font-size: 1rem;
+  line-height: 1.5rem;
+  border-radius: var(--button-border-radius);
+  color: var(--color-grey-soft);
+  background-color: var(--color-black);
+  width: var(--button-width);
+  height: 45px;
+  position: static;
+  white-space: nowrap;
+}
+
+@mixin skeleton(
+  $width: 100%,
+  $height: 2rem,
+  $background: var(--color-grey-soft)
+) {
+  display: flex;
+  background: $background;
+  width: $width;
+  height: $height;
+  position: relative;
+  margin-bottom: 1rem;
+  overflow: hidden;
+
+  &::after {
+    position: absolute;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    left: 0;
+    transform: translateX(-100%);
+    background-image: linear-gradient(
+      90deg,
+      rgba(#7e7e7e, 0) 0,
+      rgba(#cacaca, 0.2) 20%,
+      rgba(#fff, 0.5) 60%,
+      rgba(#fff, 0)
+    );
+    animation: shimmer 5s infinite;
+    content: '';
+  }
+  @keyframes shimmer {
+    100% {
+      transform: translateX(100%);
+    }
+  }
+}
+
+@mixin filter-applied {
+  background-color: var(--brand-petrol);
+  color: var(--color);
+  min-width: 90px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 0.875rem;
+  font-weight: 400;
+  line-height: 13px;
+  text-align: left;
+  padding: 9px 13px 9px 13px;
+  svg {
+    width: 13px;
+    height: 13px;
+  }
+}
+
+@mixin sidebar-list() {
+  margin-top: auto;
+
+  li {
+    display: flex;
+    font-size: 0.813rem;
+    border-bottom: 1px solid var(--color-gray-4);
+    padding-bottom: 0.625rem;
+    padding-top: 0.625rem;
+    line-height: 1rem;
+
+    span {
+      font-size: 0.75rem;
+      color: var(--color-gray-2);
+    }
+  }
+}
+
+@mixin title($size: h2) {
+  @if $size == h1 {
+    font-size: 2.25rem;
+    line-height: 2.25rem;
+    font-weight: 700;
+  } @else if $size == h2 {
+    font-size: 1.5rem;
+    line-height: 2rem;
+    font-weight: 700;
+    margin-bottom: 1rem;
+  } @else if $size == h3 {
+    font-size: 1.25rem;
+    line-height: 1.25rem;
+    font-weight: 700;
+  } @else if $size == h4 {
+    font-size: 1rem;
+    line-height: 1rem;
+    font-weight: 700;
+  } @else if $size == h5 {
+    font-size: 0.875rem;
+    line-height: 0.875rem;
+    font-weight: 700;
+  } @else if $size == h6 {
+    font-size: 0.75rem;
+    line-height: 0.75rem;
+    font-weight: 700;
+  }
+}
+
+@mixin sort-options-list {
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+  left: 0;
+  z-index: 3;
+  align-items: start;
+  width: 100%;
+  background: var(--brand-petrol);
+  padding: 1rem 0 0 0;
+  color: var(--color-grey-soft);
+  top: 40px;
+  border-radius: 0 0 18px 18px;
+  @media screen and (min-width: $breakpoint-md) {
+    position: absolute;
+    padding: 1rem 1rem 1rem 1.3rem;
+  }
+}
+
+@mixin select-options-list {
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+  left: 0;
+  z-index: 3;
+  align-items: start;
+  width: 100%;
+  background: var(--brand-petrol);
+  padding: 0 2rem 1rem 2rem;
+  color: var(--brand-cream);
+  top: 40px;
+  border-radius: 0 0 18px 18px;
+  @media screen and (min-width: $breakpoint-md) {
+    position: absolute;
+    padding: 1rem 1rem 1rem 1.3rem;
+  }
+}
+
+/* Control de filtro: tiene que leerse como un select, no como una etiqueta
+   suelta. Fondo blanco, borde y flecha visible sobre la crema de la página. */
+@mixin filter-select($background: #fff) {
+  background-color: $background;
+  border: 1px solid var(--color-grey-alt);
+  color: var(--brand-petrol);
+  height: max-content;
+  position: relative;
+  cursor: pointer;
+  padding-right: 1rem;
+  min-width: 11rem;
+  font-size: 1rem;
+  font-weight: 500;
+  line-height: 1.2rem;
+  border-radius: var(--button-border-radius);
+
+  &:hover {
+    border-color: var(--brand-petrol);
+  }
+
+  &[data-open] {
+    background: var(--brand-petrol);
+    color: var(--brand-cream);
+    border-color: var(--brand-petrol);
+    @media screen and (min-width: $breakpoint-md) {
+      border-bottom-left-radius: 0;
+      border-bottom-right-radius: 0;
+    }
+  }
+  input {
+    width: 100%;
+  }
+
+  @media screen and (min-width: $breakpoint-md) {
+    max-width: max-content;
+  }
+}
+
+@mixin btn-primary(
+  $background-color: var(--color-primary),
+  $color: white,
+  $border-color: transparent,
+  $hover-background: var(--color-dark)
+) {
+  text-decoration: none;
+  display: flex;
+  border: 1px solid $border-color;
+  justify-content: center;
+  padding: 0.625rem 0.438rem;
+  background: $background-color;
+  font-weight: 600;
+  color: $color;
+  border-radius: var(--button-border-radius);
+
+  &:hover {
+    background-color: $hover-background;
+    color: var(--color-light);
+  }
+
+  form {
+    width: 100%;
+    max-width: 100%;
+
+    button {
+      width: 100%;
+    }
+  }
+}
+
+@mixin icon-size {
+  mask-size: contain;
+  mask-repeat: no-repeat;
+  mask-position: center;
+}
+
+@mixin background($position, $size, $repeat) {
+  background-position: $position;
+  background-size: $size;
+  background-repeat: $repeat;
+}
+
+@mixin icon-factory($url, $position, $size, $repeat, $width, $height) {
+  @include icon-size;
+  mask-image: url($url);
+  -webkit-mask-image: url($url);
+  @include background($position, $size, $repeat);
+  @include width-height($width, $height);
+}
+
+@mixin width-height($width, $height: false) {
+  width: $width;
+  height: $width;
+  @if $height {
+    height: $height;
+  }
+}
+
+@mixin qty-selector($bkg: var(--color-primary), $color: white) {
+  display: flex;
+  border-radius: var(--button-border-radius);
+  align-items: center;
+  justify-content: space-between;
+  font-size: 1rem;
+  line-height: 1.5rem;
+  padding: 7px 12px;
+  background: $bkg;
+  color: $color;
+  border: 1px solid $color;
+  height: 45px;
+
+  .qtyAction {
+    font-size: 1.3rem;
+  }
+
+  input {
+    padding: 0;
+    height: 40px;
+    display: flex;
+    max-width: 60px;
+    text-align: center;
+    border: none;
+    pointer-events: none;
+    background-color: transparent;
+
+    &::-webkit-inner-spin-button {
+      display: none;
+    }
+  }
+}
+
+@mixin menu-pill($background-color: var(--color-primary), $color: white) {
+  text-align: center;
+  text-decoration: none;
+  display: flex;
+  justify-content: center;
+  padding: 0.625rem 2rem;
+  background: $background-color;
+  font-weight: 400;
+  color: $color;
+  border-radius: var(--button-border-radius);
+  border: 1px solid transparent;
+
+  &:hover {
+    border-color: var(--color-dark);
+  }
+
+  &.active:hover {
+    border-color: red;
+  }
+
+  form {
+    width: 100%;
+    max-width: 100%;
+
+    button {
+      width: 100%;
+    }
+  }
+}
+
+@mixin fields-container($qty-elements) {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1rem;
+
+  .field,
+  .tableHeader {
+    min-width: calc(100% / $qty-elements);
+    display: flex;
+  }
+
+  .field:last-child {
+    flex-direction: row;
+    justify-content: end;
+  }
+}
+
+@mixin header-icon {
+  width: 44px;
+  height: 44px;
+  display: flex;
+  justify-content: center;
+  padding: 10px 10px;
+  @media (max-width: $breakpoint-md) {
+    padding: 8px 8px;
+  }
+}
+
+@mixin availability-bullet($show-text: true) {
+  @if $show-text == false {
+    svg,
+    span {
+      display: none !important;
+    }
+  }
+}
+
+@mixin field-image {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  @media (max-width: $breakpoint-md) {
+    flex-direction: column;
+    align-items: start;
+    text-align: left;
+  }
+}

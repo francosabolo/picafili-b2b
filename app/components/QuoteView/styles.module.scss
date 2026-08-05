@@ -1,0 +1,136 @@
+.account-draftOrder {
+  padding: var(--space-6);
+  background-color: #f9f9f9;
+  border-radius: var(--radius-sm);
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.fieldsContainer {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-6);
+}
+
+.field {
+  margin-bottom: var(--space-6);
+}
+
+.fieldImage {
+  @include field-image;
+}
+
+.fieldImage img {
+  border-radius: var(--radius-sm);
+}
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: var(--space-6);
+}
+
+th,
+td {
+  padding: var(--space-3);
+  text-align: left;
+  border-bottom: 1px solid #ddd;
+}
+
+th {
+  background-color: #f1f1f1;
+}
+
+tfoot tr th,
+tfoot tr td {
+  font-weight: bold;
+}
+
+.menuPill {
+  display: inline-block;
+  padding: var(--space-3) var(--space-6);
+  background-color: var(--brand-petrol);
+  color: var(--text-on-brand);
+  border-radius: var(--radius-lg);
+  text-decoration: none;
+  transition: background-color 0.3s;
+}
+
+.menuPill:hover {
+  background-color: var(--color-grey-dark);
+}
+
+.quoteViewRow {
+  display: flex;
+  flex-direction: column;
+  margin-bottom: var(--space-8);
+  .quoteViewField {
+    display: flex;
+    gap: var(--space-6);
+    @media (max-width: $breakpoint-sm) {
+      justify-content: space-between;
+      p {
+        text-align: right;
+      }
+    }
+    h3 {
+      font-weight: 700;
+    }
+  }
+  &.right {
+    align-items: end;
+  }
+}
+
+@media (max-width: $breakpoint-sm) {
+  .responsiveTable {
+    width: 100%;
+    box-sizing: border-box;
+    border: none;
+    td,
+    th {
+      border-bottom: none;
+      background-color: transparent;
+    }
+
+    thead {
+      display: none;
+    }
+    tr {
+      margin-bottom: var(--space-3);
+      display: flex;
+      justify-content: space-between;
+      width: 100%;
+      border-bottom: 1px solid var(--color-grey-alt);
+    }
+    .lineRow {
+      padding: var(--space-4) 0;
+      td {
+        max-width: 20%;
+        display: flex;
+        flex-direction: column;
+        text-align: left;
+        border: none;
+        padding: 0;
+        &:last-child {
+          border-bottom: none;
+        }
+        &:before {
+          content: attr(data-label);
+          font-size: var(--text-xs);
+          text-transform: uppercase;
+          font-weight: bold;
+        }
+
+        &.mobile {
+          display: none;
+        }
+      }
+    }
+
+    @media screen and (max-width: $breakpoint-md) {
+      .lineItemImage {
+        padding: 0;
+      }
+    }
+  }
+}

@@ -1,0 +1,31 @@
+.quickSearch {
+  margin-top: var(--space-16);
+  margin-bottom: var(--space-8);
+  h4 {
+    display: none;
+  }
+}
+
+/* Encabezado del bloque: título + bajada que explica qué se hace acá.
+   El margen de 3.125rem debajo del título dejaba la tabla flotando lejos. */
+.heading {
+  margin-bottom: var(--space-6);
+
+  @media screen and (max-width: $breakpoint-lg) {
+    display: none;
+  }
+}
+
+.title {
+  @include title(h2);
+  font-size: var(--text-2xl);
+  line-height: 2.5rem;
+  margin-bottom: var(--space-2);
+}
+
+.subtitle {
+  font-size: var(--text-base);
+  line-height: 1.5rem;
+  color: var(--brand-petrol);
+  opacity: 0.75;
+}

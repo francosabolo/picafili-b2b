@@ -1,0 +1,233 @@
+.footer {
+  width: 100%;
+  background-color: var(--background);
+  color: var(--color-black);
+}
+
+.footerWrapper {
+  /* Mobile: una sola columna.
+     Antes habia aca un grid de 2 columnas con `grid-template-areas` nombradas
+     (description / contact / products / legal / social) y `gap: 0`. Esas areas
+     las reclamaban los bloques del fork; al reemplazarlos por las columnas de
+     informacion nuevas dejaron de reclamarlas **y nadie las ocupaba**: los
+     cinco bloques caian auto-posicionados de a dos por fila, pegados, y el
+     quinto se iba a una fila implicita. Un pie de cinco bloques en un telefono
+     se lee apilado, no en dos columnas de 195px. */
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: var(--space-8);
+  padding: var(--space-8) var(--space-4);
+
+  /* Grid que se acomoda solo, en vez de un flex rigido.
+     Con `display: flex; justify-content: space-between` cada columna se
+     repartia el ancho sobrante sin poder envolver: al sumar las columnas de
+     informacion (ventas, condiciones, cuenta) a las del menu de Shopify, el
+     pie se pasaba del ancho de la pantalla y se cortaba a la derecha, mientras
+     la descripcion quedaba tan angosta que caia UNA PALABRA POR LINEA.
+     `auto-fit` + `minmax` pone las columnas que entren y baja el resto. */
+  @media (min-width: $breakpoint-md) {
+    grid-template-columns: repeat(auto-fit, minmax(13rem, 1fr));
+    align-items: start;
+    text-align: left;
+    gap: var(--space-8);
+    padding: var(--space-16) var(--space-12);
+    font-size: var(--text-base);
+    letter-spacing: 0;
+  }
+}
+
+.footerFooter {
+  display: flex;
+  max-width: 100%;
+  justify-content: center;
+  background: var(--color-grey-dark);
+  padding: var(--space-4) 0;
+  align-items: center;
+}
+.footerFooter div.sign {
+  a,
+  span {
+    color: var(--color-grey-soft);
+    display: flex;
+    align-items: center;
+    margin: 0 var(--space-4);
+  }
+  img {
+    max-width: 12rem;
+  }
+}
+
+.footerDescription {
+  display: flex;
+  flex-direction: column;
+  /* Ocupa dos celdas del grid: la marca y la bajada necesitan ancho de lectura.
+     El `width: 50%` de antes era del layout flex y, con mas columnas, se
+     convertia en una tira vertical de una palabra por linea. */
+  min-width: 0;
+  justify-content: flex-start;
+  gap: var(--space-4);
+  grid-area: auto;
+
+  /* El `span 2` es SOLO de la grilla de escritorio. Sin acotarlo, en mobile
+     —donde la grilla tiene una sola columna— pedir dos celdas crea una segunda
+     columna implicita y desarma la pila.
+     `grid-area` va antes que `grid-column` porque es shorthand y lo resetea. */
+  @media (min-width: $breakpoint-md) {
+    grid-column: span 2;
+  }
+
+  .logo {
+    max-width: 10.75rem;
+    display: block;
+    color: var(--color);
+    @media (max-width: $breakpoint-md) {
+      max-width: 9.25rem;
+      margin-bottom: var(--space-8);
+    }
+  }
+  .descriptionContainer {
+    max-width: 34ch;
+  }
+}
+
+.footerMenuItem {
+  text-align: left;
+
+  /* Los links del menu de Shopify se leen igual que los de las columnas de
+     informacion. Antes eran base y bold: el pie tenia dos jerarquias de link
+     compitiendo, y las politicas pesaban mas que "Mis pedidos". */
+  & > a {
+    font-size: var(--text-sm);
+    display: block;
+    line-height: 1.4;
+    font-weight: var(--font-weight-normal);
+    padding: var(--space-1) 0;
+  }
+}
+
+.footerMenuWrapper {
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  /* `width: max-content` obligaba a la columna a ser tan ancha como su texto
+     mas largo, que es lo que empujaba el pie fuera de pantalla. */
+  min-width: 0;
+  /* Mismo encabezado que las columnas de informacion: sin esto, "Enlaces"
+     quedaba en minuscula y con otro peso al lado de VENTAS / MI CUENTA. */
+  .title {
+    font-size: var(--text-sm);
+    font-weight: var(--font-weight-bold);
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    margin-bottom: var(--space-3);
+    line-height: 1.4;
+    max-width: 15rem;
+  }
+}
+
+.footerContactData {
+  max-width: 14%;
+  width: 14%;
+  text-align: left;
+  /* El area "contact" ya no existe: la grilla nombrada se borro. Se deja el
+     bloque por si el componente vuelve, pero sin reclamar un area fantasma. */
+  button {
+    text-decoration: underline;
+  }
+  .title {
+    margin-bottom: var(--space-12);
+  }
+  @media (max-width: $breakpoint-md) {
+    max-width: 100%;
+    width: 100%;
+    margin-bottom: 3.875rem;
+    .title {
+      margin-bottom: var(--space-6);
+    }
+  }
+}
+
+.descriptionContainer {
+  display: flex;
+  flex-direction: column;
+  text-align: left;
+  align-items: start;
+  align-items: baseline;
+  line-height: 1.875rem;
+  .descriptionParagraph {
+    &#descriptionParagraph--2 {
+      margin-bottom: 2.6875rem;
+      @media (max-width: $breakpoint-md) {
+        margin-bottom: 1.75rem;
+      }
+    }
+  }
+}
+
+.pb2xLogo {
+  a {
+    display: flex;
+    gap: 15px;
+  }
+  img {
+    max-height: 24px;
+  }
+  @media screen and (max-width: $breakpoint-md) {
+    margin-top: var(--space-8);
+    span {
+      font-size: var(--text-sm);
+    }
+    img {
+      max-height: 20px;
+    }
+  }
+}
+
+/* Columnas de informacion del pie (E17): contacto comercial, condiciones y
+   accesos de cuenta. Cada una se oculta entera si no tiene contenido, asi que
+   el grid tiene que tolerar 1, 2 o 3 columnas sin dejar huecos. */
+.infoColumn {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+  text-align: left;
+  min-width: 12rem;
+}
+
+.infoTitle {
+  font-size: var(--text-sm);
+  font-weight: var(--font-weight-bold);
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  margin: 0;
+  color: var(--color-black);
+}
+
+.infoList {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+  font-size: var(--text-sm);
+  line-height: 1.4;
+
+  a {
+    color: inherit;
+    text-decoration: none;
+
+    &:hover {
+      text-decoration: underline;
+    }
+  }
+}
+
+.infoLabel {
+  opacity: 0.7;
+}
+
+.infoNote {
+  opacity: 0.7;
+}

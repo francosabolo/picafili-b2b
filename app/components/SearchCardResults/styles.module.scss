@@ -1,0 +1,11 @@
+.SearchResultsProductGrid {
+  .SearchResultsHeader {
+    display: grid;
+    grid-template-columns: 1.2fr repeat(7, minmax(3rem, 0.9fr));
+    padding: 27px 44px 20px 36px;
+    margin: 0 var(--pdp-selector-size) 0 93px;
+    font-size: var(--text-lg);
+    font-weight: 700;
+    line-height: 1.5rem;
+  }
+}

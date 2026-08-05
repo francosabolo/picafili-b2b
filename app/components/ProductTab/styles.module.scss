@@ -1,0 +1,59 @@
+.accordionColumns {
+  display: flex;
+  flex-direction: row;
+  gap: var(--space-8);
+  margin: var(--space-6) 0;
+
+  @media (max-width: 45em) {
+    flex-wrap: wrap;
+  }
+
+  &.details {
+    margin: 1.5rem 0 1rem !important;
+  }
+}
+
+.details {
+  margin: var(--space-6) 0 var(--space-4);
+}
+
+.drawing {
+  margin-bottom: var(--space-8);
+}
+
+.listWrapper {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-2);
+  flex-direction: column;
+
+  &.Colors {
+    flex-direction: row !important;
+    max-width: 9rem;
+  }
+}
+
+.Colors {
+  flex-direction: row;
+}
+
+.colorCircle {
+  width: 1.25rem;
+  height: 1.25rem;
+  border: 1px solid var(--brand-petrol);
+  border-radius: 100%;
+  background-size: contain;
+}
+
+.columnWrapper {
+  display: block;
+}
+.columnTitle {
+  @include title(h4);
+  margin-bottom: var(--space-6);
+}
+
+.unifiedField {
+  width: 50%;
+  display: inline-block;
+}

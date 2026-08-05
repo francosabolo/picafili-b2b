@@ -1,0 +1,72 @@
+.sortTitle {
+  @include title(h2);
+  padding-bottom: var(--space-4);
+  @media screen and (max-width: $breakpoint-md) {
+    font-size: var(--text-base);
+    padding: 0;
+    margin-bottom: var(--space-2);
+  }
+}
+
+.sortMenu {
+  display: flex;
+  flex-direction: column;
+  justify-content: end;
+
+  @media screen and (min-width: $breakpoint-md) {
+    flex-basis: 20%;
+    padding-left: var(--space-8);
+  }
+}
+
+.sortElement {
+  @include filter-select;
+  padding: var(--space-4) var(--space-8);
+  cursor: pointer;
+
+  @media screen and (min-width: $breakpoint-md) {
+    min-width: 16rem;
+  }
+
+  .sortButton {
+    font-weight: bold;
+    display: flex;
+    font-size: var(--text-base);
+    position: relative;
+    cursor: pointer;
+    .icon {
+      position: absolute;
+      right: 0;
+      top: 5px;
+    }
+  }
+}
+
+.sortItems {
+  @include sort-options-list;
+  top: 50px;
+}
+
+/* Variante en linea para la barra del listado: el rotulo va dentro del
+   control. Sin esto "Ordenar" se renderiza como un encabezado del tamaño de un
+   titulo de seccion arriba del desplegable. */
+.inline {
+  display: flex;
+  align-items: center;
+
+  .sortElement {
+    margin: 0;
+  }
+
+  .sortButton {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--space-2);
+    white-space: nowrap;
+  }
+}
+
+.inlineLabel {
+  font-weight: var(--font-weight-body);
+  opacity: 0.7;
+}

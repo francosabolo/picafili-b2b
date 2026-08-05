@@ -1,0 +1,39 @@
+.menuPill {
+  @include menu-pill(var(--color-grey-soft), var(--color-black));
+  @media (min-width: $breakpoint-md) {
+    margin-right: var(--space-4);
+  }
+}
+
+.menuPill__right {
+  @media (min-width: 55em) {
+    margin-left: auto;
+  }
+}
+
+.accountMenu {
+  display: flex;
+  align-items: center;
+  @media (min-width: $breakpoint-md) {
+    margin-bottom: var(--space-16);
+  }
+  @media (max-width: $breakpoint-md) {
+    margin: var(--space-1) var(--space-1) var(--space-12) var(--space-1);
+    gap: var(--space-3);
+    flex-wrap: wrap;
+    justify-content: center;
+  }
+}
+
+h1 {
+  font-size: var(--text-2xl);
+  font-weight: bold;
+  color: var(--color-primary);
+  @media (min-width: $breakpoint-md) {
+    margin-bottom: var(--space-16);
+  }
+}
+
+.accountLogoutBtn {
+  text-decoration: underline;
+}

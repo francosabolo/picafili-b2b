@@ -1,0 +1,8 @@
+.btnSubmit {
+  @include btn-primary(
+    var(--color-primary),
+    white,
+    transparent,
+    var(--color-dark)
+  );
+}
