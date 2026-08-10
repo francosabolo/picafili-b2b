@@ -58,6 +58,26 @@ function declaredMetafields() {
 }
 
 /**
+ * Las keys de metafield de cliente que escribe la solicitud mayorista.
+ *
+ * Se leen del texto de `app/data/b2b-request.js` por lo mismo que el resto: ese
+ * módulo usa el alias `~` y `import` no lo resuelve desde Node.
+ */
+function declaredB2BRequestKeys() {
+  const src = readSource('app/data/b2b-request.js');
+  const keys = [];
+
+  const fields = /key:\s*'([^']+)'/g;
+  let m;
+  while ((m = fields.exec(src))) keys.push(m[1]);
+
+  const requestedAt = /B2B_REQUESTED_AT_KEY = '([^']+)'/.exec(src);
+  if (requestedAt) keys.push(requestedAt[1]);
+
+  return [...new Set(keys)];
+}
+
+/**
  * Valor literal de una constante de `const.js`, como texto.
  *
  * El `^` con flag `m` no es decorativo: `const.js` documenta varias constantes
@@ -396,6 +416,51 @@ async function main() {
         'Companies B2B',
         `${companies.companies.nodes.length} company(s) — el portal tiene a quién dejar entrar`,
       );
+    }
+  }
+
+  // ── Definiciones de la solicitud mayorista ───────────────────────────
+  //
+  // `metafieldsSet` guarda un metafield **sin definición** y devuelve éxito.
+  // El admin de Shopify, en cambio, solo muestra los que tienen definición. Sin
+  // ellas la solicitud se guarda perfecto y quien tiene que aprobarla abre la
+  // ficha del cliente y no ve nada — ningún error, ninguna pista.
+  const requestKeys = declaredB2BRequestKeys();
+
+  if (requestKeys.length) {
+    const defs = await adminQuery(
+      vars,
+      `{ metafieldDefinitions(first: 50, ownerType: CUSTOMER, namespace: "b2b") {
+           nodes { key }
+         } }`,
+    ).catch((error) => ({error}));
+
+    if (defs.error) {
+      warn(
+        'Solicitud mayorista (metafields)',
+        `no se pudo verificar: ${defs.error.message}`,
+        'sin definiciones en el admin, las solicitudes se guardan y NO se ven',
+      );
+    } else {
+      const present = new Set(
+        (defs.metafieldDefinitions?.nodes ?? []).map((n) => n.key),
+      );
+      const missing = requestKeys.filter((key) => !present.has(key));
+
+      if (missing.length) {
+        bad(
+          'Solicitud mayorista (metafields)',
+          `faltan ${missing.length} de ${
+            requestKeys.length
+          } definiciones: ${missing.join(', ')}`,
+          'creálas en Configuración → Datos personalizados → Clientes, namespace "b2b", tipo texto de una línea',
+        );
+      } else {
+        ok(
+          'Solicitud mayorista (metafields)',
+          `las ${requestKeys.length} definiciones están en el admin`,
+        );
+      }
     }
   }
 

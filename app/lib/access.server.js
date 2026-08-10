@@ -25,6 +25,19 @@ export const LOGIN_PATH = '/ingresar';
 /** Logueado pero todavía sin company asignada en Shopify. */
 export const PENDING_PATH = '/cuenta-en-revision';
 
+/** Donde se guarda la solicitud de acceso mayorista. */
+export const REQUEST_API_PATH = '/api/solicitud-acceso';
+
+/**
+ * Lo único que alcanza una sesión **sin company**: la sala de espera y el
+ * endpoint que recibe su solicitud.
+ *
+ * El endpoint tiene que estar acá o el gate le contesta 401 a la única persona
+ * que puede usarlo — y como es un `fetch()`, el fallo se ve como un formulario
+ * que no hace nada, no como una pantalla de error.
+ */
+const PENDING_ALLOWED = new Set([PENDING_PATH, REQUEST_API_PATH]);
+
 /**
  * Rutas que tienen que responder sin sesión, sin excepción: son las que
  * *producen* la sesión. Cerrarlas deja el portal sin puerta de entrada.
@@ -102,6 +115,13 @@ function normalize(pathname) {
  * parsear, y el error termina apareciendo lejos de acá. 401 es la respuesta
  * honesta.
  *
+ * ⚠️ **Llamá a los `/api/*` con `fetch` plano, no con `useFetcher`.** Esta
+ * respuesta no lleva el protocolo de Remix —se arma antes que Remix— así que un
+ * fetcher no la lee como dato: la escala al error boundary y **se lleva puesta
+ * la página entera**. Verificado en el navegador con el formulario de
+ * solicitud: en vez del error en el campo salía "Algo falló de nuestro lado".
+ * La convención del repo ya era `fetch` (ver `QuoteContext.jsx`).
+ *
  * @param {string} path ruta sin prefijo de idioma
  * @param {string} destination a dónde mandar a un navegador
  */
@@ -152,7 +172,7 @@ export async function checkAccess({request, context}) {
   }
 
   if (REQUIRE_B2B_COMPANY && !context.b2b?.companyId) {
-    if (path === PENDING_PATH) return null;
+    if (PENDING_ALLOWED.has(path)) return null;
     return deny(path, `${prefix}${PENDING_PATH}`);
   }
 
