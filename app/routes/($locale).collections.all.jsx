@@ -20,13 +20,14 @@ import {COLLECTION_MENU_QUERY} from '~/graphql/header/menuQueries';
 import {CollectionHeading} from '~/components/CollectionHeading/CollectionHeading.jsx';
 import {PageWidthContainer} from '~/components/PageWidthContainer/PageWidthContainer';
 import {useTranslation} from '~/i18n/index.jsx';
-import {pageTitle} from '~/lib/utils.js';
+import {seoMeta} from '~/lib/seo.js';
+import {getBuyerVariables} from '~/lib/b2b.server.js';
 
 /**
  * @type {MetaFunction<typeof loader>}
  */
-export const meta = ({matches}) => {
-  return [{title: pageTitle(matches, 'page-title.products')}];
+export const meta = ({matches, location}) => {
+  return seoMeta({matches, location, title: 'page-title.products'});
 };
 
 export const handle = 'collection';
@@ -55,6 +56,7 @@ export async function loader({request, context}) {
 
   const {search} = await storefront.query(CATALOG_FILTERED_QUERY, {
     variables: {
+      ...getBuyerVariables(context),
       ...paginationVariables,
       metafieldIdentifiers: allProductMetafields,
       productFilters: productFilters.length ? productFilters : undefined,

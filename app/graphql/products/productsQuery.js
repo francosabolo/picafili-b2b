@@ -88,6 +88,20 @@ fragment Product on Product {
     descriptionHtml
     tags
     description
+    availableForSale
+    # Para el SEO de la ficha: la imagen social y el precio del JSON-LD. La
+    # galeria usa la lista de images, pero og:image necesita UNA sola y
+    # definida por la tienda, no la primera que devuelva esa lista.
+    # (Sin backticks: adentro de un fragment cierran el template literal.)
+    featuredImage {
+        url
+    }
+    priceRange {
+        minVariantPrice {
+            amount
+            currencyCode
+        }
+    }
     options {
         name
         values
@@ -140,9 +154,10 @@ query Product(
     $country: CountryCode
     $handle: String!
     $language: LanguageCode
+    $buyer: BuyerInput
     $selectedOptions: [SelectedOptionInput!]!
     $identifiers: [HasMetafieldsIdentifier!]!
-) @inContext(country: $country, language: $language) {
+) @inContext(country: $country, language: $language, buyer: $buyer) {
     product(handle: $handle) {
         ...Product
     }
@@ -166,8 +181,9 @@ ${PRODUCT_VARIANTS_FRAGMENT}
 query ProductVariants(
     $country: CountryCode
     $language: LanguageCode
+    $buyer: BuyerInput
     $handle: String!
-) @inContext(country: $country, language: $language) {
+) @inContext(country: $country, language: $language, buyer: $buyer) {
     product(handle: $handle) {
         ...ProductVariants
     }
@@ -176,7 +192,18 @@ query ProductVariants(
 
 export const RECOMMENDED_PRODUCTS_QUERY = `#graphql
 ${PRODUCT_ITEM_FRAGMENT}
-query RecommendedProducts($handle : String, $metafieldIdentifiers: [HasMetafieldsIdentifier!]!){
+# Esta query NO tenía @inContext: los recomendados de la ficha de producto se
+# pedían sin país, sin idioma y sin buyer, así que sus precios salían del
+# mercado por defecto mientras el resto de la página mostraba los de la
+# company. Dos precios de distinto origen en la misma pantalla, sin nada que
+# lo delate.
+query RecommendedProducts(
+  $handle: String
+  $metafieldIdentifiers: [HasMetafieldsIdentifier!]!
+  $country: CountryCode
+  $language: LanguageCode
+  $buyer: BuyerInput
+) @inContext(country: $country, language: $language, buyer: $buyer) {
   productRecommendations(productHandle: $handle,intent: COMPLEMENTARY) {
     ...ProductItem
     }

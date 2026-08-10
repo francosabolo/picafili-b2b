@@ -36,24 +36,61 @@ export const STORE_CURRENCY = 'ARS';
 export const STORE_LANGUAGES = ['ES', 'EN', 'FR'];
 
 /**
+ * ────────────────────────────────────────────────────────────────────────────
+ * PORTAL CERRADO
+ *
+ * Este storefront muestra **solo el mercado B2B**: no hay navegación anónima ni
+ * compra directa. Las dos constantes de abajo son el interruptor de esa
+ * decisión y las lee un único lugar (`app/lib/access.server.js`), que corre en
+ * `server.js` **antes** que cualquier loader. El gate está ahí y no en cada
+ * ruta a propósito: una ruta nueva nace cerrada, y olvidarse de protegerla no
+ * es posible. Abrir algo exige agregarlo a la allowlist a mano.
+ * ────────────────────────────────────────────────────────────────────────────
+ */
+
+/**
+ * ¿Hace falta sesión para ver cualquier cosa?
+ *
+ * En `true` todo el sitio redirige a `/ingresar` salvo el propio flujo de
+ * login. Consecuencia deliberada: **el catálogo deja de ser indexable**. Por
+ * eso `robots.txt` pasa a `Disallow: /` mientras esto esté encendido — un
+ * sitio que manda a Google a un login no gana nada publicando un sitemap.
+ */
+export const REQUIRE_LOGIN = true;
+
+/**
+ * ¿Además de sesión hace falta ser contacto de una company B2B de Shopify?
+ *
+ * En `true` un cliente logueado que no es contacto de ninguna company va a
+ * `/cuenta-en-revision` y no ve catálogo ni precios. Es lo que hace que el
+ * portal muestre el mercado B2B **y nada más**: sin company no hay catálogo de
+ * company location que mostrar, así que mostrar el mercado por defecto sería
+ * mostrar precios que no son los de ese comprador.
+ *
+ * ⚠️ **Esta constante puede dejar el sitio inaccesible para todos.** Si la
+ * tienda no tiene companies cargadas en Shopify, no hay cuenta que pase el
+ * gate — ni la de la demo. `npm run doctor` chequea exactamente eso y grita
+ * si la combinación es imposible; corrélo después de apuntar el `.env` a una
+ * tienda nueva y antes de dar por buena esta configuración.
+ */
+export const REQUIRE_B2B_COMPANY = true;
+
+/**
  * Carrito de compra directa.
  *
- * **Decisión tomada: presupuesto y carrito CONVIVEN**, con jerarquía.
- *
- * - **Presupuesto** (siempre activo, acción PRIMARIA): el comprador arma una
- *   lista y se emite un draft order que el equipo comercial revisa. Es para lo
- *   que se negocia — cantidades atípicas, condiciones, precios a acordar.
- * - **Carrito** (esto, acción SECUNDARIA): compra directa con checkout de
- *   Shopify, para lo que ya tiene precio cerrado y no hay nada que discutir.
- *
- * La jerarquía es lo que evita la duda de "cuál uso": el botón lleno agrega al
- * presupuesto, el de icono con borde manda al carrito. Está en la tarjeta de
- * producto y en el configurador de la ficha, siempre con la misma forma.
+ * **Decisión revisada: la única salida es el presupuesto → draft order.**
+ * Antes convivían dos caminos —presupuesto para lo que se negocia, carrito con
+ * checkout de Shopify para lo que ya tenía precio cerrado— con el presupuesto
+ * como acción primaria. En un portal donde el precio sale del catálogo de la
+ * company y todo pedido lo revisa el equipo comercial, el checkout directo no
+ * es un atajo: es una segunda forma de comprar que se saltea la revisión.
  *
  * En `false` no se renderiza ni el ícono ni el drawer ni las acciones de
- * carrito: una tienda que solo cotiza no debería mostrar nada de esto.
+ * carrito, **y las rutas `/cart` y `/api/cart/*` quedan cerradas**. Lo segundo
+ * importa tanto como lo primero: esconder el botón deja el checkout a un
+ * pegado de URL de distancia, y `checkoutUrl` viaja en el payload del carrito.
  */
-export const ENABLE_CART = true;
+export const ENABLE_CART = false;
 
 /**
  * ────────────────────────────────────────────────────────────────────────────
@@ -137,9 +174,14 @@ export const DISCOUNT_STACK_MODE = 'cascade';
 /**
  * Switcher "Ver como" de la barra mayorista: herramienta de demo para mostrar
  * los cuatro estados de cuenta sin companies reales cargadas en Shopify.
- * En una tienda de cara al público esto va en false.
+ *
+ * **Apagado desde que el portal exige company real** (`REQUIRE_B2B_COMPANY`).
+ * No es solo que sobre: el switcher escribe la cookie `demoAccountState`, y
+ * `canSeePricesOnServer` la aceptaba como prueba de que el visitante puede ver
+ * precios. Eso convertía "poné una cookie a mano" en la llave de la lista de
+ * precios completa. Con el gate real esa cookie ya no gobierna nada.
  */
-export const DEMO_ROLE_SWITCHER = true;
+export const DEMO_ROLE_SWITCHER = false;
 
 /**
  * Pedido mínimo de la nota de pedido, expresado en `STORE_CURRENCY`.

@@ -1,6 +1,7 @@
 import {createContext, useContext, useMemo, useState} from 'react';
 import Cookies from 'js-cookie';
 import {useRevalidator} from '@remix-run/react';
+import {DEMO_ROLE_SWITCHER} from '~/lib/const.js';
 
 /**
  * Máquina de estados de cuenta B2B (épica E2 del backlog).
@@ -8,10 +9,16 @@ import {useRevalidator} from '@remix-run/react';
  * El privilegio no se comunica con adornos: se comunica mostrando lo que
  * todavía no podés ver. Cada estado define qué se ve y qué se puede hacer.
  *
- * HOY el estado sale de una cookie que mueve el switcher de demo. CUANDO
- * exista B2B habilitado en la tienda (épica E3), `resolveAccountState()` pasa
- * a derivarlo de los datos reales del customer y el switcher queda solo como
- * herramienta de demo. El resto de la app no se entera: consume `useAccountState()`.
+ * El estado sale de los **datos** (`resolveRealState`): company del cliente y
+ * si hay sesión. El switcher de demo solo gobierna cuando `DEMO_ROLE_SWITCHER`
+ * está encendido y no hay company real — y mientras se lo miraba siempre, una
+ * cookie vieja pintaba "Cuenta aprobada · Distribuidora El Sol" arriba de la
+ * pantalla que decía que la cuenta estaba en revisión.
+ *
+ * ⚠️ Esto es la CARA del permiso, no el permiso. Quién ve precios lo decide el
+ * servidor en `price-gating.server.js`, y quién entra, `access.server.js`. Un
+ * componente pregunta por la capacidad (`canSeePrices`, `canOrder`), nunca por
+ * el string del estado.
  */
 
 export const ACCOUNT_STATES = {
@@ -75,11 +82,58 @@ const DEMO_STATE_COOKIE = 'demoAccountState';
 const AccountStateContext = createContext(null);
 
 /**
- * @param {{children: React.ReactNode, initialState?: string}}
+ * Estado REAL, derivado de los datos y no de una cookie.
+ *
+ * Los tres casos del portal cerrado, en orden de privilegio: contacto de una
+ * company, sesión sin company todavía, y nadie. Devuelve la forma completa —
+ * incluidos `company` y `priceList` en `null`— para no heredar los valores de
+ * demo de `ACCOUNT_STATE_CONFIG` ("Distribuidora El Sol", "Comercio Nuevo"),
+ * que son datos inventados y no de esta persona.
+ *
+ * @param {{companyName?: string, companyId?: string, hasBuyerContext?: boolean}|null} b2b
+ * @param {boolean} loggedIn
  */
-export function AccountStateProvider({children, initialState, b2b}) {
+function resolveRealState(b2b, loggedIn) {
+  if (b2b?.companyId) {
+    return {
+      ...ACCOUNT_STATE_CONFIG[ACCOUNT_STATES.APPROVED],
+      // Los precios se piden en el contexto de la company. Si ese contexto no
+      // está armado, el servidor NO manda importes (ver price-gating.server.js)
+      // y la UI tiene que decir lo mismo: si acá dijera `true`, se dibujarían
+      // los espacios de precio vacíos de una página que nunca los va a tener.
+      canSeePrices: Boolean(b2b.hasBuyerContext),
+      canOrder: Boolean(b2b.hasBuyerContext),
+      company: b2b.companyName ?? null,
+      companyId: b2b.companyId,
+      locations: b2b.locations,
+      activeLocationId: b2b.activeLocationId,
+      priceList: null,
+      isReal: true,
+    };
+  }
+
+  if (loggedIn) {
+    return {
+      ...ACCOUNT_STATE_CONFIG[ACCOUNT_STATES.PENDING],
+      company: null,
+      isReal: true,
+    };
+  }
+
+  return {...ACCOUNT_STATE_CONFIG[ACCOUNT_STATES.GUEST], isReal: true};
+}
+
+/**
+ * @param {{children: React.ReactNode, initialState?: string, b2b?: object|null, loggedIn?: boolean}}
+ */
+export function AccountStateProvider({children, initialState, b2b, loggedIn}) {
   const {revalidate} = useRevalidator();
   const [stateId, setStateId] = useState(() => {
+    // Sin switcher no hay estado simulado que recordar, y sobre todo no se
+    // mira la cookie: una `demoAccountState` vieja seguía diciendo "cliente
+    // aprobado" en un portal donde el permiso lo da la company.
+    if (!DEMO_ROLE_SWITCHER) return ACCOUNT_STATES.GUEST;
+
     // `initialState` viene del loader (cookie leída en el server). Solo se cae
     // a leer la cookie en el cliente si no llegó: si el primer render del
     // cliente no coincide con el del server, React tira hydration mismatch.
@@ -91,29 +145,19 @@ export function AccountStateProvider({children, initialState, b2b}) {
   });
 
   const value = useMemo(() => {
-    const config =
-      ACCOUNT_STATE_CONFIG[stateId] ??
-      ACCOUNT_STATE_CONFIG[ACCOUNT_STATES.GUEST];
+    const real = resolveRealState(b2b, loggedIn);
 
-    // Si hay company real, manda sobre el estado simulado: el switcher de demo
-    // solo gobierna mientras no exista B2B en la tienda.
-    const real = b2b
-      ? {
-          id: ACCOUNT_STATES.APPROVED,
-          label: ACCOUNT_STATE_CONFIG[ACCOUNT_STATES.APPROVED].label,
-          canSeePrices: true,
-          canOrder: true,
-          company: b2b.companyName,
-          companyId: b2b.companyId,
-          locations: b2b.locations,
-          activeLocationId: b2b.activeLocationId,
-          isReal: true,
-        }
-      : null;
+    // El switcher es una herramienta de demo: gobierna solo mientras esté
+    // encendido Y no haya company real. Con `DEMO_ROLE_SWITCHER` en false, el
+    // estado sale enteramente de los datos.
+    const config =
+      DEMO_ROLE_SWITCHER && !b2b?.companyId
+        ? ACCOUNT_STATE_CONFIG[stateId] ??
+          ACCOUNT_STATE_CONFIG[ACCOUNT_STATES.GUEST]
+        : real;
 
     return {
       ...config,
-      ...(real ?? {}),
       /** Cambia el estado simulado. Solo lo usa el switcher de demo. */
       setAccountState: (nextId) => {
         if (!ACCOUNT_STATE_CONFIG[nextId]) return;
@@ -126,7 +170,7 @@ export function AccountStateProvider({children, initialState, b2b}) {
         revalidate();
       },
     };
-  }, [stateId, b2b, revalidate]);
+  }, [stateId, b2b, loggedIn, revalidate]);
 
   return (
     <AccountStateContext.Provider value={value}>

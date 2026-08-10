@@ -1,6 +1,7 @@
 import {json} from '@shopify/remix-oxygen';
 import {VARIANTS_BY_ID_QUERY} from '~/graphql/products/variantsQuery.js';
 import {toQuoteLine} from '~/lib/quote.js';
+import {getBuyerVariables} from '~/lib/b2b.server.js';
 
 /** Tope de IDs por request: una lista de reposición no es un catálogo. */
 const MAX_IDS = 100;
@@ -49,7 +50,7 @@ export async function action({request, context}) {
   const ids = [...quantityById.keys()].filter(Boolean);
 
   const {nodes} = await context.storefront.query(VARIANTS_BY_ID_QUERY, {
-    variables: {ids},
+    variables: {ids, ...getBuyerVariables(context)},
   });
 
   // `nodes(ids:)` devuelve null en la posición de cada ID que ya no existe.

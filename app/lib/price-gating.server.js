@@ -15,6 +15,7 @@
  */
 
 import {EMPTY_DISCOUNT_CONTEXT} from '~/lib/discounts.js';
+import {DEMO_ROLE_SWITCHER, REQUIRE_B2B_COMPANY} from '~/lib/const.js';
 
 const DEMO_STATE_COOKIE = 'demoAccountState';
 
@@ -41,11 +42,28 @@ const PRICE_KEYS = new Set([
  * La company real manda sobre el switcher, igual que en el cliente: el
  * switcher es una herramienta de demo y deja de gobernar apenas hay B2B.
  *
+ * Con `DEMO_ROLE_SWITCHER` apagado la cookie **no se mira**. Mientras se la
+ * miraba, cualquiera podía escribir `demoAccountState=approved` en su navegador
+ * y desbloquear la lista de precios entera: una cookie del cliente no es
+ * credencial de nada, y este archivo existe justamente porque un gate que
+ * confía en el cliente no es un gate.
+ *
  * @param {Request} request
- * @param {{companyId?: string}|null} b2b
+ * @param {{companyId?: string, buyer?: object|null}|null} b2b
  */
 export function canSeePricesOnServer(request, b2b) {
-  if (b2b?.companyId) return true;
+  // Con buyer context completo los precios que devuelve Shopify SON los de
+  // esta company location. Es la única situación en la que mostrar un importe
+  // es mostrar el importe correcto.
+  if (b2b?.buyer) return true;
+
+  // Portal cerrado con company obligatoria y sin buyer resoluble: hay company
+  // pero no se le puede pedir a Shopify el precio DE esa company, así que lo
+  // que volvería es el precio del mercado por defecto. Se prefiere no mostrar
+  // precio antes que mostrar uno ajeno — ver `resolveBuyer` en b2b.server.js.
+  if (b2b?.companyId && !REQUIRE_B2B_COMPANY) return true;
+
+  if (!DEMO_ROLE_SWITCHER) return false;
 
   const cookie = request.headers.get('Cookie') ?? '';
   const match = cookie.match(

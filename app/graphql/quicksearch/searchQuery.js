@@ -8,8 +8,9 @@ export const GET_FILTERS_QUERY = `#graphql
 query getFilters(
   $query: String!
   $country: CountryCode,
-  $language: LanguageCode,  
-) @inContext(language: $language, country: $country)
+  $language: LanguageCode,
+  $buyer: BuyerInput,
+) @inContext(language: $language, country: $country, buyer: $buyer)
 {
   search(first:1, query: $query) {
     productFilters {
@@ -44,9 +45,10 @@ query searchWithFilters(
     $identifiers: [HasMetafieldsIdentifier!]!,
     $startCursor: String,
     $country: CountryCode,
-    $language: LanguageCode,  
+    $language: LanguageCode,
+    $buyer: BuyerInput,
     $endCursor: String
-  ) @inContext(country: $country, language: $language){
+  ) @inContext(country: $country, language: $language, buyer: $buyer){
     search(
       query: $query,
       first: $first,

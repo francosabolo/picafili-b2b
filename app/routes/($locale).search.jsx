@@ -12,6 +12,7 @@ import {useTranslation} from '~/i18n/index.jsx';
 import {allProductMetafields} from '~/data/metafields.js';
 import {PARENT_PRODUCT_FILTER} from '~/lib/const.js';
 import {pageTitle} from '~/lib/utils.js';
+import {getBuyerVariables} from '~/lib/b2b.server.js';
 
 /**
  * Arma la query de búsqueda de Shopify.
@@ -56,6 +57,7 @@ export async function loader({request, context}) {
 
   const {errors, ...data} = await context.storefront.query(SEARCH_QUERY, {
     variables: {
+      ...getBuyerVariables(context),
       query: buildSearchQuery(searchTerm),
       metafieldIdentifiers: allProductMetafields,
       ...variables,
@@ -137,7 +139,8 @@ const SEARCH_QUERY = `#graphql
     $last: Int
     $query: String!
     $startCursor: String
-  ) @inContext(country: $country, language: $language) {
+    $buyer: BuyerInput
+  ) @inContext(country: $country, language: $language, buyer: $buyer) {
     products: search(
       query: $query,
       unavailableProducts: HIDE,

@@ -1,5 +1,6 @@
 import {json} from '@shopify/remix-oxygen';
 import {canSeePricesOnServer, gatePrices} from '~/lib/price-gating.server.js';
+import {getBuyerVariables} from '~/lib/b2b.server.js';
 import {Link, useLoaderData} from '@remix-run/react';
 import {Image} from '@shopify/hydrogen';
 import {PageWidthContainer} from '~/components/PageWidthContainer/PageWidthContainer.jsx';
@@ -8,7 +9,7 @@ import {PRODUCT_ITEM_FRAGMENT} from '~/data/fragments';
 import {useAccountState} from '~/context/AccountStateContext.jsx';
 import {useTranslation} from '~/i18n/index.jsx';
 import {HOME_CATEGORIES_COUNT, HOME_PRODUCTS_COUNT} from '~/lib/const.js';
-import {pageTitle} from '~/lib/utils.js';
+import {seoMeta, storeJsonLd} from '~/lib/seo.js';
 import styles from '~/styles/pages/Home.module.scss';
 import {allProductMetafields} from '~/data/metafields.js';
 
@@ -22,8 +23,18 @@ import {allProductMetafields} from '~/data/metafields.js';
  *
  * @type {MetaFunction}
  */
-export const meta = ({matches}) => {
-  return [{title: pageTitle(matches, 'page-title.b2b')}];
+export const meta = ({matches, location}) => {
+  const shop = matches?.[0]?.data?.header?.shop;
+  const origin = matches?.[0]?.data?.origin;
+
+  return seoMeta({
+    matches,
+    location,
+    title: 'page-title.b2b',
+    // La entidad de la tienda se declara UNA vez, acá. Repetirla en cada ruta
+    // le da a un buscador N organizaciones distintas en vez de una.
+    jsonLd: storeJsonLd(shop, origin),
+  });
 };
 
 /**
@@ -40,10 +51,16 @@ export async function loader({request, context}) {
       variables: {first: HOME_CATEGORIES_COUNT},
     }),
     storefront.query(HOME_PRODUCTS_QUERY, {
-      cache: storefront.CacheShort(),
+      // Sin caché desde que la query lleva buyer: los precios que devuelve son
+      // los del catálogo de ESTA company location. Una entrada compartida de
+      // caché acá es la lista de precios de un cliente servida a otro.
+      // El listado de categorías de arriba sí se sigue cacheando: no lleva
+      // precios y es igual para todos.
+      cache: storefront.CacheNone(),
       variables: {
         first: HOME_PRODUCTS_COUNT,
         metafieldIdentifiers: allProductMetafields,
+        ...getBuyerVariables(context),
       },
     }),
   ]);
@@ -196,8 +213,8 @@ const HOME_COLLECTIONS_QUERY = `#graphql
 
 const HOME_PRODUCTS_QUERY = `#graphql
   ${PRODUCT_ITEM_FRAGMENT}
-  query HomeProducts($first: Int!, $metafieldIdentifiers: [HasMetafieldsIdentifier!]!, $country: CountryCode, $language: LanguageCode)
-  @inContext(country: $country, language: $language) {
+  query HomeProducts($first: Int!, $metafieldIdentifiers: [HasMetafieldsIdentifier!]!, $country: CountryCode, $language: LanguageCode, $buyer: BuyerInput)
+  @inContext(country: $country, language: $language, buyer: $buyer) {
     products(first: $first, sortKey: BEST_SELLING) {
       nodes {
         ...ProductItem

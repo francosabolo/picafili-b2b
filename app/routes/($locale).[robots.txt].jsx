@@ -1,10 +1,28 @@
 import {parseGid} from '@shopify/hydrogen';
+import {REQUIRE_LOGIN} from '~/lib/const.js';
 
 /**
  * @param {LoaderFunctionArgs}
  */
 export async function loader({request, context}) {
   const url = new URL(request.url);
+
+  // Portal cerrado: no hay nada público que rastrear. Todo lo que un buscador
+  // pida termina en un redirect al login, así que el robots.txt largo de una
+  // tienda abierta —con su sitemap y sus reglas por sección— describiría un
+  // sitio que no existe. Se dice lo único cierto: no entres.
+  //
+  // Ojo con el orden: esto tiene que ir ANTES de la query, o la ruta hace una
+  // subrequest a Shopify para armar un texto que no se usa.
+  if (REQUIRE_LOGIN) {
+    return new Response(['User-agent: *', 'Disallow: /'].join('\n'), {
+      status: 200,
+      headers: {
+        'Content-Type': 'text/plain',
+        'Cache-Control': `max-age=${60 * 60 * 24}`,
+      },
+    });
+  }
 
   const {shop} = await context.storefront.query(ROBOTS_QUERY);
 

@@ -16,6 +16,7 @@ import {
 } from '~/graphql/products/productsQuery.js';
 import {ProductForm} from '~/components/ProductForm/ProductForm.jsx';
 import {pageTitle} from '~/lib/utils.js';
+import {getBuyerVariables} from '~/lib/b2b.server.js';
 const FILTER_URL_PREFIX = 'filter.';
 const QUERY_URL_PREFIX = 'query';
 
@@ -52,6 +53,7 @@ export async function loader({params, request, context}) {
   // await the query for the critical product data
   const {shop, product} = await storefront.query(PRODUCT_QUERY, {
     variables: {
+      ...getBuyerVariables(context),
       handle,
       selectedOptions,
     },
@@ -84,7 +86,7 @@ export async function loader({params, request, context}) {
   // where variant options might show as available when they're not, but after
   // this deffered query resolves, the UI will update.
   const variants = storefront.query(VARIANTS_QUERY, {
-    variables: {handle},
+    variables: {handle, ...getBuyerVariables(context)},
   });
 
   const searchParams = new URL(request.url).searchParams;
@@ -115,6 +117,7 @@ export async function loader({params, request, context}) {
 
   const filters = await context?.storefront?.query(GET_FILTERS_QUERY, {
     variables: {
+      ...getBuyerVariables(context),
       query: SkuQuery[0] ? SkuQuery[0].query : '',
     },
   });
@@ -196,6 +199,7 @@ export async function loader({params, request, context}) {
 
   const {search} = await context.storefront.query(SEARCH_QUERY, {
     variables: {
+      ...getBuyerVariables(context),
       query: SkuQuery[0] ? SkuQuery[0].query : '',
       first: 10,
       productFilter: appliedFiltersList,

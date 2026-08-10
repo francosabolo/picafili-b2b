@@ -35,6 +35,52 @@
   storefront), las limitaciones funcionales de Liquid, y la pregunta que decide la plataforma. Este
   archivo es el manual operativo; ese es el documento de decisión.
 
+## Portal cerrado — solo mercado B2B
+
+Este storefront **no tiene navegación anónima ni compra directa**. Tres interruptores en
+`app/lib/const.js` lo definen, y un solo archivo los aplica:
+
+| Constante             | En true                                                                       |
+| --------------------- | ----------------------------------------------------------------------------- |
+| `REQUIRE_LOGIN`       | todo redirige a `/ingresar` salvo el flujo de login                           |
+| `REQUIRE_B2B_COMPANY` | sin company de Shopify → `/cuenta-en-revision`, sin catálogo ni precios       |
+| `ENABLE_CART` (false) | se van el drawer, `/cart`, `/cart/$lines` y `/api/cart/*` — solo draft orders |
+
+**El gate vive en `app/lib/access.server.js` y corre en `server.js`, antes que Remix.** Está ahí y
+no en los loaders para que **una ruta nueva nazca cerrada**: olvidarse de una guarda no abre un
+agujero, porque no hay guarda que copiar. Abrir algo es escribirlo en `PUBLIC_PATHS` a mano.
+Para documentos devuelve un redirect con `return_to`; para `/api/*`, un 401 — un redirect a HTML le
+llega al `fetch()` del navegador como un 200 con un cuerpo que no puede parsear.
+
+**El buyer context es lo que hace que el mercado sea el B2B.** `getB2BContext` resuelve la company
+y guarda la location con `setBuyer`; `getBuyerVariables(context)` se spreadea en las `variables` de
+**toda query de catálogo**, que declara `$buyer: BuyerInput` y lo pasa por
+`@inContext(country:, language:, buyer:)`. Sin eso Shopify contesta con los precios del mercado por
+defecto **sin avisar** — datos válidos, de otro comprador.
+
+⚠️ El codegen **no cubre** los documentos de `app/graphql/**` (el `.graphqlrc.js` los excluye del
+proyecto de Storefront), así que ahí no hay red de seguridad de tipos: una operación que use `buyer`
+sin declararlo falla recién en runtime, en la página. Las de las rutas sí se tipan.
+
+Tres cosas que no son obvias y cuestan caro:
+
+- **`unstableB2b: true` en `createHydrogenContext` no es opcional.** Es lo que hace que Hydrogen
+  emita el token de storefront del cliente, que es la mitad del `buyer`. Y lo emite **solo al
+  autorizar el login y al refrescar el token**, no en cada request: una sesión abierta desde antes
+  de encenderlo no lo tiene hasta que refresque. Por eso `resolveBuyer` devuelve `null` en vez de un
+  buyer a medias, y sin buyer completo **no se muestran precios**.
+- **Una query con `buyer` no se cachea.** El precio pasó a ser por company location: una entrada
+  compartida de caché es la lista de precios de un cliente servida a otro. La home cachea el listado
+  de categorías (sin precios) y NO los productos.
+- **`b2b` no viaja entero al cliente.** `publicB2B()` en `root.jsx` le saca el `buyer` antes de
+  mandarlo: lleva el `customerAccessToken`, y el payload de Remix se lee en el código fuente.
+
+Verificar esto necesita **companies cargadas en Shopify**, y `REQUIRE_B2B_COMPANY` con cero
+companies deja el sitio inaccesible para todos sin un solo error a la vista: responde 200 y manda a
+todo el mundo a "cuenta en revisión". `npm run doctor` chequea justo eso contra Admin API — y avisa
+fuerte cuando **no puede** comprobarlo, que es lo que pasa en local porque el
+`ADMIN_API_ACCESS_TOKEN` del `.env` es un placeholder.
+
 ## Superficies de datos
 
 - **Storefront API:** documentos GraphQL en `app/graphql/{cart,collections,products,footer,header,quicksearch}/`
@@ -156,6 +202,11 @@ De dónde sale cada cosa, para no volver a clavarla:
   rompe el build.
 - **El carrito y todo lo que dependa del cliente logueado nunca se cachea.** El `CacheLong()` de
   `root.jsx` es para header/footer/menús; queries de cart, cuenta y cotizaciones van sin caché.
+- **El gate de acceso es uno solo y corre en `server.js`.** No agregues guardas de sesión en loaders
+  sueltos: el default es cerrado y lo que se abre se escribe en `PUBLIC_PATHS`.
+- **Toda query que devuelva precios lleva `$buyer` y no se cachea.** Sin buyer, Shopify contesta con
+  el mercado por defecto en silencio; con caché compartida, con los precios de otra company.
+- **El `buyer` (y su `customerAccessToken`) no sale del servidor.** Al cliente va `publicB2B()`.
 - **Las cotizaciones se crean únicamente por Admin API (draft orders), nunca por Storefront API**, y
   siempre desde el servidor (`app/lib/admin-api-client.server.js` + rutas `api.*`). El
   `ADMIN_API_ACCESS_TOKEN` no puede tocar el bundle de cliente.

@@ -1,6 +1,7 @@
 import {json} from '@shopify/remix-oxygen';
 import {NO_PREDICTIVE_SEARCH_RESULTS} from '~/components/Search/Search.jsx';
 import {applyTrackingParams} from '~/lib/search';
+import {getBuyerVariables} from '~/lib/b2b.server.js';
 
 const DEFAULT_SEARCH_TYPES = [
   'ARTICLE',
@@ -55,6 +56,7 @@ async function fetchPredictiveSearchResults({params, request, context}) {
 
   const data = await context.storefront.query(PREDICTIVE_SEARCH_QUERY, {
     variables: {
+      ...getBuyerVariables(context),
       limit,
       limitScope: 'EACH',
       searchTerm,
@@ -259,7 +261,8 @@ const PREDICTIVE_SEARCH_QUERY = `#graphql
     $limitScope: PredictiveSearchLimitScope!
     $searchTerm: String!
     $types: [PredictiveSearchType!]
-  ) @inContext(country: $country, language: $language) {
+    $buyer: BuyerInput
+  ) @inContext(country: $country, language: $language, buyer: $buyer) {
     predictiveSearch(
       limit: $limit,
       limitScope: $limitScope,

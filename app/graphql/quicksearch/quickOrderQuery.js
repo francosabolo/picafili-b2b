@@ -12,7 +12,8 @@ export const QUICK_ORDER_SEARCH_QUERY = `#graphql
     $productFilters: [ProductFilter!]
     $country: CountryCode
     $language: LanguageCode
-  ) @inContext(country: $country, language: $language) {
+    $buyer: BuyerInput
+  ) @inContext(country: $country, language: $language, buyer: $buyer) {
     search(
       query: $query
       first: $first

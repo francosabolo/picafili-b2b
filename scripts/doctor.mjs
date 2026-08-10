@@ -105,6 +105,40 @@ async function query(vars, document, variables = {}) {
   return json.data;
 }
 
+/**
+ * Admin API. Existe aparte de `query()` porque las **companies** de B2B no se
+ * ven desde Storefront: ese schema solo expone la company del cliente que está
+ * logueado, y el doctor corre sin sesión de nadie.
+ */
+async function adminQuery(vars, document) {
+  const token = vars.ADMIN_API_ACCESS_TOKEN;
+
+  if (!token) throw new Error('falta ADMIN_API_ACCESS_TOKEN en el .env');
+
+  const res = await fetch(
+    `https://${vars.PUBLIC_STORE_DOMAIN}/admin/api/2025-01/graphql.json`,
+    {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'X-Shopify-Access-Token': token,
+      },
+      body: JSON.stringify({query: document}),
+    },
+  );
+
+  const json = await res.json();
+
+  // La Admin API contesta 200 con `errors` como string cuando el token no
+  // sirve, y como array cuando el problema es la query.
+  if (typeof json.errors === 'string') throw new Error(json.errors);
+  if (json.errors?.length) {
+    throw new Error(json.errors.map((e) => e.message).join('; '));
+  }
+
+  return json.data;
+}
+
 /* ── Reporte ───────────────────────────────────────────────────────────── */
 
 const results = [];
@@ -327,6 +361,40 @@ async function main() {
       ok(
         'Catálogos B2B',
         `${breaks} variantes con quiebres, ${rules} con reglas`,
+      );
+    }
+  }
+
+  // ── Portal cerrado: ¿hay alguien que pueda entrar? ────────────────────
+  //
+  // Este chequeo es el más importante del script, porque el modo de falla que
+  // cubre no se parece a un error: con `REQUIRE_B2B_COMPANY` encendido y cero
+  // companies cargadas, el sitio compila, deploya, responde 200 y **manda a
+  // todo el mundo a "cuenta en revisión"**, incluida la demo. No hay pantalla
+  // de error que mirar ni log que leer: parece que el portal está en orden y
+  // que nadie tiene permiso.
+  if (constValue('REQUIRE_B2B_COMPANY') === 'true') {
+    const companies = await adminQuery(
+      vars,
+      `{ companies(first: 5) { nodes { id name } } }`,
+    ).catch((error) => ({error}));
+
+    if (companies.error) {
+      warn(
+        'Companies B2B',
+        `no se pudo verificar: ${companies.error.message}`,
+        'REQUIRE_B2B_COMPANY está en true y esto NO quedó comprobado — sin companies, nadie entra al portal',
+      );
+    } else if (!companies.companies?.nodes?.length) {
+      bad(
+        'Companies B2B',
+        'REQUIRE_B2B_COMPANY está en true y la tienda no tiene ninguna company',
+        'nadie puede pasar del login: cargá companies en Shopify o poné REQUIRE_B2B_COMPANY en false',
+      );
+    } else {
+      ok(
+        'Companies B2B',
+        `${companies.companies.nodes.length} company(s) — el portal tiene a quién dejar entrar`,
       );
     }
   }

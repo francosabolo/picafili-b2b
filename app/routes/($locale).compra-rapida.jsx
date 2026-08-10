@@ -11,6 +11,7 @@ import AvailabilityStatus from '~/components/AvailabilityStatus/AvailabilityStat
 import {QuoteItemActions} from '~/components/QuoteQuickSearchItemActions/QuoteQuickSearchItemActions.jsx';
 import styles from '~/styles/pages/QuickOrder.module.scss';
 import {useAccountState} from '~/context/AccountStateContext.jsx';
+import {getBuyerVariables} from '~/lib/b2b.server.js';
 
 const RESULTS_LIMIT = 24;
 
@@ -50,6 +51,7 @@ export async function loader({request, context}) {
 
   const {search} = await context.storefront.query(QUICK_ORDER_SEARCH_QUERY, {
     variables: {
+      ...getBuyerVariables(context),
       query,
       first: RESULTS_LIMIT,
       productFilters: productFilters.length ? productFilters : undefined,
