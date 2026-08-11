@@ -41,7 +41,27 @@ asignación **directa de catálogo a company location** y los catálogos ilimita
 
 ## 2. Credenciales
 
-Las variables están listadas en `AGENTS.md` → Operación. Lo que ese listado no dice y acá importa:
+Las variables están listadas en `AGENTS.md` → Operación, pero **no todas salen del mismo lado**, y
+esa es la parte que sorprende:
+
+| API                                                | De dónde sale                 | Cómo se obtiene                                            |
+| -------------------------------------------------- | ----------------------------- | ---------------------------------------------------------- |
+| **Storefront** — catálogo, precios, carrito        | Canal Hydrogen                | `shopify hydrogen env pull`                                |
+| **Customer Account** — login, cuenta, cotizaciones | Canal Hydrogen                | idem                                                       |
+| **Admin** — draft orders, metafields, companies    | **Custom app, creado a mano** | Configuración → Apps y canales de venta → Desarrollar apps |
+| `SESSION_SECRET`                                   | Nuestro                       | Cualquier string aleatoria larga                           |
+
+**El único que hay que fabricar es el de Admin**, y hay que fabricarlo **una vez por tienda**: un
+token de Admin API pertenece a una tienda y no se comparte entre ellas. No viene con `env pull` y no
+se hereda del proyecto anterior.
+
+Existe porque **la Storefront API no puede escribir en la tienda**: no crea draft orders, no escribe
+metafields de cliente y no crea companies. Todo el flujo de cotización del portal depende de él.
+
+Al crear el custom app, marcá de una todos los scopes que el portal usa —agregarlos después obliga a
+reinstalar la app— y **guardá el token apenas se muestre: aparece una sola vez**.
+
+Lo que ese listado tampoco dice y acá importa:
 
 - **`ADMIN_API_ACCESS_TOKEN` necesita `write_customers` y `write_companies`.** Sin el primero, la
   solicitud de acceso devuelve 502 y el formulario dice que falló; sin el segundo no se pueden
