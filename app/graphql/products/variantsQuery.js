@@ -14,8 +14,8 @@
  * ACCESS_DENIED para toda la query.
  */
 export const VARIANTS_BY_ID_QUERY = `#graphql
-  query VariantsById($ids: [ID!]!, $country: CountryCode, $language: LanguageCode)
-  @inContext(country: $country, language: $language) {
+  query VariantsById($ids: [ID!]!, $country: CountryCode, $language: LanguageCode, $buyer: BuyerInput)
+  @inContext(country: $country, language: $language, buyer: $buyer) {
     nodes(ids: $ids) {
       ... on ProductVariant {
         id
@@ -67,8 +67,8 @@ export const VARIANTS_BY_ID_QUERY = `#graphql
  * una tienda real no entra en una página: el endpoint recorre los cursores.
  */
 export const PRICE_LIST_QUERY = `#graphql
-  query PriceList($first: Int!, $cursor: String, $country: CountryCode, $language: LanguageCode)
-  @inContext(country: $country, language: $language) {
+  query PriceList($first: Int!, $cursor: String, $country: CountryCode, $language: LanguageCode, $buyer: BuyerInput)
+  @inContext(country: $country, language: $language, buyer: $buyer) {
     products(first: $first, after: $cursor) {
       nodes {
         title

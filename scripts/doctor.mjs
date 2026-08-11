@@ -58,6 +58,26 @@ function declaredMetafields() {
 }
 
 /**
+ * Las keys de metafield de cliente que escribe la solicitud mayorista.
+ *
+ * Se leen del texto de `app/data/b2b-request.js` por lo mismo que el resto: ese
+ * módulo usa el alias `~` y `import` no lo resuelve desde Node.
+ */
+function declaredB2BRequestKeys() {
+  const src = readSource('app/data/b2b-request.js');
+  const keys = [];
+
+  const fields = /key:\s*'([^']+)'/g;
+  let m;
+  while ((m = fields.exec(src))) keys.push(m[1]);
+
+  const requestedAt = /B2B_REQUESTED_AT_KEY = '([^']+)'/.exec(src);
+  if (requestedAt) keys.push(requestedAt[1]);
+
+  return [...new Set(keys)];
+}
+
+/**
  * Valor literal de una constante de `const.js`, como texto.
  *
  * El `^` con flag `m` no es decorativo: `const.js` documenta varias constantes
@@ -102,6 +122,40 @@ async function query(vars, document, variables = {}) {
   if (json.errors?.length) {
     throw new Error(json.errors.map((e) => e.message).join('; '));
   }
+  return json.data;
+}
+
+/**
+ * Admin API. Existe aparte de `query()` porque las **companies** de B2B no se
+ * ven desde Storefront: ese schema solo expone la company del cliente que está
+ * logueado, y el doctor corre sin sesión de nadie.
+ */
+async function adminQuery(vars, document) {
+  const token = vars.ADMIN_API_ACCESS_TOKEN;
+
+  if (!token) throw new Error('falta ADMIN_API_ACCESS_TOKEN en el .env');
+
+  const res = await fetch(
+    `https://${vars.PUBLIC_STORE_DOMAIN}/admin/api/2025-01/graphql.json`,
+    {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'X-Shopify-Access-Token': token,
+      },
+      body: JSON.stringify({query: document}),
+    },
+  );
+
+  const json = await res.json();
+
+  // La Admin API contesta 200 con `errors` como string cuando el token no
+  // sirve, y como array cuando el problema es la query.
+  if (typeof json.errors === 'string') throw new Error(json.errors);
+  if (json.errors?.length) {
+    throw new Error(json.errors.map((e) => e.message).join('; '));
+  }
+
   return json.data;
 }
 
@@ -328,6 +382,153 @@ async function main() {
         'Catálogos B2B',
         `${breaks} variantes con quiebres, ${rules} con reglas`,
       );
+    }
+  }
+
+  // ── Portal cerrado: ¿hay alguien que pueda entrar? ────────────────────
+  //
+  // Este chequeo es el más importante del script, porque el modo de falla que
+  // cubre no se parece a un error: con `REQUIRE_B2B_COMPANY` encendido y cero
+  // companies cargadas, el sitio compila, deploya, responde 200 y **manda a
+  // todo el mundo a "cuenta en revisión"**, incluida la demo. No hay pantalla
+  // de error que mirar ni log que leer: parece que el portal está en orden y
+  // que nadie tiene permiso.
+  const requiresCompany = constValue('REQUIRE_B2B_COMPANY') === 'true';
+  const cartOff = constValue('ENABLE_CART') === 'false';
+
+  // Una sola consulta alimenta los dos chequeos: quién puede entrar y por dónde
+  // puede pagar. Las locations vienen en la misma ida porque es de ellas —y no
+  // de la company— de donde cuelgan tanto los precios como el checkout.
+  const companies =
+    requiresCompany || cartOff
+      ? await adminQuery(
+          vars,
+          `{ companies(first: 50) { nodes {
+               id name
+               locations(first: 20) { nodes {
+                 id name
+                 buyerExperienceConfiguration { checkoutToDraft }
+               } }
+             } } }`,
+        ).catch((error) => ({error}))
+      : null;
+
+  const companyNodes = companies?.companies?.nodes ?? [];
+
+  if (requiresCompany) {
+    if (companies.error) {
+      warn(
+        'Companies B2B',
+        `no se pudo verificar: ${companies.error.message}`,
+        'REQUIRE_B2B_COMPANY está en true y esto NO quedó comprobado — sin companies, nadie entra al portal',
+      );
+    } else if (!companyNodes.length) {
+      bad(
+        'Companies B2B',
+        'REQUIRE_B2B_COMPANY está en true y la tienda no tiene ninguna company',
+        'nadie puede pasar del login: cargá companies en Shopify o poné REQUIRE_B2B_COMPANY en false',
+      );
+    } else {
+      ok(
+        'Companies B2B',
+        `${companyNodes.length} company(s) — el portal tiene a quién dejar entrar`,
+      );
+    }
+  }
+
+  // ── ¿El "solo draft orders" vale fuera de este repo? ──────────────────
+  //
+  // `ENABLE_CART = false` apaga el carrito **de este storefront**, y nada más.
+  // El mismo comprador puede entrar al theme de Liquid, ver los precios de su
+  // company y pagar ahí, salteándose la revisión comercial entera. Lo que sí lo
+  // cierra es `checkoutToDraft` en la company location: con eso el checkout
+  // termina en un draft order para revisión **venga de donde venga**.
+  //
+  // Es un desvío que no avisa. La location queda creada, el portal anda, el
+  // theme anda, y el día que alguien compre por el otro lado se entera quien
+  // factura. Por eso se reporta como problema y no como aviso: el código dice
+  // una cosa y la tienda hace otra.
+  if (cartOff && companies?.error) {
+    // Sin este aviso, un token sin permisos hacía que el chequeo se salteara
+    // en silencio — y "no salió nada" se lee igual que "está todo bien".
+    warn(
+      'Checkout a draft (checkoutToDraft)',
+      `no se pudo verificar: ${companies.error.message}`,
+      'ENABLE_CART está en false pero NO quedó comprobado que el theme no pueda cobrarle a un cliente B2B',
+    );
+  }
+
+  if (cartOff && companies && !companies.error && companyNodes.length) {
+    const open = [];
+
+    for (const company of companyNodes) {
+      for (const location of company.locations?.nodes ?? []) {
+        if (location?.buyerExperienceConfiguration?.checkoutToDraft !== true) {
+          open.push(`${company.name} / ${location?.name ?? location?.id}`);
+        }
+      }
+    }
+
+    if (open.length) {
+      bad(
+        'Checkout a draft (checkoutToDraft)',
+        `${
+          open.length
+        } location(s) pueden pagar directo salteando la revisión: ${open
+          .slice(0, 5)
+          .join(', ')}${open.length > 5 ? '…' : ''}`,
+        'Clientes → Empresas → [empresa] → Ubicaciones → [ubicación] → Envío de pedidos → "Enviar todos los pedidos como borradores para revisión"',
+      );
+    } else {
+      ok(
+        'Checkout a draft (checkoutToDraft)',
+        'todas las locations envían sus pedidos a revisión',
+      );
+    }
+  }
+
+  // ── Definiciones de la solicitud mayorista ───────────────────────────
+  //
+  // `metafieldsSet` guarda un metafield **sin definición** y devuelve éxito.
+  // El admin de Shopify, en cambio, solo muestra los que tienen definición. Sin
+  // ellas la solicitud se guarda perfecto y quien tiene que aprobarla abre la
+  // ficha del cliente y no ve nada — ningún error, ninguna pista.
+  const requestKeys = declaredB2BRequestKeys();
+
+  if (requestKeys.length) {
+    const defs = await adminQuery(
+      vars,
+      `{ metafieldDefinitions(first: 50, ownerType: CUSTOMER, namespace: "b2b") {
+           nodes { key }
+         } }`,
+    ).catch((error) => ({error}));
+
+    if (defs.error) {
+      warn(
+        'Solicitud mayorista (metafields)',
+        `no se pudo verificar: ${defs.error.message}`,
+        'sin definiciones en el admin, las solicitudes se guardan y NO se ven',
+      );
+    } else {
+      const present = new Set(
+        (defs.metafieldDefinitions?.nodes ?? []).map((n) => n.key),
+      );
+      const missing = requestKeys.filter((key) => !present.has(key));
+
+      if (missing.length) {
+        bad(
+          'Solicitud mayorista (metafields)',
+          `faltan ${missing.length} de ${
+            requestKeys.length
+          } definiciones: ${missing.join(', ')}`,
+          'creálas en Configuración → Datos personalizados → Clientes, namespace "b2b", tipo texto de una línea',
+        );
+      } else {
+        ok(
+          'Solicitud mayorista (metafields)',
+          `las ${requestKeys.length} definiciones están en el admin`,
+        );
+      }
     }
   }
 

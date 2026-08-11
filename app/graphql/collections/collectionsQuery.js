@@ -9,6 +9,7 @@ export const COLLECTION_QUERY = `#graphql
     $metafieldIdentifiers: [HasMetafieldsIdentifier!]!
     $country: CountryCode
     $language: LanguageCode
+    $buyer: BuyerInput
     $filters: [ProductFilter!]
     $first: Int
     $last: Int
@@ -16,7 +17,7 @@ export const COLLECTION_QUERY = `#graphql
     $startCursor: String
     $endCursor: String
     $sortKey: ProductCollectionSortKeys = TITLE
-  ) @inContext(country: $country, language: $language) {
+  ) @inContext(country: $country, language: $language, buyer: $buyer) {
     collection(handle: $handle) {
       id
       handle
@@ -112,11 +113,12 @@ export const CATALOG_QUERY = `#graphql
     $metafieldIdentifiers: [HasMetafieldsIdentifier!]!
     $country: CountryCode
     $language: LanguageCode
+    $buyer: BuyerInput
     $first: Int
     $last: Int
     $startCursor: String
     $endCursor: String
-  ) @inContext(country: $country, language: $language) {
+  ) @inContext(country: $country, language: $language, buyer: $buyer) {
     products(first: $first, last: $last, before: $startCursor, after: $endCursor, query: "") {
       nodes {
         ...ProductItem
@@ -147,12 +149,13 @@ export const CATALOG_FILTERED_QUERY = `#graphql
     $metafieldIdentifiers: [HasMetafieldsIdentifier!]!
     $country: CountryCode
     $language: LanguageCode
+    $buyer: BuyerInput
     $first: Int
     $last: Int
     $startCursor: String
     $endCursor: String
     $productFilters: [ProductFilter!]
-  ) @inContext(country: $country, language: $language) {
+  ) @inContext(country: $country, language: $language, buyer: $buyer) {
     search(
       query: "*"
       types: PRODUCT

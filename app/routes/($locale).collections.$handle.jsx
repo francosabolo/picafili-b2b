@@ -1,6 +1,6 @@
 import {json, redirect} from '@shopify/remix-oxygen';
 import {canSeePricesOnServer, gatePrices} from '~/lib/price-gating.server.js';
-import {pageTitle} from '~/lib/utils.js';
+import {seoMeta} from '~/lib/seo.js';
 import {useLoaderData, useNavigation, useSearchParams} from '@remix-run/react';
 import {getPaginationVariables, Pagination} from '@shopify/hydrogen';
 import {CollectionToolbar} from '~/components/CollectionToolbar/CollectionToolbar.jsx';
@@ -24,12 +24,26 @@ import {
 } from '~/components/Skeleton/Skeleton.jsx';
 import {useTranslation} from '~/i18n/index.jsx';
 import {ConsultTooltip} from '~/components/ConsultButton/ConsultButton';
+import {getBuyerVariables} from '~/lib/b2b.server.js';
 
 /**
  * @type {MetaFunction<typeof loader>}
  */
-export const meta = ({data, matches}) => {
-  return [{title: pageTitle(matches, data?.collection?.title ?? '')}];
+export const meta = ({data, matches, location}) => {
+  const collection = data?.collection;
+
+  return seoMeta({
+    matches,
+    location,
+    // `seo` es lo que el comercio escribió en el admin de Shopify para esta
+    // colección: si lo cargó, manda sobre el título y la descripción del
+    // catálogo. Es la diferencia entre respetar su trabajo y pisarlo.
+    title: collection?.title ?? '',
+    rawTitle: collection?.seo?.title || null,
+    description:
+      collection?.seo?.description || collection?.description || null,
+    image: collection?.image?.url ?? null,
+  });
 };
 
 export const handle = 'collection';
@@ -59,6 +73,7 @@ export async function loader({request, params, context}) {
 
   const {collection} = await context.storefront.query(COLLECTION_QUERY, {
     variables: {
+      ...getBuyerVariables(context),
       ...paginationVariables,
       handle,
       metafieldIdentifiers: allProductMetafields,

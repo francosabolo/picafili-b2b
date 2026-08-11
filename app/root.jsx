@@ -1,5 +1,6 @@
 import {useNonce, getShopAnalytics, Analytics, Script} from '@shopify/hydrogen';
 import {parseQuoteSummary} from '~/lib/quote-storage.js';
+import {DEMO_ROLE_SWITCHER, ENABLE_CART} from '~/lib/const.js';
 import {
   canSeePricesOnServer,
   gateDiscounts,
@@ -93,6 +94,10 @@ export async function loader(args) {
 async function loadCriticalData({context, request}) {
   const {storefront} = context;
   const i18n = context.storefront.i18n;
+  // Resuelto, no diferido: el estado de cuenta se pinta en el primer render y
+  // un `await` de una promesa acá abajo llegaría tarde. Es barato — lee la
+  // sesión, no la red: el refresh de token ya corrió al armar el contexto.
+  const loggedIn = await context.customerAccount.isLoggedIn();
   const [header] = await Promise.all([
     storefront.query(HEADER_QUERY, {
       cache: storefront.CacheLong(),
@@ -105,14 +110,26 @@ async function loadCriticalData({context, request}) {
   return {
     header,
     i18n,
-    adminApiClient: context.adminApiClient,
+    // Origen absoluto de esta request. Las funciones `meta` de Remix no ven la
+    // request, y el canonical, las alternas por idioma y las tarjetas sociales
+    // necesitan URLs absolutas. Sale de la request y no de una constante para
+    // que valga igual en local, en el preview de Oxygen y el día que la tienda
+    // ate un dominio propio.
+    origin: new URL(request.url).origin,
     // El estado de cuenta simulado se lee acá y no solo en el cliente: si el
     // provider lo tomaba de la cookie recién al hidratar, el server renderizaba
     // "invitado" y el cliente otra cosa → hydration mismatch.
-    demoAccountState: readCookie(request, 'demoAccountState'),
-    // Contexto B2B real. Es null mientras la tienda no tenga B2B habilitado o
-    // el visitante no sea contacto de una company: ahí manda el switcher de demo.
-    b2b: context.b2b,
+    //
+    // Con el switcher apagado ni se lee: una cookie vieja de una demo anterior
+    // seguía gobernando la UI y pintaba "Cuenta aprobada — Distribuidora El
+    // Sol" ARRIBA de la pantalla que dice que la cuenta está en revisión.
+    demoAccountState: DEMO_ROLE_SWITCHER
+      ? readCookie(request, 'demoAccountState')
+      : null,
+    loggedIn,
+    // Contexto B2B real, **sin el buyer**. Es null mientras la tienda no tenga
+    // B2B habilitado o el visitante no sea contacto de una company.
+    b2b: publicB2B(context.b2b),
     // Pasa por el MISMO gate que los precios: ver gateDiscounts().
     discountContext: gateDiscounts(
       context.discountContext,
@@ -124,6 +141,26 @@ async function loadCriticalData({context, request}) {
     // único que el servidor necesita para pintar la barra sin que parpadee.
     quoteSummary: parseQuoteSummary(readCookie(request, 'quoteSummary')),
   };
+}
+
+/**
+ * La parte del contexto B2B que puede viajar al navegador.
+ *
+ * ⚠️ **`buyer` no sale del servidor.** Lleva el `customerAccessToken` de
+ * storefront del cliente, que es una credencial: mandarlo en el payload de
+ * Remix lo deja escrito en el HTML de cada página, a la vista de cualquiera
+ * que abra el código fuente. El navegador no lo necesita para nada — quien
+ * scopea las queries es el loader—, así que la UI solo se entera de si el
+ * contexto está armado o no.
+ *
+ * @param {{companyId: string, companyName: string, locations: Array, activeLocationId: string|null, buyer: object|null}|null} b2b
+ */
+function publicB2B(b2b) {
+  if (!b2b) return null;
+
+  const {buyer, ...rest} = b2b;
+
+  return {...rest, hasBuyerContext: Boolean(buyer)};
 }
 
 /**
@@ -160,7 +197,12 @@ function loadDeferredData({context}) {
     });
 
   return {
-    cart: cart.get(),
+    // Con el carrito apagado no se pide: era una subrequest a Storefront en
+    // CADA página para alimentar un drawer que no se renderiza, y de paso
+    // mandaba un `checkoutUrl` vivo en el payload de una tienda que no tiene
+    // checkout. Los únicos consumidores son el drawer y `/cart`, y los dos
+    // están detrás del mismo interruptor.
+    cart: ENABLE_CART ? cart.get() : null,
     isLoggedIn: customerAccount.isLoggedIn(),
     footer,
   };

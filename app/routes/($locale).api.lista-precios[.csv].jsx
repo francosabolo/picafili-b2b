@@ -1,5 +1,6 @@
 import {PRICE_LIST_QUERY} from '~/graphql/products/variantsQuery.js';
 import {canSeePricesOnServer} from '~/lib/price-gating.server.js';
+import {getBuyerVariables} from '~/lib/b2b.server.js';
 
 /** Productos por página al recorrer el catálogo. */
 const PAGE_SIZE = 250;
@@ -54,7 +55,7 @@ export async function loader({request, context}) {
 
   do {
     const {products} = await context.storefront.query(PRICE_LIST_QUERY, {
-      variables: {first: PAGE_SIZE, cursor},
+      variables: {first: PAGE_SIZE, cursor, ...getBuyerVariables(context)},
       // Sin caché: una lista de precios servida de caché puede ser la de otro
       // catálogo B2B cuando la tienda tenga catálogos por company.
       cache: context.storefront.CacheNone(),

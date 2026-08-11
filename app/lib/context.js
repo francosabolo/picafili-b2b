@@ -27,7 +27,7 @@ export async function createAppLoadContext(request, env, executionContext) {
     AppSession.init(request, [env.SESSION_SECRET]),
   ]);
 
-  const shopifyAdminApiClient = await adminApiClient(env);
+  const shopifyAdminApiClient = adminApiClient(env);
 
   const hydrogenContext = createHydrogenContext({
     env,
@@ -38,6 +38,15 @@ export async function createAppLoadContext(request, env, executionContext) {
     i18n: getLocaleFromRequest(request),
     cart: {
       queryFragment: CART_QUERY_FRAGMENT,
+    },
+    customerAccount: {
+      // Enciende el B2B de Hydrogen. Lo que agrega es lo que hace funcionar
+      // todo el portal: al autorizar el login emite un token de storefront
+      // para el cliente, y ese token es la mitad del `buyer` que scopea las
+      // queries al catálogo y a los precios de la company. Sin esto,
+      // `UNSTABLE_getBuyer()` devuelve una sesión sin token y las queries
+      // caen al mercado por defecto. Ver `app/lib/b2b.server.js`.
+      unstableB2b: true,
     },
   });
 

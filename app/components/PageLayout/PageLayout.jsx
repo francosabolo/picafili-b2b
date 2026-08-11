@@ -36,6 +36,7 @@ export function PageLayout({
   demoAccountState,
   quoteSummary,
   b2b,
+  loggedIn,
   discountContext,
 }) {
   const navigation = useNavigation();
@@ -51,7 +52,11 @@ export function PageLayout({
   return (
     <>
       {isLoading && <LoaderWrapper isLoading={isLoading} />}
-      <AccountStateProvider initialState={demoAccountState} b2b={b2b}>
+      <AccountStateProvider
+        initialState={demoAccountState}
+        b2b={b2b}
+        loggedIn={loggedIn}
+      >
         <ToastProvider>
           <CartLinesProvider>
             <DiscountContextProvider value={discountContext}>

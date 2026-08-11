@@ -1,0 +1,129 @@
+/* Formulario de solicitud de acceso mayorista.
+
+   Vive aparte de Login.module.scss aunque comparta el layout de dos columnas:
+   son ocho campos y sus estilos no tienen nada que hacer en la hoja de una
+   pantalla que solo tiene un botón. */
+
+/* La tarjeta del login son 26rem, que alcanzan para un botón y no para un
+   formulario: a ese ancho los campos cortos quedan uno abajo del otro y la
+   pantalla se vuelve una tira de ocho inputs. */
+.formCard {
+  width: 100%;
+  max-width: 34rem;
+}
+
+.fields {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: var(--space-4);
+  margin: 0 0 var(--space-6);
+  padding: 0;
+  border: 0;
+}
+
+/* Razón social, dirección y el nombre de contacto se llevan la fila entera:
+   son los que más texto reciben y partirlos al medio obliga a leer en zigzag. */
+.fieldWide {
+  grid-column: 1 / -1;
+}
+
+.field {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-1);
+  min-width: 0;
+}
+
+.label {
+  font-size: var(--text-xs);
+  font-weight: 800;
+  color: var(--brand-petrol);
+}
+
+.input {
+  width: 100%;
+  padding: var(--space-3) var(--space-4);
+  border: 1px solid var(--color-grey-alt);
+  border-radius: var(--radius-sm);
+  background-color: var(--surface-raised);
+  color: var(--brand-petrol);
+  /* 1rem y no menos: por debajo de 16px Safari en iPhone hace zoom al enfocar
+     un input y deja la pantalla corrida. */
+  font-size: var(--text-base);
+  font-family: inherit;
+
+  &:focus-visible {
+    outline: 2px solid var(--brand-teal);
+    outline-offset: 1px;
+  }
+}
+
+.inputInvalid {
+  border-color: var(--text-error);
+}
+
+/* El error va debajo de SU campo y no todo junto arriba: con ocho campos, una
+   lista de errores en la cabecera obliga a buscar cuál es cuál. */
+.fieldError {
+  font-size: var(--text-xs);
+  color: var(--text-error);
+}
+
+.submit {
+  display: block;
+  width: 100%;
+  padding: var(--space-4) var(--space-6);
+  border: 0;
+  border-radius: var(--radius-md);
+  background-color: var(--brand-teal);
+  color: var(--text-on-brand);
+  font-size: var(--text-base);
+  font-family: inherit;
+  font-weight: 800;
+  text-align: center;
+  cursor: pointer;
+  transition: opacity 0.2s ease;
+
+  &:hover,
+  &:focus-visible {
+    opacity: 0.9;
+  }
+
+  &:disabled {
+    opacity: 0.6;
+    cursor: progress;
+  }
+}
+
+/* Falla del envío entero, no de un campo: token sin permisos, Shopify caído.
+   Se dice, no se esconde — el formulario que "no hace nada" es peor. */
+.formError {
+  margin: 0 0 var(--space-4);
+  padding: var(--space-3) var(--space-4);
+  border-radius: var(--radius-sm);
+  background-color: var(--brand-cream-deep);
+  border-left: 3px solid var(--text-error);
+  font-size: var(--text-sm);
+  color: var(--brand-petrol);
+}
+
+.note {
+  margin: var(--space-4) 0 0;
+  font-size: var(--text-xs);
+  line-height: 1.5;
+  color: var(--brand-petrol);
+  opacity: 0.7;
+}
+
+@media screen and (max-width: $breakpoint-md) {
+  .formCard {
+    max-width: none;
+  }
+
+  /* A 390px dos columnas dejan cada campo en 163px: entra el rótulo y no el
+     contenido. Una sola columna y se scrollea, que para un formulario que se
+     completa una vez en la vida es el intercambio correcto. */
+  .fields {
+    grid-template-columns: 1fr;
+  }
+}

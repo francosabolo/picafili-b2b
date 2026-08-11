@@ -1,5 +1,11 @@
 import {defer} from '@shopify/remix-oxygen';
-import {pageTitle} from '~/lib/utils.js';
+import {canSeePricesOnServer} from '~/lib/price-gating.server.js';
+import {
+  breadcrumbJsonLd,
+  productJsonLd,
+  seoMeta,
+  stripLocaleSegment,
+} from '~/lib/seo.js';
 import {useLoaderData, useNavigation} from '@remix-run/react';
 import {getPaginationVariables} from '@shopify/hydrogen';
 import {QuickSearch} from '~/components/QuickSearch/QuickSearch.jsx';
@@ -22,13 +28,44 @@ import {useTranslation} from '~/i18n/index.jsx';
 // Estaba usado sin importar: la etiqueta del filtro de precio tiraba
 // ReferenceError apenas alguien aplicaba ese filtro.
 import {parseAsCurrency} from '~/lib/utils';
+import {getBuyerVariables} from '~/lib/b2b.server.js';
 
 const FILTER_URL_PREFIX = 'filter.';
 /**
  * @type {MetaFunction<typeof loader>}
  */
-export const meta = ({data, matches}) => {
-  return [{title: pageTitle(matches, data?.product?.title ?? '')}];
+export const meta = ({data, matches, location}) => {
+  const product = data?.product;
+  const root = matches?.[0]?.data;
+  const origin = root?.origin ?? '';
+  const shop = root?.header?.shop;
+  const url = `${origin}${stripLocaleSegment(location?.pathname ?? '/')}`;
+
+  return seoMeta({
+    matches,
+    location,
+    // Si el comercio cargó el SEO del producto en el admin, eso gana sobre el
+    // catálogo — y va como `rawTitle` porque ya es un título terminado.
+    title: product?.title ?? '',
+    rawTitle: product?.seo?.title || null,
+    description: product?.seo?.description || product?.description || null,
+    image: product?.featuredImage?.url ?? null,
+    type: 'product',
+    jsonLd: [
+      productJsonLd({
+        product,
+        url,
+        // El precio viaja al JSON-LD solo si este visitante ya podía verlo.
+        // Ver la nota en `productJsonLd`: es el mismo gate, no uno paralelo.
+        canSeePrices: Boolean(data?.canSeePrices),
+        brandName: shop?.name,
+      }),
+      breadcrumbJsonLd([
+        {name: shop?.name ?? '', url: origin},
+        {name: product?.title ?? '', url},
+      ]),
+    ],
+  });
 };
 
 export const handle = 'product-page';
@@ -52,6 +89,7 @@ export async function loader({params, request, context}) {
   // await the query for the critical product data
   const {product} = await storefront.query(PRODUCT_QUERY, {
     variables: {
+      ...getBuyerVariables(context),
       country: context.storefront.i18n.country,
       language: context.storefront.i18n.language,
       handle,
@@ -87,6 +125,7 @@ export async function loader({params, request, context}) {
 
   const filters = await context?.storefront?.query(GET_FILTERS_QUERY, {
     variables: {
+      ...getBuyerVariables(context),
       tag: 'child',
       query: searchQuery,
       country: context.storefront.i18n.country,
@@ -155,6 +194,7 @@ export async function loader({params, request, context}) {
   // AND NOT tag:parent will do the magic.
   const {search} = await context.storefront.query(SEARCH_QUERY, {
     variables: {
+      ...getBuyerVariables(context),
       ...paginationVariables,
       query: searchQuery,
       productFilter: appliedFiltersList,
@@ -191,6 +231,7 @@ export async function loader({params, request, context}) {
       variables: {
         handle,
         metafieldIdentifiers: allProductMetafields,
+        ...getBuyerVariables(context),
       },
     },
   );
@@ -202,6 +243,9 @@ export async function loader({params, request, context}) {
     productSku,
     appliedFilters,
     recommendedProducts,
+    // Solo para decidir si el JSON-LD lleva `offers`. NO cambia lo que la
+    // página muestra: el filtrado de precios de esta ruta sigue como estaba.
+    canSeePrices: canSeePricesOnServer(request, context.b2b),
   });
 }
 
