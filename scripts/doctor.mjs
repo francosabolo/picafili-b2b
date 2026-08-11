@@ -393,19 +393,36 @@ async function main() {
   // todo el mundo a "cuenta en revisión"**, incluida la demo. No hay pantalla
   // de error que mirar ni log que leer: parece que el portal está en orden y
   // que nadie tiene permiso.
-  if (constValue('REQUIRE_B2B_COMPANY') === 'true') {
-    const companies = await adminQuery(
-      vars,
-      `{ companies(first: 5) { nodes { id name } } }`,
-    ).catch((error) => ({error}));
+  const requiresCompany = constValue('REQUIRE_B2B_COMPANY') === 'true';
+  const cartOff = constValue('ENABLE_CART') === 'false';
 
+  // Una sola consulta alimenta los dos chequeos: quién puede entrar y por dónde
+  // puede pagar. Las locations vienen en la misma ida porque es de ellas —y no
+  // de la company— de donde cuelgan tanto los precios como el checkout.
+  const companies =
+    requiresCompany || cartOff
+      ? await adminQuery(
+          vars,
+          `{ companies(first: 50) { nodes {
+               id name
+               locations(first: 20) { nodes {
+                 id name
+                 buyerExperienceConfiguration { checkoutToDraft }
+               } }
+             } } }`,
+        ).catch((error) => ({error}))
+      : null;
+
+  const companyNodes = companies?.companies?.nodes ?? [];
+
+  if (requiresCompany) {
     if (companies.error) {
       warn(
         'Companies B2B',
         `no se pudo verificar: ${companies.error.message}`,
         'REQUIRE_B2B_COMPANY está en true y esto NO quedó comprobado — sin companies, nadie entra al portal',
       );
-    } else if (!companies.companies?.nodes?.length) {
+    } else if (!companyNodes.length) {
       bad(
         'Companies B2B',
         'REQUIRE_B2B_COMPANY está en true y la tienda no tiene ninguna company',
@@ -414,7 +431,58 @@ async function main() {
     } else {
       ok(
         'Companies B2B',
-        `${companies.companies.nodes.length} company(s) — el portal tiene a quién dejar entrar`,
+        `${companyNodes.length} company(s) — el portal tiene a quién dejar entrar`,
+      );
+    }
+  }
+
+  // ── ¿El "solo draft orders" vale fuera de este repo? ──────────────────
+  //
+  // `ENABLE_CART = false` apaga el carrito **de este storefront**, y nada más.
+  // El mismo comprador puede entrar al theme de Liquid, ver los precios de su
+  // company y pagar ahí, salteándose la revisión comercial entera. Lo que sí lo
+  // cierra es `checkoutToDraft` en la company location: con eso el checkout
+  // termina en un draft order para revisión **venga de donde venga**.
+  //
+  // Es un desvío que no avisa. La location queda creada, el portal anda, el
+  // theme anda, y el día que alguien compre por el otro lado se entera quien
+  // factura. Por eso se reporta como problema y no como aviso: el código dice
+  // una cosa y la tienda hace otra.
+  if (cartOff && companies?.error) {
+    // Sin este aviso, un token sin permisos hacía que el chequeo se salteara
+    // en silencio — y "no salió nada" se lee igual que "está todo bien".
+    warn(
+      'Checkout a draft (checkoutToDraft)',
+      `no se pudo verificar: ${companies.error.message}`,
+      'ENABLE_CART está en false pero NO quedó comprobado que el theme no pueda cobrarle a un cliente B2B',
+    );
+  }
+
+  if (cartOff && companies && !companies.error && companyNodes.length) {
+    const open = [];
+
+    for (const company of companyNodes) {
+      for (const location of company.locations?.nodes ?? []) {
+        if (location?.buyerExperienceConfiguration?.checkoutToDraft !== true) {
+          open.push(`${company.name} / ${location?.name ?? location?.id}`);
+        }
+      }
+    }
+
+    if (open.length) {
+      bad(
+        'Checkout a draft (checkoutToDraft)',
+        `${
+          open.length
+        } location(s) pueden pagar directo salteando la revisión: ${open
+          .slice(0, 5)
+          .join(', ')}${open.length > 5 ? '…' : ''}`,
+        'Clientes → Empresas → [empresa] → Ubicaciones → [ubicación] → Envío de pedidos → "Enviar todos los pedidos como borradores para revisión"',
+      );
+    } else {
+      ok(
+        'Checkout a draft (checkoutToDraft)',
+        'todas las locations envían sus pedidos a revisión',
       );
     }
   }
