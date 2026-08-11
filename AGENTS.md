@@ -35,6 +35,11 @@
   storefront), las limitaciones funcionales de Liquid, y la pregunta que decide la plataforma. Este
   archivo es el manual operativo; ese es el documento de decisión.
 
+- **Instalar en una tienda nueva:** `docs/puesta-en-marcha.md` — el runbook ordenado de qué tocar en
+  `const.js`, qué configurar del lado de Shopify y qué decisiones llevarle al PM. Cada paso dice
+  **cómo se ve si lo salteás**, que en este proyecto casi nunca es un error: es un `null`, cero
+  resultados, o el precio del mercado equivocado.
+
 ## Portal cerrado — solo mercado B2B
 
 Este storefront **no tiene navegación anónima ni compra directa**. Tres interruptores en
