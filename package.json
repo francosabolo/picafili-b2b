@@ -15,7 +15,8 @@
     "format:check": "prettier --check --ignore-unknown .",
     "prepare": "husky",
     "check:design": "node scripts/check-design-tokens.mjs",
-    "doctor": "node scripts/doctor.mjs"
+    "doctor": "node scripts/doctor.mjs",
+    "setup:b2b": "node scripts/setup-b2b.mjs"
   },
   "prettier": "@shopify/prettier-config",
   "dependencies": {

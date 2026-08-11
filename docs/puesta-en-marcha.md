@@ -104,8 +104,16 @@ Esto no se resuelve en el repo y es donde más cosas fallan calladas.
 
 ### 4.1 Definiciones de metafield para la solicitud de acceso
 
-**Configuración → Datos personalizados → Clientes.** Namespace `b2b`, tipo _texto de una línea_, una
-por cada key de `app/data/b2b-request.js` (hoy nueve).
+```
+npm run setup:b2b
+```
+
+Crea las nueve, con el rótulo que sale del diccionario en castellano para que quien aprueba lea lo
+mismo que ve el comprador. Es idempotente: chequea qué existe y solo agrega lo que falta, así que
+correrlo dos veces no rompe nada. Necesita `ADMIN_API_ACCESS_TOKEN` con scope `write_customers`.
+
+A mano es **Configuración → Datos personalizados → Clientes**, namespace `b2b`, tipo _texto de una
+línea_, una por cada key de `app/data/b2b-request.js`.
 
 > **Si lo salteás:** `metafieldsSet` guarda igual y devuelve éxito, pero **el admin no muestra
 > metafields sin definición**. La solicitud queda perfectamente guardada y quien tiene que aprobarla
