@@ -80,6 +80,23 @@ Tres cosas que no son obvias y cuestan caro:
 - **`b2b` no viaja entero al cliente.** `publicB2B()` en `root.jsx` le saca el `buyer` antes de
   mandarlo: lleva el `customerAccessToken`, y el payload de Remix se lee en el código fuente.
 
+### Estado de la tienda Picafili (verificado por Admin API, 2026-08-10)
+
+- **Plan: Basic.** B2B **sí** está disponible —dejó de ser exclusivo de Plus el 2026-04-02— pero con
+  límites que mandan sobre el diseño: hasta **3 catálogos activos**, asignados **vía B2B markets**, y
+  **no** se puede asignar un catálogo directo a una company location. Esto último decide que el
+  endpoint de aprobación no pueda fijar el precio por sí solo: la location tiene que entrar al market.
+- **Ya existe un `MarketCatalog` llamado "Precios B2B"** (`gid://shopify/MarketCatalog/105634529468`,
+  ACTIVE). El catálogo B2B no hay que crearlo.
+- **Sin definiciones de metafield de cliente.** La solicitud de acceso se guardaría y el admin no la
+  mostraría — ver `docs/puesta-en-marcha.md` §4.1.
+
+⚠️ **La sesión del Shopify CLI (`shopify store execute`) sirve para leer productos y nada más:** sus
+scopes son `read_products` y `write_products`. `companies` y `markets` contestan ACCESS_DENIED, y no
+alcanza para crear definiciones de metafield de cliente. Configurar B2B por CLI exige sumarle scopes
+al custom app (`write_customers`, `read_companies`/`write_companies`, `read_markets`) — o hacerlo en
+el admin.
+
 Verificar esto necesita **companies cargadas en Shopify**, y `REQUIRE_B2B_COMPANY` con cero
 companies deja el sitio inaccesible para todos sin un solo error a la vista: responde 200 y manda a
 todo el mundo a "cuenta en revisión". `npm run doctor` chequea justo eso contra Admin API — y avisa

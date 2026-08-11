@@ -204,6 +204,29 @@ No las tomes en silencio; llevalas al PM con opciones y consecuencias.
 
 ---
 
+## Apéndice: hacerlo por CLI en vez de a mano
+
+`shopify store execute -s <tienda>.myshopify.com -q '<query>'` corre Admin GraphQL contra la tienda
+y sirve para auditar y configurar sin pasar por el admin. Dos cosas antes de intentarlo:
+
+```
+shopify store info --store <tienda>.myshopify.com   # plan y datos de la tienda
+shopify store execute -s <tienda>.myshopify.com -j \
+  -q '{ currentAppInstallation { accessScopes { handle } } }'
+```
+
+**Mirá los scopes primero.** La sesión del CLI usa un app cuyos permisos suelen ser mínimos —en
+Picafili son `read_products` y `write_products` y nada más—, así que `companies`, `markets` y las
+definiciones de metafield de cliente quedan fuera de alcance. `companies` y `markets` contestan
+ACCESS_DENIED, que es honesto; pero **`metafieldDefinitions` de otro `ownerType` puede devolver una
+lista vacía en vez de un error**, y "no hay ninguna" se lee igual que "no tenés permiso". Confirmá
+con un control sobre `ownerType: PRODUCT` antes de concluir que falta algo.
+
+Para configurar de verdad hay que sumarle scopes al custom app (`write_customers`,
+`write_companies`, `read_markets`) en **Configuración → Apps y canales de venta → Desarrollar apps**.
+
+---
+
 ## Pendiente de verificar
 
 - Si en planes no-Plus la asignación de una company location a un B2B market se puede automatizar
