@@ -6,6 +6,8 @@ import {CartMain} from '~/components/Cart/Cart.jsx';
 import {useRootLoaderData} from '~/lib/root-data';
 import {pageTitle} from '~/lib/utils.js';
 import {useTranslation} from '~/i18n/index.jsx';
+import {PageWidthContainer} from '~/components/PageWidthContainer/PageWidthContainer';
+import styles from '~/styles/pages/CartPage.module.scss';
 
 /**
  * @type {MetaFunction}
@@ -123,19 +125,14 @@ export default function Cart() {
   const cartPromise = rootData.cart;
 
   return (
-    <div className="cart">
-      <h1>{t('cart.title')}</h1>
+    <PageWidthContainer className={styles.page}>
+      <h1 className={styles.title}>{t('cart.title')}</h1>
       <Suspense fallback={<p>{t('orders.loading')}</p>}>
-        <Await
-          resolve={cartPromise}
-          errorElement={<div>An error occurred</div>}
-        >
-          {(cart) => {
-            return <CartMain layout="page" cart={cart} />;
-          }}
+        <Await resolve={cartPromise} errorElement={<p>{t('error.lead')}</p>}>
+          {(cart) => <CartMain layout="page" cart={cart} />}
         </Await>
       </Suspense>
-    </div>
+    </PageWidthContainer>
   );
 }
 

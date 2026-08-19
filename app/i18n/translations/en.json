@@ -420,7 +420,13 @@
     "add-failed": "Could not be added",
     "add-failed-detail": "Shopify rejected the line: it may be out of stock or unavailable for your account.",
     "max-quantity": "Maximum quantity",
-    "max-quantity-detail": "Only {{quantity}} units are available."
+    "max-quantity-detail": "Only {{quantity}} units are available.",
+    "view-cart": "View cart",
+    "shipping": "Shipping",
+    "tax": "Taxes",
+    "total": "Total",
+    "calculated-at-checkout": "Calculated at checkout",
+    "summary-title": "Summary"
   },
   "quote-page": {
     "title": "Quote",

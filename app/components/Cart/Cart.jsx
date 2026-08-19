@@ -19,7 +19,9 @@ export function CartMain({layout, cart}) {
   // propio lo pisa. Con el estilo nuevo, el mensaje de carrito vacio se veia
   // al mismo tiempo que las lineas.
   return (
-    <div className={styles.cart}>
+    <div
+      className={`${styles.cart} ${layout === 'page' ? styles.pageLayout : ''}`}
+    >
       {linesCount ? (
         <CartDetails cart={cart} layout={layout} />
       ) : (
@@ -34,17 +36,38 @@ export function CartMain({layout, cart}) {
  */
 function CartDetails({layout, cart}) {
   const cartHasItems = !!cart && cart.totalQuantity > 0;
+  const isPage = layout === 'page';
 
   return (
     <>
       <CartLines lines={cart?.lines} layout={layout} />
       {cartHasItems && (
-        <CartSummary cost={cart.cost} layout={layout}>
-          <CartDiscounts discountCodes={cart.discountCodes} />
-          <CartCheckoutActions checkoutUrl={cart.checkoutUrl} />
+        <CartSummary cart={cart} layout={layout}>
+          {/* El drawer es para revisar y seguir comprando: su salida es la
+              pantalla de carrito, donde están los totales, el envío estimado y
+              el código de descuento. Mandarlo derecho al checkout de Shopify lo
+              saca del portal sin haber visto lo que va a pagar. */}
+          {isPage ? (
+            <>
+              <CartDiscounts discountCodes={cart.discountCodes} />
+              <CartCheckoutActions checkoutUrl={cart.checkoutUrl} />
+            </>
+          ) : (
+            <CartViewLink />
+          )}
         </CartSummary>
       )}
     </>
+  );
+}
+
+function CartViewLink() {
+  const {t} = useTranslation();
+
+  return (
+    <Link className={styles.checkout} to="/cart">
+      {t('cart.view-cart')} →
+    </Link>
   );
 }
 
@@ -142,24 +165,99 @@ function CartCheckoutActions({checkoutUrl}) {
  *   layout: CartMainProps['layout'];
  * }}
  */
-export function CartSummary({cost, layout, children = null}) {
+export function CartSummary({cart, cost, layout, children = null}) {
   const {t} = useTranslation();
+  const totals = cart?.cost ?? cost;
+  const isPage = layout === 'page';
+
+  // Descuentos del carrito entero (códigos y automáticos). Los de línea ya
+  // vienen restados del subtotal, así que sumarlos acá los contaría dos veces.
+  const discount = (cart?.discountAllocations ?? []).reduce(
+    (sum, allocation) =>
+      sum + Number(allocation?.discountedAmount?.amount ?? 0),
+    0,
+  );
+
+  // Envío estimado. Shopify solo lo calcula con dirección conocida — en B2B, la
+  // de la company location— y con tarifas cargadas para ese mercado. Cuando no
+  // se puede, se dice; un cero ahí sería una promesa.
+  const deliveryGroup = cart?.deliveryGroups?.nodes?.[0];
+  const shipping =
+    deliveryGroup?.selectedDeliveryOption?.estimatedCost ??
+    deliveryGroup?.deliveryOptions?.[0]?.estimatedCost ??
+    null;
+
   return (
     <div className={styles.summary}>
       <div className={styles.totalRow}>
         <span>{t('cart.subtotal')}</span>
         <span>
-          {cost?.subtotalAmount?.amount ? (
-            <Price data={cost.subtotalAmount} withoutTrailingZeros />
+          {totals?.subtotalAmount?.amount ? (
+            <Price data={totals.subtotalAmount} withoutTrailingZeros />
           ) : (
             '-'
           )}
         </span>
       </div>
+
+      {isPage && discount > 0 && (
+        <div className={`${styles.totalRow} ${styles.discountRow}`}>
+          <span>{t('cart.discounts')}</span>
+          <span>
+            −
+            <Price
+              data={{
+                amount: String(discount),
+                currencyCode: totals?.subtotalAmount?.currencyCode,
+              }}
+              withoutTrailingZeros
+            />
+          </span>
+        </div>
+      )}
+
+      {isPage && (
+        <div className={`${styles.totalRow} ${styles.muted}`}>
+          <span>{t('cart.shipping')}</span>
+          <span>
+            {shipping ? (
+              <Price data={shipping} withoutTrailingZeros />
+            ) : (
+              t('cart.calculated-at-checkout')
+            )}
+          </span>
+        </div>
+      )}
+
+      {isPage && (
+        <div className={`${styles.totalRow} ${styles.muted}`}>
+          <span>{t('cart.tax')}</span>
+          <span>
+            {totals?.totalTaxAmount?.amount ? (
+              <Price data={totals.totalTaxAmount} withoutTrailingZeros />
+            ) : (
+              t('cart.calculated-at-checkout')
+            )}
+          </span>
+        </div>
+      )}
+
+      {isPage && totals?.totalAmount?.amount && (
+        <div className={`${styles.totalRow} ${styles.grandTotal}`}>
+          <span>{t('cart.total')}</span>
+          <span>
+            <Price data={totals.totalAmount} withoutTrailingZeros />
+          </span>
+        </div>
+      )}
+
       {/* El pedido mínimo vivía en la barra del presupuesto, que ya no existe:
           quedó sin decirse en ningún lado. Va acá, pegado al subtotal, que es
           contra lo que se compara. Avisa, no bloquea. */}
-      <MinimumOrderNotice total={cost?.subtotalAmount ?? null} compact />
+      <MinimumOrderNotice
+        total={totals?.subtotalAmount ?? null}
+        compact={!isPage}
+      />
       {children}
     </div>
   );

@@ -274,6 +274,31 @@ export type CartApiQueryFragment = Pick<
   discountCodes: Array<
     Pick<StorefrontAPI.CartDiscountCode, 'code' | 'applicable'>
   >;
+  discountAllocations: Array<{
+    discountedAmount: Pick<StorefrontAPI.MoneyV2, 'currencyCode' | 'amount'>;
+  }>;
+  deliveryGroups: {
+    nodes: Array<
+      Pick<StorefrontAPI.CartDeliveryGroup, 'id'> & {
+        selectedDeliveryOption?: StorefrontAPI.Maybe<
+          Pick<StorefrontAPI.CartDeliveryOption, 'title'> & {
+            estimatedCost: Pick<
+              StorefrontAPI.MoneyV2,
+              'currencyCode' | 'amount'
+            >;
+          }
+        >;
+        deliveryOptions: Array<
+          Pick<StorefrontAPI.CartDeliveryOption, 'title'> & {
+            estimatedCost: Pick<
+              StorefrontAPI.MoneyV2,
+              'currencyCode' | 'amount'
+            >;
+          }
+        >;
+      }
+    >;
+  };
 };
 
 export type CartApiMutationFragment = Pick<

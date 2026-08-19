@@ -1,0 +1,18 @@
+/* Pantalla de carrito.
+ *
+ * Es donde el comprador decide, así que se lee en dos bloques: a la izquierda
+ * qué lleva —con precio unitario, cantidad y total de línea— y a la derecha lo
+ * que va a pagar. El resumen queda pegado al scroll: con veinte líneas, un
+ * total que hay que ir a buscar al final es un total que nadie mira.
+ *
+ * El drawer usa los mismos componentes en su versión angosta; acá el layout es
+ * de la página, no del componente. */
+
+.page {
+  padding-block: var(--space-8) var(--space-16);
+}
+
+.title {
+  font-size: var(--text-2xl);
+  margin-bottom: var(--space-8);
+}

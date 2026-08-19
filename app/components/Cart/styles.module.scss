@@ -10,6 +10,33 @@
   min-height: 0;
 }
 
+/* En la PÁGINA el carrito son dos bloques: qué llevo y qué voy a pagar. El
+   resumen acompaña el scroll — con veinte líneas, un total al que hay que
+   bajar es un total que nadie mira. En el drawer sigue siendo una columna. */
+.pageLayout {
+  display: grid;
+  gap: var(--space-8);
+  align-items: start;
+  grid-template-columns: 1fr;
+
+  @media screen and (min-width: $breakpoint-md) {
+    grid-template-columns: minmax(0, 1.6fr) minmax(20rem, 0.9fr);
+  }
+
+  .lines {
+    overflow: visible;
+  }
+
+  .summary {
+    position: sticky;
+    top: var(--space-6);
+    background: var(--surface-raised);
+    border: 1px solid var(--color-grey-alt);
+    border-radius: var(--radius-md);
+    padding: var(--space-6);
+  }
+}
+
 .lines {
   flex: 1 1 auto;
   min-height: 0;
@@ -278,4 +305,26 @@
   .spinner {
     animation: none;
   }
+}
+
+/* Resumen del carrito en la PÁGINA: el desglose completo antes de irse al
+   checkout de Shopify. En el drawer el mismo componente muestra solo el
+   subtotal — ahí se revisa, no se decide. */
+.discountRow {
+  color: var(--b2b-savings);
+  font-weight: 600;
+}
+
+.muted {
+  color: var(--brand-petrol);
+  opacity: 0.7;
+  font-size: var(--text-sm);
+}
+
+.grandTotal {
+  border-top: 2px solid var(--brand-petrol);
+  margin-top: var(--space-3);
+  padding-top: var(--space-3);
+  font-size: var(--text-lg);
+  font-weight: 700;
 }

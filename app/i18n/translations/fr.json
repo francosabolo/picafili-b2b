@@ -418,7 +418,13 @@
     "add-failed": "Ajout impossible",
     "add-failed-detail": "Shopify a refusé la ligne : rupture de stock ou indisponible pour votre compte.",
     "max-quantity": "Quantité maximale",
-    "max-quantity-detail": "Il ne reste que {{quantity}} unités."
+    "max-quantity-detail": "Il ne reste que {{quantity}} unités.",
+    "view-cart": "Voir le panier",
+    "shipping": "Livraison",
+    "tax": "Taxes",
+    "total": "Total",
+    "calculated-at-checkout": "Calculé au paiement",
+    "summary-title": "Résumé"
   },
   "quote-page": {
     "title": "Devis",

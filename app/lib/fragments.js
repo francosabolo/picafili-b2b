@@ -100,6 +100,34 @@ export const CART_QUERY_FRAGMENT = `#graphql
       code
       applicable
     }
+    # Descuentos aplicados al carrito entero (códigos, automáticos). Los de
+    # línea viajan en CartLine.
+    discountAllocations {
+      discountedAmount {
+        ...Money
+      }
+    }
+    # Envío estimado. Solo viene con dirección de comprador conocida — en B2B
+    # es la de la company location—, así que puede llegar vacío: la pantalla
+    # tiene que saber decir "se calcula en el checkout" en vez de mentir un
+    # número.
+    deliveryGroups(first: 1) {
+      nodes {
+        id
+        selectedDeliveryOption {
+          title
+          estimatedCost {
+            ...Money
+          }
+        }
+        deliveryOptions {
+          title
+          estimatedCost {
+            ...Money
+          }
+        }
+      }
+    }
   }
 `;
 

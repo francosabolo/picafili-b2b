@@ -419,7 +419,13 @@
     "add-failed": "No se pudo agregar",
     "add-failed-detail": "Shopify no aceptó la línea: puede estar sin stock o no disponible para tu cuenta.",
     "max-quantity": "Cantidad máxima",
-    "max-quantity-detail": "Solo quedan {{quantity}} unidades disponibles."
+    "max-quantity-detail": "Solo quedan {{quantity}} unidades disponibles.",
+    "view-cart": "Ver carrito",
+    "shipping": "Envío",
+    "tax": "Impuestos",
+    "total": "Total",
+    "calculated-at-checkout": "Se calcula en el checkout",
+    "summary-title": "Resumen"
   },
   "quote-page": {
     "title": "Presupuesto",
