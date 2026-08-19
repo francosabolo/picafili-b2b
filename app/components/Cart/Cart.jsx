@@ -64,8 +64,23 @@ function CartDetails({layout, cart}) {
 function CartViewLink() {
   const {t} = useTranslation();
 
+  /**
+   * Cierra el drawer antes de navegar.
+   *
+   * Los drawers se abren con `:target` (`#cart-aside`), y `:target` **no se
+   * recalcula con `pushState`**: el `<Link>` de Remix cambia la URL sin
+   * navegación de fragmento, así que el drawer quedaba abierto encima de la
+   * pantalla de carrito. Vaciar el hash sí es una navegación de fragmento y lo
+   * apaga.
+   */
+  const closeAside = () => {
+    if (typeof window !== 'undefined' && window.location.hash) {
+      window.location.hash = '';
+    }
+  };
+
   return (
-    <Link className={styles.checkout} to="/cart">
+    <Link className={styles.checkout} to="/cart" onClick={closeAside}>
       {t('cart.view-cart')} →
     </Link>
   );
@@ -264,6 +279,28 @@ export function CartSummary({cart, cost, layout, children = null}) {
 }
 
 /**
+ * El precio público de la línea, en la misma magnitud que el precio mostrado:
+ * por unidad cuando se muestra el unitario, y multiplicado por la cantidad
+ * cuando se muestra el total.
+ *
+ * @param {object} line
+ * @param {'regular'|'compareAt'} priceType
+ */
+function compareAtForQuantity(line, priceType) {
+  const unit = line?.cost?.compareAtAmountPerQuantity;
+  if (!unit?.amount) return null;
+
+  if (priceType !== 'regular') return unit;
+
+  const quantity = Number(line?.quantity ?? 1);
+
+  return {
+    amount: (Number(unit.amount) * (quantity || 1)).toFixed(2),
+    currencyCode: unit.currencyCode,
+  };
+}
+
+/**
  * @param {{lineIds: string[]}}
  */
 function CartLineRemoveButton({lineIds}) {
@@ -361,14 +398,18 @@ function CartLinePrice({line, priceType = 'regular', ...passthroughProps}) {
     return null;
   }
 
-  // El ahorro se calcula por UNIDAD y no sobre el total de la línea: el total
-  // ya está multiplicado por la cantidad y el porcentaje sale igual, pero
-  // comparar dos magnitudes distintas es la clase de cuenta que un día cambia
-  // de significado sin que nadie lo note.
+  // El ahorro se calcula por UNIDAD: el porcentaje sale igual y evita mezclar
+  // magnitudes.
   const savings = getSavingsPercent(
     line.cost.amountPerQuantity,
     line.cost.compareAtAmountPerQuantity,
   );
+
+  // El tachado tiene que estar en la MISMA magnitud que el precio que muestra
+  // la fila. Con 3 unidades se veía "ARS 42.750" tachando "ARS 19.000": el
+  // total de la línea contra el precio público de UNA unidad, o sea un ahorro
+  // que se leía al revés.
+  const compareAtTotal = compareAtForQuantity(line, priceType);
 
   return (
     <div className={styles.linePriceRow}>
@@ -376,13 +417,10 @@ function CartLinePrice({line, priceType = 'regular', ...passthroughProps}) {
       {/* Lo mismo que muestra la tarjeta: el precio de lista tachado y cuánto
           se ahorra. En el carrito faltaba, así que el mayorista perdía de
           vista su ventaja justo en la pantalla donde decide comprar. */}
-      {savings && (
+      {savings && compareAtTotal && (
         <>
           <s className={styles.lineCompareAt}>
-            <Price
-              withoutTrailingZeros
-              data={line.cost.compareAtAmountPerQuantity}
-            />
+            <Price withoutTrailingZeros data={compareAtTotal} />
           </s>
           <span className={styles.lineSavings}>−{savings}%</span>
         </>
