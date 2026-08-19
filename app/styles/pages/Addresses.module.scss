@@ -1,0 +1,92 @@
+/* Alta y edición de direcciones.
+ *
+ * El formulario anterior usaba **labels flotantes**: la etiqueta vivía encima
+ * del input y subía al enfocar. Se veía mal por una razón concreta y no
+ * estética — el input no tenía caja, así que en foco quedaban dos textos
+ * pisándose sobre una línea, y con el campo lleno la etiqueta desaparecía: al
+ * revisar una dirección cargada no había forma de saber cuál era el código
+ * postal y cuál el número de calle.
+ *
+ * Acá la etiqueta está siempre arriba, el campo tiene caja y el foco se ve. Es
+ * más aburrido y se completa sin pensar, que es lo que uno quiere de un
+ * formulario de dirección. */
+
+.grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(14rem, 1fr));
+  gap: var(--space-4);
+  margin-bottom: var(--space-6);
+}
+
+/* Dirección y empresa reciben más texto que el resto: van a fila completa para
+   que no haya que leer una calle cortada en dos renglones. */
+.wide {
+  grid-column: 1 / -1;
+}
+
+.field {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+  /* Reemplaza al `.field` global, que posicionaba la etiqueta en absoluto. */
+  position: static;
+  max-width: none;
+  margin-bottom: 0;
+}
+
+.label {
+  position: static;
+  font-size: var(--text-sm);
+  font-weight: 600;
+  color: var(--brand-petrol);
+  pointer-events: auto;
+}
+
+.input {
+  width: 100%;
+  padding: var(--space-3) var(--space-4);
+  border: 1px solid var(--color-grey-alt);
+  border-radius: var(--radius-md);
+  background: var(--surface-raised);
+  color: var(--brand-petrol);
+  font-size: var(--text-base);
+  font-family: inherit;
+
+  &::placeholder {
+    color: var(--brand-petrol);
+    opacity: 0.4;
+  }
+
+  &:focus {
+    outline: none;
+    border-color: var(--brand-magenta);
+    /* Anillo y no solo cambio de borde: en un formulario de diez campos, saber
+       dónde estás parado tiene que costar cero. */
+    box-shadow: 0 0 0 3px
+      color-mix(in srgb, var(--brand-magenta) 18%, transparent);
+  }
+
+  &:invalid:not(:placeholder-shown) {
+    border-color: var(--color-red);
+  }
+}
+
+.checkboxRow {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  margin-bottom: var(--space-6);
+
+  input {
+    width: 1.15rem;
+    height: 1.15rem;
+    accent-color: var(--brand-magenta);
+  }
+
+  label {
+    position: static;
+    color: var(--brand-petrol);
+    font-size: var(--text-sm);
+    pointer-events: auto;
+  }
+}

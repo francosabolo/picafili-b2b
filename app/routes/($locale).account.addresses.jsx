@@ -11,10 +11,10 @@ import {
   DELETE_ADDRESS_MUTATION,
   CREATE_ADDRESS_MUTATION,
 } from '~/graphql/customer-account/CustomerAddressMutations';
-import useLabelAnimation from '../hooks/useLabelAnimation.jsx';
 import {useEffect, useState} from 'react';
 import {IconSuccess, IconError, IconCaret} from '../components/Icon/Icon.jsx';
 import {useTranslation} from '~/i18n/index.jsx';
+import styles from '~/styles/pages/Addresses.module.scss';
 
 export const meta = ({matches}) => {
   return [{title: pageTitle(matches, 'page-title.addresses')}];
@@ -393,7 +393,6 @@ export function AddressForm({
   }, [action]);
 
   const isDefaultAddress = defaultAddress?.id === addressId;
-  const {handleFocus, handleBlur} = useLabelAnimation();
 
   return (
     <>
@@ -414,10 +413,13 @@ export function AddressForm({
         <Form id={addressId}>
           <fieldset>
             <input type="hidden" name="addressId" defaultValue={addressId} />
-            <div className="fieldsContainer">
-              <div className={`field ${address.firstName ? 'active' : ''}`}>
-                <label htmlFor="firstName">{t('account.first-name')}*</label>
+            <div className={styles.grid}>
+              <div className={styles.field}>
+                <label className={styles.label} htmlFor="firstName">
+                  {t('account.first-name')}*
+                </label>
                 <input
+                  className={styles.input}
                   aria-label={t('account.first-name')}
                   autoComplete="given-name"
                   defaultValue={address?.firstName ?? ''}
@@ -426,13 +428,14 @@ export function AddressForm({
                   placeholder={t('account.first-name')}
                   required
                   type="text"
-                  onFocus={handleFocus}
-                  onBlur={handleBlur}
                 />
               </div>
-              <div className={`field ${address.lastName ? 'active' : ''}`}>
-                <label htmlFor="lastName">{t('account.last-name')}*</label>
+              <div className={styles.field}>
+                <label className={styles.label} htmlFor="lastName">
+                  {t('account.last-name')}*
+                </label>
                 <input
+                  className={styles.input}
                   aria-label={t('account.last-name')}
                   autoComplete="family-name"
                   defaultValue={address?.lastName ?? ''}
@@ -441,13 +444,14 @@ export function AddressForm({
                   placeholder={t('account.last-name')}
                   required
                   type="text"
-                  onFocus={handleFocus}
-                  onBlur={handleBlur}
                 />
               </div>
-              <div className={`field ${address.company ? 'active' : ''}`}>
-                <label htmlFor="company">{t('account.company')}</label>
+              <div className={`${styles.field} ${styles.wide}`}>
+                <label className={styles.label} htmlFor="company">
+                  {t('account.company')}
+                </label>
                 <input
+                  className={styles.input}
                   aria-label={t('account.company')}
                   autoComplete="organization"
                   defaultValue={address?.company ?? ''}
@@ -455,13 +459,14 @@ export function AddressForm({
                   name="company"
                   placeholder={t('account.company')}
                   type="text"
-                  onFocus={handleFocus}
-                  onBlur={handleBlur}
                 />
               </div>
-              <div className={`field ${address.address1 ? 'active' : ''}`}>
-                <label htmlFor="address1">{t('account.address-1')}*</label>
+              <div className={`${styles.field} ${styles.wide}`}>
+                <label className={styles.label} htmlFor="address1">
+                  {t('account.address-1')}*
+                </label>
                 <input
+                  className={styles.input}
                   aria-label={t('account.address-1')}
                   autoComplete="address-line1"
                   defaultValue={address?.address1 ?? ''}
@@ -470,13 +475,14 @@ export function AddressForm({
                   placeholder={t('account.address-1')}
                   required
                   type="text"
-                  onFocus={handleFocus}
-                  onBlur={handleBlur}
                 />
               </div>
-              <div className={`field ${address.address2 ? 'active' : ''}`}>
-                <label htmlFor="address2">{t('account.address-2')}</label>
+              <div className={`${styles.field} ${styles.wide}`}>
+                <label className={styles.label} htmlFor="address2">
+                  {t('account.address-2')}
+                </label>
                 <input
+                  className={styles.input}
                   aria-label={t('account.address-2')}
                   autoComplete="address-line2"
                   defaultValue={address?.address2 ?? ''}
@@ -484,13 +490,14 @@ export function AddressForm({
                   name="address2"
                   placeholder={t('account.address-2')}
                   type="text"
-                  onFocus={handleFocus}
-                  onBlur={handleBlur}
                 />
               </div>
-              <div className={`field ${address.city ? 'active' : ''}`}>
-                <label htmlFor="city">{t('account.city')}*</label>
+              <div className={styles.field}>
+                <label className={styles.label} htmlFor="city">
+                  {t('account.city')}*
+                </label>
                 <input
+                  className={styles.input}
                   aria-label={t('account.city')}
                   autoComplete="address-level2"
                   defaultValue={address?.city ?? ''}
@@ -499,13 +506,14 @@ export function AddressForm({
                   placeholder={t('account.city')}
                   required
                   type="text"
-                  onFocus={handleFocus}
-                  onBlur={handleBlur}
                 />
               </div>
-              <div className={`field ${address.zoneCode ? 'active' : ''}`}>
-                <label htmlFor="zoneCode">{t('account.province')}*</label>
+              <div className={styles.field}>
+                <label className={styles.label} htmlFor="zoneCode">
+                  {t('account.province')}*
+                </label>
                 <input
+                  className={styles.input}
                   aria-label={t('account.province')}
                   autoComplete="address-level1"
                   defaultValue={address?.zoneCode ?? ''}
@@ -514,13 +522,14 @@ export function AddressForm({
                   placeholder={t('account.province')}
                   required
                   type="text"
-                  onFocus={handleFocus}
-                  onBlur={handleBlur}
                 />
               </div>
-              <div className={`field ${address.zip ? 'active' : ''}`}>
-                <label htmlFor="zip">{t('account.zip')}*</label>
+              <div className={styles.field}>
+                <label className={styles.label} htmlFor="zip">
+                  {t('account.zip')}*
+                </label>
                 <input
+                  className={styles.input}
                   aria-label={t('account.zip')}
                   autoComplete="postal-code"
                   defaultValue={address?.zip ?? ''}
@@ -529,13 +538,14 @@ export function AddressForm({
                   placeholder={t('account.zip')}
                   required
                   type="text"
-                  onFocus={handleFocus}
-                  onBlur={handleBlur}
                 />
               </div>
-              <div className={`field ${address.territoryCode ? 'active' : ''}`}>
-                <label htmlFor="territoryCode">{t('account.country')}*</label>
+              <div className={styles.field}>
+                <label className={styles.label} htmlFor="territoryCode">
+                  {t('account.country')}*
+                </label>
                 <input
+                  className={styles.input}
                   aria-label={t('account.country')}
                   autoComplete="country"
                   defaultValue={address?.territoryCode ?? ''}
@@ -545,13 +555,14 @@ export function AddressForm({
                   required
                   type="text"
                   maxLength={2}
-                  onFocus={handleFocus}
-                  onBlur={handleBlur}
                 />
               </div>
-              <div className={`field ${address.phoneNumber ? 'active' : ''}`}>
-                <label htmlFor="phoneNumber">{t('account.phone')}</label>
+              <div className={styles.field}>
+                <label className={styles.label} htmlFor="phoneNumber">
+                  {t('account.phone')}
+                </label>
                 <input
+                  className={styles.input}
                   aria-label={t('account.phone')}
                   autoComplete="tel"
                   defaultValue={address?.phoneNumber ?? ''}
@@ -560,19 +571,19 @@ export function AddressForm({
                   placeholder="+16135551111"
                   pattern="^\+?[1-9]\d{3,14}$"
                   type="tel"
-                  onFocus={handleFocus}
-                  onBlur={handleBlur}
                 />
               </div>
             </div>
-            <div className="defaultCheckboxContainer">
+            <div className={styles.checkboxRow}>
               <input
                 defaultChecked={isDefaultAddress}
                 id="defaultAddress"
                 name="defaultAddress"
                 type="checkbox"
               />
-              <label htmlFor="defaultAddress">{t('account.set-default')}</label>
+              <label className={styles.label} htmlFor="defaultAddress">
+                {t('account.set-default')}
+              </label>
             </div>
             {error && message ? (
               <a className="message error">
