@@ -239,15 +239,23 @@ function AddedToCartToast({
     const result = fetcher.data;
 
     // Que Shopify no devuelva errores NO significa que haya agregado la
-    // línea. Con una variante sin stock la mutación responde limpia y el
-    // carrito vuelve sin esa línea: el botón decía "agregado" y el carrito
-    // mostraba cantidad 0. La única prueba de que entró es encontrarla en el
-    // carrito que devolvió la respuesta.
-    const added = (result?.cart?.lines?.nodes ?? []).some(
-      (node) => node?.merchandise?.id === merchandiseId && node?.quantity > 0,
-    );
+    // línea: con una variante sin stock la mutación responde limpia y el
+    // carrito vuelve sin esa línea. La prueba de que entró es encontrarla en
+    // el carrito que devolvió la respuesta.
+    //
+    // ⚠️ Pero solo se puede afirmar el fallo **si la respuesta trae líneas**.
+    // Cuando no las trae —pasó al principio, porque las mutaciones devuelven
+    // un fragmento mínimo— dar por rechazado lo que sí entró es peor que el
+    // problema original: el comprador ve un error rojo sobre un producto que
+    // está en su carrito. Sin información, se confía en la ausencia de errores.
+    const lines = result?.cart?.lines?.nodes;
+    const rejected =
+      Array.isArray(lines) &&
+      !lines.some(
+        (node) => node?.merchandise?.id === merchandiseId && node?.quantity > 0,
+      );
 
-    if (!result || result.errors?.length || !added) {
+    if (!result || result.errors?.length || rejected) {
       // Fallo: el boton vuelve a su estado normal en vez de quedar confirmando
       // algo que no paso.
       onAdded?.(false);

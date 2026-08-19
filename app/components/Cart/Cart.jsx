@@ -170,14 +170,22 @@ function CartLineRemoveButton({lineIds}) {
       action={CartForm.ACTIONS.LinesRemove}
       inputs={{lineIds}}
     >
-      <button
-        type="submit"
-        className={styles.remove}
-        aria-label={t('cart.remove')}
-        title={t('cart.remove')}
-      >
-        <IconRemoveItem viewBox="0 0 20 20" />
-      </button>
+      {(fetcher) => {
+        const busy = fetcher.state !== 'idle';
+
+        return (
+          <button
+            type="submit"
+            className={styles.remove}
+            aria-label={t('cart.remove')}
+            title={t('cart.remove')}
+            disabled={busy}
+            aria-busy={busy || undefined}
+          >
+            {busy ? <Spinner /> : <IconRemoveItem viewBox="0 0 20 20" />}
+          </button>
+        );
+      }}
     </CartForm>
   );
 }
@@ -196,26 +204,33 @@ function CartLineQuantity({line}) {
     <div className={styles.quantity}>
       <div className={styles.stepper}>
         <CartLineUpdateButton lines={[{id: lineId, quantity: prevQuantity}]}>
-          <button
-            type="submit"
-            aria-label={t('cart.decrease')}
-            disabled={quantity <= 1}
-            name="decrease-quantity"
-            value={prevQuantity}
-          >
-            &#8722;
-          </button>
+          {(busy) => (
+            <button
+              type="submit"
+              aria-label={t('cart.decrease')}
+              disabled={busy || quantity <= 1}
+              aria-busy={busy || undefined}
+              name="decrease-quantity"
+              value={prevQuantity}
+            >
+              {busy ? <Spinner /> : <>&#8722;</>}
+            </button>
+          )}
         </CartLineUpdateButton>
         <span className={styles.quantityValue}>{quantity}</span>
         <CartLineUpdateButton lines={[{id: lineId, quantity: nextQuantity}]}>
-          <button
-            type="submit"
-            aria-label={t('cart.increase')}
-            name="increase-quantity"
-            value={nextQuantity}
-          >
-            &#43;
-          </button>
+          {(busy) => (
+            <button
+              type="submit"
+              aria-label={t('cart.increase')}
+              disabled={busy}
+              aria-busy={busy || undefined}
+              name="increase-quantity"
+              value={nextQuantity}
+            >
+              {busy ? <Spinner /> : <>&#43;</>}
+            </button>
+          )}
         </CartLineUpdateButton>
       </div>
       <CartLineRemoveButton lineIds={[lineId]} />
@@ -368,9 +383,25 @@ function CartLineUpdateButton({children, lines}) {
       action={CartForm.ACTIONS.LinesUpdate}
       inputs={{lines}}
     >
-      {children}
+      {(fetcher) =>
+        typeof children === 'function'
+          ? children(fetcher.state !== 'idle')
+          : children
+      }
     </CartForm>
   );
+}
+
+/**
+ * Indicador de que el carrito está trabajando.
+ *
+ * Cambiar una cantidad o borrar una línea es una vuelta de red: sin esto el
+ * botón se apretaba y no pasaba nada visible durante medio segundo, así que se
+ * volvía a apretar — y cada click era otra unidad. Ocupa el lugar del glifo
+ * para que el botón no cambie de tamaño y la fila no salte.
+ */
+function Spinner() {
+  return <span className={styles.spinner} aria-hidden="true" />;
 }
 
 /** @typedef {CartApiQueryFragment['lines']['nodes'][0]} CartLine */

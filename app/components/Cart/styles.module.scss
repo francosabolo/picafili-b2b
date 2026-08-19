@@ -252,3 +252,30 @@
   font-weight: 700;
   color: var(--brand-magenta);
 }
+
+/* Spinner mínimo: un anillo del tamaño del glifo al que reemplaza, para que el
+   botón no cambie de tamaño mientras el carrito responde. */
+.spinner {
+  display: inline-block;
+  width: 0.9em;
+  height: 0.9em;
+  border: 2px solid currentColor;
+  border-right-color: transparent;
+  border-radius: var(--radius-pill);
+  opacity: 0.7;
+  animation: cart-spin 0.6s linear infinite;
+}
+
+@keyframes cart-spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+/* Quien pidió "sin animaciones" no quiere una ruleta girando: el anillo se
+   queda quieto y el estado lo comunica el botón deshabilitado. */
+@media (prefers-reduced-motion: reduce) {
+  .spinner {
+    animation: none;
+  }
+}

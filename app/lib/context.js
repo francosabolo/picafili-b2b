@@ -38,6 +38,12 @@ export async function createAppLoadContext(request, env, executionContext) {
     i18n: getLocaleFromRequest(request),
     cart: {
       queryFragment: CART_QUERY_FRAGMENT,
+      // Las mutaciones devuelven por defecto solo `id` y `totalQuantity`. Con
+      // eso no se puede saber si la línea entró de verdad — y sin saberlo, el
+      // botón confirma un alta que Shopify pudo haber rechazado (una variante
+      // sin stock vuelve sin error y sin línea). Pedimos el carrito completo:
+      // cuesta una respuesta más grande y evita mentir.
+      mutateFragment: CART_QUERY_FRAGMENT,
     },
     customerAccount: {
       // Enciende el B2B de Hydrogen. Lo que agrega es lo que hace funcionar
