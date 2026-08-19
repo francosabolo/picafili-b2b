@@ -403,3 +403,28 @@
     border: 1px solid var(--brand-magenta);
   }
 }
+
+/* Fila de acciones dentro de la TABLA comparativa.
+ *
+ * Ahí la celda es angosta a propósito (la tabla existe para comparar producto,
+ * no para dar espacio a los controles), así que el CTA de la tarjeta —45px de
+ * alto y padding de 24px— no entraba al lado del selector y se caía al renglón
+ * de abajo. Duplicaba el alto de cada fila y rompía la lectura en columna, que
+ * es lo único que la tabla tiene que hacer bien. */
+.compactRow {
+  flex-wrap: nowrap;
+  align-items: center;
+  gap: var(--space-2);
+
+  .quantitySelector {
+    transform: scale(0.9);
+    transform-origin: right center;
+  }
+
+  .addToQuoteButton {
+    height: 2rem;
+    padding: 0 var(--space-3);
+    font-size: var(--text-xs);
+    border-radius: var(--radius-sm);
+  }
+}

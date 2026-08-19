@@ -6,7 +6,7 @@ import {useTranslation} from '~/i18n/index.jsx';
 import {Button} from '@headlessui/react';
 import {useAccountState} from '~/context/AccountStateContext.jsx';
 
-export function ProductPrice({product}) {
+export function ProductPrice({product, compact = false}) {
   const variant = product?.variants?.nodes[0] ?? null;
   const {t} = useTranslation();
   const {canSeePrices} = useAccountState();
@@ -26,7 +26,9 @@ export function ProductPrice({product}) {
   }
 
   return (
-    <div className={styles.priceContainer}>
+    <div
+      className={`${styles.priceContainer} ${compact ? styles.compact : ''}`}
+    >
       {product?.tags?.includes('parent') ? (
         <div className={styles.priceLabel}>{t('price.from')}</div>
       ) : (

@@ -101,6 +101,10 @@
 
 .priceCell {
   white-space: nowrap;
+  /* El precio venía con el tamaño de la tarjeta (`--text-xl`), donde es el
+     protagonista. En una tabla de 16 filas ese cuerpo se come el ancho de las
+     columnas que están al lado y obliga a la fila a crecer. */
+  font-size: var(--text-base);
   /* Los precios se leen en columna: alineados a la derecha y con cifras de
      ancho fijo, comparar dos importes es mirar, no contar digitos. */
   text-align: right;

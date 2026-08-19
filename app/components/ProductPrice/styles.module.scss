@@ -76,3 +76,16 @@
   border-radius: var(--radius-pill);
   white-space: nowrap;
 }
+
+/* Versión de tabla. El precio deja de ser el protagonista —lo es en la
+   tarjeta— y pasa a ser una columna más que se lee de arriba abajo. Con el
+   cuerpo de la tarjeta, una tabla de 16 filas quedaba dominada por los
+   importes y las filas crecían de alto. */
+.compact {
+  font-size: var(--text-base);
+  gap: var(--space-2);
+
+  .savings {
+    font-size: var(--text-xs);
+  }
+}

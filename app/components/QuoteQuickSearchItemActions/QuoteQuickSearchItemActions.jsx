@@ -231,7 +231,7 @@ export const QuoteItemActions = ({
       <div
         className={`${styles.quoteActionsWrapper} ${styles.quickOrderRow} ${
           stacked ? styles.stacked : ''
-        }`}
+        } ${compact ? styles.compactRow : ''}`}
       >
         <div className={styles.quantitySelector}>
           <button

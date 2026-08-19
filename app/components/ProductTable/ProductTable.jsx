@@ -126,7 +126,7 @@ function ProductRow({product, specColumns, pathname, t}) {
       </td>
 
       <td className={styles.priceCell}>
-        <ProductPrice product={product} />
+        <ProductPrice product={product} compact />
       </td>
 
       <td className={styles.actionsCell}>
