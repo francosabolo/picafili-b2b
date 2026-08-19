@@ -4,7 +4,12 @@ node_modules
 /dist
 /public/build
 /.mf
-.env
+# Cualquier variante, no solo `.env` exacto. `shopify hydrogen env pull` pisa el
+# archivo, así que el reflejo es copiarlo antes — y ese `.env.backup-…` quedaba
+# fuera del ignore, a un `git add -A` de distancia de entrar en un commit con
+# los tokens adentro. El único que se versiona es el ejemplo.
+.env*
+!.env.example
 .shopify
 .vercel
 
