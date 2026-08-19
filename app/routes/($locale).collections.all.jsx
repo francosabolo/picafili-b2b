@@ -1,6 +1,7 @@
 import {json} from '@shopify/remix-oxygen';
 import {canSeePricesOnServer, gatePrices} from '~/lib/price-gating.server.js';
 import {withRetailCompareAt} from '~/lib/retail-prices.server.js';
+import {CategoryGrid} from '~/components/CategoryGrid/CategoryGrid.jsx';
 import {useLoaderData, useNavigation, useSearchParams} from '@remix-run/react';
 import {getPaginationVariables, Pagination} from '@shopify/hydrogen';
 import {CATALOG_FILTERED_QUERY} from '~/graphql/collections/collectionsQuery.js';
@@ -55,6 +56,13 @@ export async function loader({request, context}) {
     },
   });
 
+  // Las categorías del bloque "Explorá por categoría". Sin precios, así que
+  // se cachea — y va en paralelo con el catálogo para no sumar latencia.
+  const categoriesPromise = storefront.query(CATEGORY_GRID_QUERY, {
+    cache: storefront.CacheLong(),
+    variables: {first: 12},
+  });
+
   const {search} = await storefront.query(CATALOG_FILTERED_QUERY, {
     variables: {
       ...getBuyerVariables(context),
@@ -91,12 +99,13 @@ export async function loader({request, context}) {
     appliedFilters,
     user,
     collectionsMenu,
+    categories: (await categoriesPromise)?.collections?.nodes ?? [],
   });
 }
 
 export default function Collection() {
   /** @type {LoaderReturnData} */
-  const {products, filters, appliedFilters, user, collectionsMenu} =
+  const {products, filters, appliedFilters, user, collectionsMenu, categories} =
     useLoaderData();
   // El skeleton se muestra mientras Remix esta navegando, no por un
   // temporizador. Antes `isLoading` arrancaba en `true` y un setTimeout de
@@ -127,6 +136,11 @@ export default function Collection() {
             bannerTitle={t('collections.all.title')}
           />
           <PageWidthContainer>
+            {/* Arriba de la grilla y no al pie: acá el comprador aterriza con
+                el catálogo entero sin agrupar, y esto es lo único que le dice
+                que hay un orden. Sin link a "ver todo" — ya está en todo. */}
+            <CategoryGrid collections={categories} showAllLink={false} />
+
             <Pagination connection={products}>
               {({
                 nodes,
@@ -204,3 +218,31 @@ function ProductsGrid({products, user}) {
 /** @template T @typedef {import('@remix-run/react').MetaFunction<T>} MetaFunction */
 /** @typedef {import('storefrontapi.generated').ProductItemFragment} ProductItemFragment */
 /** @typedef {import('@shopify/remix-oxygen').SerializeFrom<typeof loader>} LoaderReturnData */
+
+/**
+ * Categorías para el bloque de exploración del catálogo completo.
+ *
+ * Sin `$buyer` y sin precios a propósito: es lo que la hace cacheable. Los
+ * títulos y las imágenes de colección son iguales para todos los compradores.
+ */
+const CATEGORY_GRID_QUERY = `#graphql
+  query CatalogCategories(
+    $first: Int!
+    $country: CountryCode
+    $language: LanguageCode
+  ) @inContext(country: $country, language: $language) {
+    collections(first: $first, sortKey: UPDATED_AT, reverse: true) {
+      nodes {
+        id
+        handle
+        title
+        image {
+          url
+          altText
+          width
+          height
+        }
+      }
+    }
+  }
+`;

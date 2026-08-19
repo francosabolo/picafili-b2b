@@ -1,0 +1,98 @@
+/* "Explorá por categoría".
+ *
+ * Los estilos viven acá y no en `Home.module.scss` porque el bloque dejó de ser
+ * de la home: también se muestra en el catálogo completo. Un módulo por
+ * componente es lo que evita que arreglar el bloque en una pantalla lo deje
+ * distinto en la otra. */
+
+.section {
+  margin-bottom: var(--space-12);
+}
+
+.head {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: var(--space-4);
+  flex-wrap: wrap;
+  margin-bottom: var(--space-6);
+}
+
+.title {
+  /* `--text-xl` es el tamaño de "títulos de sección" de la escala (DESIGN.md).
+     Venía como un `clamp(1.5rem, 3vw, 2rem)` heredado, que es la misma idea
+     escrita a mano. */
+  font-size: var(--text-xl);
+  line-height: 1.1;
+  margin: 0 0 var(--space-1);
+}
+
+.lead {
+  margin: 0;
+  color: var(--brand-petrol);
+  opacity: 0.7;
+}
+
+.link {
+  color: var(--brand-magenta);
+  font-weight: var(--font-weight-bold);
+  text-decoration: none;
+  white-space: nowrap;
+
+  &:hover {
+    text-decoration: underline;
+  }
+}
+
+.categories {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(9rem, 1fr));
+  gap: var(--space-4);
+}
+
+.category {
+  display: block;
+  background: var(--surface-raised);
+  border: 1px solid var(--color-grey-alt);
+  border-radius: var(--radius-md);
+  overflow: hidden;
+  text-decoration: none;
+  color: var(--brand-petrol);
+  transition: border-color 0.15s ease, transform 0.15s ease;
+
+  img {
+    display: block;
+    width: 100%;
+    height: auto;
+    object-fit: cover;
+  }
+
+  &:hover {
+    border-color: var(--brand-magenta);
+    transform: translateY(-2px);
+    text-decoration: none;
+  }
+}
+
+/* Colección sin imagen cargada en Shopify.
+   Un bloque liso se leía como una imagen que no cargó; el degradé de marca lo
+   deja como una decisión. Pasa seguido: en una tienda nueva es lo normal que
+   las colecciones todavía no tengan imagen. */
+.categoryPlaceholder {
+  display: block;
+  width: 100%;
+  aspect-ratio: 4 / 3;
+  background: linear-gradient(
+    135deg,
+    var(--brand-cream-deep) 0%,
+    color-mix(in srgb, var(--brand-magenta) 12%, var(--brand-cream-deep)) 100%
+  );
+}
+
+.categoryName {
+  display: block;
+  padding: var(--space-3);
+  font-weight: var(--font-weight-bold);
+  font-size: var(--text-sm);
+  line-height: 1.2;
+}

@@ -798,6 +798,24 @@ export type StoreCollectionsQuery = {
   };
 };
 
+export type CatalogCategoriesQueryVariables = StorefrontAPI.Exact<{
+  first: StorefrontAPI.Scalars['Int']['input'];
+  country?: StorefrontAPI.InputMaybe<StorefrontAPI.CountryCode>;
+  language?: StorefrontAPI.InputMaybe<StorefrontAPI.LanguageCode>;
+}>;
+
+export type CatalogCategoriesQuery = {
+  collections: {
+    nodes: Array<
+      Pick<StorefrontAPI.Collection, 'id' | 'handle' | 'title'> & {
+        image?: StorefrontAPI.Maybe<
+          Pick<StorefrontAPI.Image, 'url' | 'altText' | 'width' | 'height'>
+        >;
+      }
+    >;
+  };
+};
+
 export type PageQueryVariables = StorefrontAPI.Exact<{
   language?: StorefrontAPI.InputMaybe<StorefrontAPI.LanguageCode>;
   country?: StorefrontAPI.InputMaybe<StorefrontAPI.CountryCode>;
@@ -1042,6 +1060,10 @@ interface GeneratedQueryTypes {
   '#graphql\n  fragment Collection on Collection {\n    id\n    title\n    handle\n    image {\n      id\n      url\n      altText\n      width\n      height\n    }\n  }\n  query StoreCollections(\n    $country: CountryCode\n    $endCursor: String\n    $first: Int\n    $language: LanguageCode\n    $last: Int\n    $startCursor: String\n  ) @inContext(country: $country, language: $language) {\n    collections(\n      first: $first,\n      last: $last,\n      before: $startCursor,\n      after: $endCursor\n    ) {\n      nodes {\n        ...Collection\n      }\n      pageInfo {\n        hasNextPage\n        hasPreviousPage\n        startCursor\n        endCursor\n      }\n    }\n  }\n': {
     return: StoreCollectionsQuery;
     variables: StoreCollectionsQueryVariables;
+  };
+  '#graphql\n  query CatalogCategories(\n    $first: Int!\n    $country: CountryCode\n    $language: LanguageCode\n  ) @inContext(country: $country, language: $language) {\n    collections(first: $first, sortKey: UPDATED_AT, reverse: true) {\n      nodes {\n        id\n        handle\n        title\n        image {\n          url\n          altText\n          width\n          height\n        }\n      }\n    }\n  }\n': {
+    return: CatalogCategoriesQuery;
+    variables: CatalogCategoriesQueryVariables;
   };
   '#graphql\n  query Page(\n    $language: LanguageCode,\n    $country: CountryCode,\n    $handle: String!\n  )\n  @inContext(language: $language, country: $country) {\n    page(handle: $handle) {\n      id\n      title\n      body\n      seo {\n        description\n        title\n      }\n    }\n  }\n': {
     return: PageQuery;

@@ -1,6 +1,7 @@
 import {json} from '@shopify/remix-oxygen';
 import {canSeePricesOnServer, gatePrices} from '~/lib/price-gating.server.js';
 import {withRetailCompareAt} from '~/lib/retail-prices.server.js';
+import {CategoryGrid} from '~/components/CategoryGrid/CategoryGrid.jsx';
 import {getBuyerVariables} from '~/lib/b2b.server.js';
 import {Link, useLoaderData} from '@remix-run/react';
 import {Image} from '@shopify/hydrogen';
@@ -131,43 +132,7 @@ export default function Home() {
       </section>
 
       <PageWidthContainer>
-        {collections.length > 0 && (
-          <section className={styles.section}>
-            <header className={styles.sectionHead}>
-              <div>
-                <h2>{t('home.categories-title')}</h2>
-                <p>{t('home.categories-lead')}</p>
-              </div>
-              <Link to="/collections" className={styles.sectionLink}>
-                {t('home.see-all')}
-              </Link>
-            </header>
-
-            <div className={styles.categories}>
-              {collections.map((collection) => (
-                <Link
-                  key={collection.id}
-                  to={`/collections/${collection.handle}`}
-                  className={styles.category}
-                >
-                  {collection.image?.url ? (
-                    <Image
-                      data={collection.image}
-                      aspectRatio="4/3"
-                      sizes="(min-width: 45em) 260px, 45vw"
-                      loading="lazy"
-                    />
-                  ) : (
-                    <span className={styles.categoryPlaceholder} />
-                  )}
-                  <span className={styles.categoryName}>
-                    {collection.title}
-                  </span>
-                </Link>
-              ))}
-            </div>
-          </section>
-        )}
+        <CategoryGrid collections={collections} />
 
         {products.length > 0 && (
           <section className={styles.section}>
