@@ -67,7 +67,18 @@ export function CartLinesSync({cart}) {
     for (const line of lines ?? []) {
       const id = line?.merchandise?.id;
       if (!id) continue;
-      next[id] = (next[id] ?? 0) + (Number(line.quantity) || 0);
+
+      const previous = next[id];
+      next[id] = {
+        quantity: (previous?.quantity ?? 0) + (Number(line.quantity) || 0),
+        // El id de LÍNEA, que es lo que pide `LinesUpdate`. Sin esto, el
+        // stepper de la tarjeta solo sabía cuántas unidades hay pero no cuál
+        // fila del carrito editar, así que tocar "+" volvía a agregar en vez
+        // de corregir. Con la misma variante en dos líneas gana la primera:
+        // editar una de las dos es lo único que se puede hacer sin inventar
+        // una regla de reparto.
+        lineId: previous?.lineId ?? line.id,
+      };
     }
     setQuantities(next);
   }, [lines, totalQuantity, setQuantities]);
@@ -87,5 +98,21 @@ export function CartLinesSync({cart}) {
 export function useCartQuantity(merchandiseId) {
   const context = useContext(CartLinesContext);
   if (!context || !merchandiseId) return 0;
-  return context.quantities[merchandiseId] ?? 0;
+  return context.quantities[merchandiseId]?.quantity ?? 0;
+}
+
+/**
+ * La línea del carrito de esta variante: cuántas unidades y qué línea es.
+ *
+ * `null` si el producto no está en el carrito. El `lineId` es lo que permite
+ * que el stepper de la tarjeta **corrija** la cantidad en vez de agregar otra
+ * vez, que es lo que espera cualquiera que ve el número del carrito reflejado
+ * en la tarjeta.
+ *
+ * @param {string} merchandiseId
+ */
+export function useCartLine(merchandiseId) {
+  const context = useContext(CartLinesContext);
+  if (!context || !merchandiseId) return null;
+  return context.quantities[merchandiseId] ?? null;
 }

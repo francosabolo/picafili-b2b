@@ -2,6 +2,7 @@ import {useNonce, getShopAnalytics, Analytics, Script} from '@shopify/hydrogen';
 import {parseQuoteSummary} from '~/lib/quote-storage.js';
 import {DEMO_ROLE_SWITCHER, ENABLE_CART} from '~/lib/const.js';
 import {hasRequiredCustomerTags} from '~/lib/customer-tags.js';
+import {withRetailCartCompareAt} from '~/lib/retail-prices.server.js';
 import {
   canSeePricesOnServer,
   gateDiscounts,
@@ -215,7 +216,14 @@ function loadDeferredData({context}) {
     // mandaba un `checkoutUrl` vivo en el payload de una tienda que no tiene
     // checkout. Los únicos consumidores son el drawer y `/cart`, y los dos
     // están detrás del mismo interruptor.
-    cart: ENABLE_CART ? cart.get() : null,
+    // El tachado de cada línea tiene que ser el precio público, igual que en
+    // el listado. Se encadena a la promesa para no perder el streaming: el
+    // carrito sigue siendo dato diferido.
+    cart: ENABLE_CART
+      ? cart
+          .get()
+          .then((resolved) => withRetailCartCompareAt(context, resolved))
+      : null,
     isLoggedIn: customerAccount.isLoggedIn(),
     footer,
   };

@@ -396,11 +396,17 @@
 
   /* Ya está en el carrito. Antes reusaba el verde de "en el presupuesto", que
      adentro del botón magenta se veía como un semáforo. Mismo botón, en
-     versión secundaria: el producto ya está adentro, no hay que gritarlo. */
+     versión secundaria: el producto ya está adentro, no hay que gritarlo.
+     En verde porque es una confirmación, no una advertencia, y sin el borde
+     magenta que competía con el tilde. */
   .addedToCart {
     background: var(--brand-cream);
-    color: var(--brand-magenta);
-    border: 1px solid var(--brand-magenta);
+    color: var(--b2b-savings);
+    border: 1px solid color-mix(in srgb, var(--b2b-savings) 45%, transparent);
+    /* Cuadrado: solo lleva el tilde y con el padding del texto quedaba un
+       botón ancho con un icono perdido en el medio. */
+    width: 2rem;
+    padding: 0;
   }
 }
 

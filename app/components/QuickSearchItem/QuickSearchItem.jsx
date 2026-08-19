@@ -84,7 +84,7 @@ export function QuickSearchItem({product, loading}) {
               <ItemDescription product={product} />
               <ItemSumUp product={product} viewport={'desktop'} />
               <div className={styles.priceWrapper}>
-                <ProductPrice product={product} />
+                <ProductPrice product={product} compact />
               </div>
               {/* Color y talle: son lo que distingue una fila de otra cuando
                   el producto tiene varias variantes. Reemplaza a la columna de

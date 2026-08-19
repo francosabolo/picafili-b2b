@@ -394,6 +394,7 @@ function CartLink({cart}) {
   return (
     <a
       href="#cart-aside"
+      onClick={keepScrollOnOpen}
       className={styles.cartLink}
       aria-label={t('cart.open')}
     >
@@ -413,7 +414,11 @@ function CartLink({cart}) {
 
 function HeaderMenuMobileToggle() {
   return (
-    <a className={styles.headerMenuMobileToggle} href="#mobile-menu-aside">
+    <a
+      className={styles.headerMenuMobileToggle}
+      href="#mobile-menu-aside"
+      onClick={keepScrollOnOpen}
+    >
       <IconMenu fill="none" viewBox="0 0 18 16" stroke="none" />
     </a>
   );
@@ -442,6 +447,24 @@ function HeaderMenuMobileToggle() {
  * @param {string} linkUrl
  * @param {string} pathname
  */
+/**
+ * Abre un drawer sin que la página se mueva.
+ *
+ * Los drawers se abren por `:target` (`href="#cart-aside"`), y eso es una
+ * navegación a un ancla: el navegador scrollea hasta el elemento. El resultado
+ * era que abrir el carrito te dejaba abajo de todo, y al cerrarlo habías
+ * perdido el lugar donde estabas comprando.
+ *
+ * Se deja que el navegador haga lo suyo y se restaura la posición en el frame
+ * siguiente, antes de pintar: no se ve el salto. Sacar el `:target` sería la
+ * otra opción, pero es lo que hace que los drawers funcionen sin JavaScript.
+ */
+function keepScrollOnOpen() {
+  if (typeof window === 'undefined') return;
+  const y = window.scrollY;
+  window.requestAnimationFrame(() => window.scrollTo({top: y}));
+}
+
 function activeStyle(linkUrl, pathname) {
   const current = stripLocale(pathname);
   const target = stripLocale(linkUrl);

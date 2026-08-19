@@ -177,7 +177,7 @@
     "by-quantity": "Prix par quantité",
     "from-quantity": "Dès {{quantity}} u.",
     "next-tier-nudge": "Avec {{quantity}} de plus, l’unité revient à {{price}}.",
-    "savings": "−{{percent}} %",
+    "savings": "{{percent}} % OFF",
     "locked": "Prix réservé aux clients validés"
   },
   "collections": {

@@ -143,3 +143,73 @@ export async function withRetailCompareAt(context, data) {
     return data;
   }
 }
+
+/**
+ * Lo mismo, para las líneas del **carrito**.
+ *
+ * El carrito no expone el precio de la variante donde la UI lo lee: usa
+ * `cost.compareAtAmountPerQuantity`, que llega con el ajuste del catálogo
+ * aplicado igual que en el listado. Sin esto, el carrito mostraba un tachado —
+ * pero uno que anunciaba un ahorro que no existe, justo en la pantalla donde se
+ * decide comprar.
+ *
+ * Recibe y devuelve el carrito tal cual; nunca lanza.
+ *
+ * @template T
+ * @param {import('@shopify/remix-oxygen').AppLoadContext} context
+ * @param {T} cart
+ * @returns {Promise<T>}
+ */
+export async function withRetailCartCompareAt(context, cart) {
+  if (!context?.b2b?.buyer) return cart;
+
+  const lines = cart?.lines?.nodes;
+  if (!lines?.length) return cart;
+
+  try {
+    const ids = [
+      ...new Set(lines.map((line) => line?.merchandise?.id).filter(Boolean)),
+    ];
+    if (!ids.length) return cart;
+
+    const {storefront} = context;
+
+    const result = await storefront.query(RETAIL_PRICES_QUERY, {
+      cache: storefront.CacheLong(),
+      variables: {ids},
+    });
+
+    const retail = new Map();
+    for (const node of result?.nodes ?? []) {
+      if (node?.id && node?.price) retail.set(node.id, node.price);
+    }
+
+    if (!retail.size) return cart;
+
+    return {
+      ...cart,
+      lines: {
+        ...cart.lines,
+        nodes: lines.map((line) => {
+          const publicPrice = retail.get(line?.merchandise?.id);
+          const unit = line?.cost?.amountPerQuantity?.amount;
+
+          const saves =
+            publicPrice && unit && Number(publicPrice.amount) > Number(unit);
+
+          return {
+            ...line,
+            cost: {
+              ...line.cost,
+              compareAtAmountPerQuantity: saves ? publicPrice : null,
+            },
+          };
+        }),
+      },
+    };
+  } catch (error) {
+    // eslint-disable-next-line no-console
+    console.error('withRetailCartCompareAt:', error);
+    return cart;
+  }
+}

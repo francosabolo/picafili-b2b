@@ -179,7 +179,7 @@
     "by-quantity": "Volume pricing",
     "from-quantity": "From {{quantity}} u.",
     "next-tier-nudge": "Add {{quantity}} more and each unit costs {{price}}.",
-    "savings": "−{{percent}}%",
+    "savings": "{{percent}}% OFF",
     "locked": "Price for approved customers"
   },
   "collections": {

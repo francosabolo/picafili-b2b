@@ -1,5 +1,8 @@
 import React, {useEffect, useRef, useState} from 'react';
 import {ENABLE_CART, ENABLE_QUOTE} from '~/lib/const.js';
+import {CartForm} from '@shopify/hydrogen';
+import {useFetcher} from '@remix-run/react';
+import {useCartLine} from '~/context/CartLinesContext.jsx';
 import {AddToCartButton} from '~/components/AddToCartButton/AddToCartButton.jsx';
 import {IconCartPlus} from '~/components/Icon/Icon.jsx';
 import {useQuote} from '~/context/QuoteContext.jsx';
@@ -28,6 +31,39 @@ export const QuoteItemActions = ({
   const [animation, setAnimation] = useState();
   const {canOrder, id: accountStateId} = useAccountState();
   const {t} = useTranslation();
+
+  // La línea del carrito de esta variante, si está. Con el presupuesto
+  // encendido no se mira: ahí manda la nota de pedido y el carrito no existe.
+  const cartLine = useCartLine(ENABLE_QUOTE ? null : quoteItem?.id);
+  const cartFetcher = useFetcher();
+
+  /**
+   * Corrige la cantidad de la línea que ya está en el carrito.
+   *
+   * `fetcher` y no un `<CartForm>` con botón: el stepper son dos botones que
+   * disparan muchas veces seguidas, y cada uno tendría que ser su propio
+   * formulario. En 0 se borra la línea — es lo que espera quien baja hasta
+   * cero, y `LinesUpdate` con 0 no la saca.
+   */
+  const updateCartQuantity = (quantity) => {
+    if (!cartLine?.lineId) return;
+
+    const remove = quantity <= 0;
+
+    cartFetcher.submit(
+      {
+        [CartForm.INPUT_NAME]: JSON.stringify({
+          action: remove
+            ? CartForm.ACTIONS.LinesRemove
+            : CartForm.ACTIONS.LinesUpdate,
+          inputs: remove
+            ? {lineIds: [cartLine.lineId]}
+            : {lines: [{id: cartLine.lineId, quantity}]},
+        }),
+      },
+      {method: 'POST', action: '/cart'},
+    );
+  };
 
   useEffect(() => {
     const existingItem = quoteItems.find((item) => item.id === quoteItem.id);
@@ -213,18 +249,32 @@ export const QuoteItemActions = ({
       return max ? Math.min(snapped, max) : snapped;
     };
 
-    // Con el ítem ya en el presupuesto, el selector muestra y edita la cantidad
-    // real de la nota. Antes tenía su propio estado local: sumabas desde el
-    // botón y el número de la izquierda seguía en 1, mintiendo.
-    const displayQuantity = isInQuote ? inQuoteItem.quantity : inputQuantity;
+    // Con el ítem ya en el carrito (o en el presupuesto), el selector muestra
+    // y **edita** esa cantidad. Antes tenía su propio estado local: sumabas
+    // desde el botón y el número de la izquierda seguía en 1, mintiendo.
+    //
+    // Lo mismo vale ahora para el carrito: quien ve "3" en la tarjeta espera
+    // que tocar "+" corrija esas 3 unidades, no que agregue otras tres.
+    const displayQuantity = isInQuote
+      ? inQuoteItem.quantity
+      : cartLine
+      ? cartLine.quantity
+      : inputQuantity;
 
     const setQuantity = (next) => {
       const value = clamp(next);
+
       if (isInQuote) {
         updateQuoteItem(quoteItem, value);
-      } else {
-        setInputQuantity(value);
+        return;
       }
+
+      if (cartLine) {
+        updateCartQuantity(value);
+        return;
+      }
+
+      setInputQuantity(value);
     };
 
     return (
@@ -282,7 +332,7 @@ export const QuoteItemActions = ({
             productTitle={quoteItem?.product?.title}
             addedClassName={styles.addedToCart}
             /* En la tabla no entra el texto: alcanza el tilde. */
-            confirmedLabel={compact ? null : t('cart.add')}
+            confirmedLabel={compact ? null : t('cart.added')}
             /* Lo que no se puede vender no se ofrece. Sin esto el comprador
                apretaba, veía "agregado" y el carrito le quedaba igual. */
             disabled={!quoteItem?.availableForSale}
