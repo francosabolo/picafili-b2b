@@ -5,7 +5,6 @@ import AccountMenu from '~/components/AccountMenu/AccountMenu';
 import {useUser} from '~/context/UserContext.jsx';
 import {useEffect, useState} from 'react';
 import {useTranslation} from '~/i18n/index.jsx';
-import LogoutButton from '../components/LogoutButton/LogoutButton';
 
 export const handle = 'account';
 
@@ -45,21 +44,17 @@ export default function AccountLayout() {
     setUserData(customer);
   }, []);
 
-  if (!customer?.tags?.includes('active')) {
-    return (
-      <div className="account page-width">
-        <div className="customerInactiveMenu">
-          <LogoutButton />
-          <div className="customerInactiveMessage">
-            <h3>{t('account.inactive-message-title')}</h3>
-            <p>{t('account.inactive-message')}</p>
-          </div>
-        </div>
-      </div>
-    );
-  }
+  // Acá había un gate por el tag `active` heredado del fork: sin ese tag, la
+  // zona de cuenta entera se reemplazaba por un cartel que hablaba de "miembro
+  // profesional HER" y mandaba a escribir a hello@powerb2x.com. En esta tienda
+  // NADIE tiene ese tag, así que el cartel era lo único que veía cualquier
+  // cliente que entrara a su cuenta — con la marca y el mail equivocados.
+  //
+  // No se reemplaza por otro gate: quién entra ya lo decidió
+  // `app/lib/access.server.js` antes que Remix, y duplicar esa regla acá es
+  // exactamente la forma de que las dos se desincronicen.
 
-  const firstName = customer?.firstName || 'HerLighter';
+  const firstName = customer?.firstName || '';
   const heading = customer
     ? customer?.firstName
       ? `${t('account.welcome')} ${firstName} !`

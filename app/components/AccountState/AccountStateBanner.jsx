@@ -10,8 +10,17 @@ import styles from './styles.module.scss';
  * al usuario en qué punto del embudo está y qué le falta para ver precios.
  */
 export function AccountStateBanner() {
-  const {id, company, priceList} = useAccountState();
+  const {id} = useAccountState();
   const {t} = useTranslation();
+
+  // Al aprobado no se le anuncia nada: que vea precios y pueda pedir **es** el
+  // anuncio. El banner ocupaba el primer pliegue de cada página para repetir
+  // algo que la pantalla ya demuestra, y encima arrastraba una línea con la
+  // empresa y un `·` colgando de un grupo de precios que en B2B real no
+  // existe. Los otros dos estados sí dicen algo que no se ve: qué falta.
+  if (id === ACCOUNT_STATES.APPROVED || id === ACCOUNT_STATES.SALES_REP) {
+    return null;
+  }
 
   if (id === ACCOUNT_STATES.GUEST) {
     return (
@@ -42,20 +51,5 @@ export function AccountStateBanner() {
     );
   }
 
-  return (
-    <div className={`${styles.banner} ${styles.bannerApproved}`}>
-      <div>
-        <strong className={styles.bannerTitle}>
-          {t('account-state.approved-title')}
-        </strong>
-        {/* La empresa y el grupo van en su propia línea y no embebidos en la
-            frase: metidos en el texto obligaban a partir la oración para poder
-            destacar el grupo en negrita, y una frase partida no se traduce. */}
-        <p className={styles.bannerMeta}>
-          {company} · <strong>{priceList}</strong>
-        </p>
-        <p>{t('account-state.approved-body')}</p>
-      </div>
-    </div>
-  );
+  return null;
 }

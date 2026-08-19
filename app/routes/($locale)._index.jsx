@@ -6,7 +6,10 @@ import {Image} from '@shopify/hydrogen';
 import {PageWidthContainer} from '~/components/PageWidthContainer/PageWidthContainer.jsx';
 import {ProductItem} from '~/components/ProductItem/ProductItem.jsx';
 import {PRODUCT_ITEM_FRAGMENT} from '~/data/fragments';
-import {useAccountState} from '~/context/AccountStateContext.jsx';
+import {
+  ACCOUNT_STATES,
+  useAccountState,
+} from '~/context/AccountStateContext.jsx';
 import {useTranslation} from '~/i18n/index.jsx';
 import {HOME_CATEGORIES_COUNT, HOME_PRODUCTS_COUNT} from '~/lib/const.js';
 import {seoMeta, storeJsonLd} from '~/lib/seo.js';
@@ -74,7 +77,13 @@ export async function loader({request, context}) {
 
 export default function Home() {
   const {shop, collections, products} = useLoaderData();
-  const {canSeePrices, company} = useAccountState();
+  const {id: accountState, canSeePrices, company} = useAccountState();
+
+  // Quien está adentro ya es mayorista: el CTA de alta solo tiene sentido para
+  // el visitante sin sesión, que en este portal solo existe si `REQUIRE_LOGIN`
+  // se apaga. Antes la condición era "ve precios", y con eso a un cliente
+  // aprobado sin catálogo asignado le ofrecíamos registrarse de nuevo.
+  const isGuest = accountState === ACCOUNT_STATES.GUEST;
   const {t} = useTranslation();
 
   // El H1 es la promesa del portal mayorista, no la descripción de la marca:
@@ -98,13 +107,13 @@ export default function Home() {
             <Link to="/collections/all" className={styles.heroPrimary}>
               {t('home.cta-catalog')}
             </Link>
-            {canSeePrices ? (
-              <Link to="/compra-rapida" className={styles.heroSecondary}>
-                {t('home.cta-quick-order')}
-              </Link>
-            ) : (
+            {isGuest ? (
               <Link to="/pages/contact" className={styles.heroSecondary}>
                 {t('home.cta-signup')}
+              </Link>
+            ) : (
+              <Link to="/compra-rapida" className={styles.heroSecondary}>
+                {t('home.cta-quick-order')}
               </Link>
             )}
           </div>

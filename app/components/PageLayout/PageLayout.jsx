@@ -37,6 +37,7 @@ export function PageLayout({
   quoteSummary,
   b2b,
   loggedIn,
+  wholesaleApproved,
   discountContext,
 }) {
   const navigation = useNavigation();
@@ -66,6 +67,7 @@ export function PageLayout({
         initialState={demoAccountState}
         b2b={b2b}
         loggedIn={loggedIn}
+        wholesaleApproved={wholesaleApproved}
       >
         <ToastProvider>
           <CartLinesProvider>

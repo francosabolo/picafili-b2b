@@ -15,7 +15,7 @@
  */
 
 import {EMPTY_DISCOUNT_CONTEXT} from '~/lib/discounts.js';
-import {DEMO_ROLE_SWITCHER, REQUIRE_B2B_COMPANY} from '~/lib/const.js';
+import {DEMO_ROLE_SWITCHER} from '~/lib/const.js';
 
 const DEMO_STATE_COOKIE = 'demoAccountState';
 
@@ -57,11 +57,17 @@ export function canSeePricesOnServer(request, b2b) {
   // es mostrar el importe correcto.
   if (b2b?.buyer) return true;
 
-  // Portal cerrado con company obligatoria y sin buyer resoluble: hay company
-  // pero no se le puede pedir a Shopify el precio DE esa company, así que lo
-  // que volvería es el precio del mercado por defecto. Se prefiere no mostrar
-  // precio antes que mostrar uno ajeno — ver `resolveBuyer` en b2b.server.js.
-  if (b2b?.companyId && !REQUIRE_B2B_COMPANY) return true;
+  // Company sin buyer resoluble: hay company, pero no se le puede pedir a
+  // Shopify el precio DE esa company, así que lo que volvería es el precio del
+  // mercado por defecto. Se prefiere no mostrar precio antes que mostrar uno
+  // ajeno — ver `resolveBuyer` en b2b.server.js.
+  //
+  // Acá había una excepción atada a `REQUIRE_B2B_COMPANY`: con esa constante en
+  // false devolvía `true` con solo tener company. Cuando la aprobación pasó a
+  // los tags y la constante se apagó, esa línea empezó a mandar los precios de
+  // retail en el payload de cualquiera con company —incluido el que se acaba de
+  // registrar y todavía no fue aprobado—, mientras la UI seguía mostrando el
+  // candado. Un flag de acceso no puede decidir de qué mercado son los precios.
 
   if (!DEMO_ROLE_SWITCHER) return false;
 

@@ -11,10 +11,17 @@ import {
 import {B2B_REQUEST_STATUS_QUERY} from '~/graphql/b2b/b2bRequest.js';
 import {CUSTOMER_COMPANY_QUERY} from '~/graphql/customer-account/CustomerCompanyQuery.js';
 import {useTranslation} from '~/i18n/index.jsx';
-import {SALES_CONTACT} from '~/lib/const.js';
+import {B2B_REQUEST_FORM_ENABLED, SALES_CONTACT} from '~/lib/const.js';
 import {seoMeta} from '~/lib/seo.js';
 import styles from '~/styles/pages/Login.module.scss';
 import formStyles from '~/styles/pages/B2BRequest.module.scss';
+
+/**
+ * Sin cromo, igual que el login: es la otra puerta. El banner de estado de
+ * cuenta acá era peor que ruido — decía "Cuenta aprobada" arriba de la
+ * pantalla que explica que la cuenta todavía no lo está.
+ */
+export const handle = {bodyClass: 'login', bareLayout: true};
 
 /**
  * Sala de espera del portal, con dos estados.
@@ -91,21 +98,36 @@ export async function loader({context}) {
 
   const customerId = data?.customer?.id ?? null;
 
+  // Con company ya creada el alta ocurrió — la haya hecho Shopify Forms, un
+  // endpoint o una persona en el admin. Pedirle de nuevo razón social y CUIT a
+  // alguien cuya empresa ya existe en la tienda es pedir dos veces el mismo
+  // dato, y encima invita a que las dos versiones no coincidan.
+  const hasCompany = Boolean(context.b2b?.companyId);
+
+  // La solicitud por metafield solo hace falta consultarla si el formulario
+  // sigue siendo una posibilidad: es una llamada a Admin API por request.
+  const askForData = B2B_REQUEST_FORM_ENABLED && !hasCompany;
+
   return json({
     email: data?.customer?.emailAddress?.emailAddress ?? null,
-    requestedAt: customerId ? await readRequestedAt(context, customerId) : null,
+    requestedAt:
+      askForData && customerId
+        ? await readRequestedAt(context, customerId)
+        : null,
+    askForData,
     salesEmail: SALES_CONTACT.email,
   });
 }
 
 export default function AccountPendingPage() {
-  const {email, requestedAt, salesEmail} = useLoaderData();
+  const {email, requestedAt, askForData, salesEmail} = useLoaderData();
   const [justSent, setJustSent] = useState(false);
 
-  // El estado se toma del envío recién hecho O del loader: sin lo primero, la
-  // persona manda el formulario y se queda mirando el mismo formulario hasta
-  // que algo revalide.
-  const sent = justSent || Boolean(requestedAt);
+  // "Ya no hay nada que pedirle": porque acaba de mandar el formulario, porque
+  // lo mandó antes, o porque nunca se lo íbamos a pedir (el alta la junta
+  // Shopify Forms — ver B2B_REQUEST_FORM_ENABLED). Los tres casos muestran lo
+  // mismo: en qué está su cuenta y a quién escribirle.
+  const sent = !askForData || justSent || Boolean(requestedAt);
 
   return (
     <div className={styles.layout}>

@@ -159,7 +159,11 @@ export const QuoteItemActions = ({
   // Gating de pedido (E2): quien no está aprobado no puede armar la nota.
   // Se le ofrece el camino en su lugar — iniciar sesión, o esperar la aprobación.
   if (!canOrder) {
-    const pendingApproval = accountStateId === ACCOUNT_STATES.PENDING;
+    // "Iniciar sesión" solo tiene sentido para quien NO la tiene — y en este
+    // portal eso solo pasa si `REQUIRE_LOGIN` se apaga. A un cliente logueado
+    // que todavía no puede pedir le ofrecíamos iniciar sesión otra vez: el
+    // botón lo devolvía a la misma pantalla, sin explicar nada.
+    const pendingApproval = accountStateId !== ACCOUNT_STATES.GUEST;
 
     // En la tabla comparativa el CTA ancho no entra en la celda —se salia por
     // los dos lados— y ademas repetia el mismo mensaje en cada una de las doce

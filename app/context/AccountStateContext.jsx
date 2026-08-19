@@ -90,11 +90,20 @@ const AccountStateContext = createContext(null);
  * demo de `ACCOUNT_STATE_CONFIG` ("Distribuidora El Sol", "Comercio Nuevo"),
  * que son datos inventados y no de esta persona.
  *
+ * ⚠️ **La aprobación la decide el gate, no esta función.** `wholesaleApproved`
+ * llega del loader de root y es el mismo booleano que dejó pasar (o no) a esta
+ * persona — hoy, los tags del cliente. Tener company **no** alcanza: el
+ * formulario público crea la company al registrarse, así que entre el registro
+ * y la aprobación hay company y no hay permiso. Mientras esta función miraba
+ * solo la company, la sala de espera se pintaba con un banner verde de "Cuenta
+ * aprobada".
+ *
  * @param {{companyName?: string, companyId?: string, hasBuyerContext?: boolean}|null} b2b
  * @param {boolean} loggedIn
+ * @param {boolean} wholesaleApproved
  */
-function resolveRealState(b2b, loggedIn) {
-  if (b2b?.companyId) {
+function resolveRealState(b2b, loggedIn, wholesaleApproved) {
+  if (b2b?.companyId && wholesaleApproved) {
     return {
       ...ACCOUNT_STATE_CONFIG[ACCOUNT_STATES.APPROVED],
       // Los precios se piden en el contexto de la company. Si ese contexto no
@@ -124,9 +133,15 @@ function resolveRealState(b2b, loggedIn) {
 }
 
 /**
- * @param {{children: React.ReactNode, initialState?: string, b2b?: object|null, loggedIn?: boolean}}
+ * @param {{children: React.ReactNode, initialState?: string, b2b?: object|null, loggedIn?: boolean, wholesaleApproved?: boolean}}
  */
-export function AccountStateProvider({children, initialState, b2b, loggedIn}) {
+export function AccountStateProvider({
+  children,
+  initialState,
+  b2b,
+  loggedIn,
+  wholesaleApproved,
+}) {
   const {revalidate} = useRevalidator();
   const [stateId, setStateId] = useState(() => {
     // Sin switcher no hay estado simulado que recordar, y sobre todo no se
@@ -145,7 +160,7 @@ export function AccountStateProvider({children, initialState, b2b, loggedIn}) {
   });
 
   const value = useMemo(() => {
-    const real = resolveRealState(b2b, loggedIn);
+    const real = resolveRealState(b2b, loggedIn, wholesaleApproved);
 
     // El switcher es una herramienta de demo: gobierna solo mientras esté
     // encendido Y no haya company real. Con `DEMO_ROLE_SWITCHER` en false, el
@@ -170,7 +185,7 @@ export function AccountStateProvider({children, initialState, b2b, loggedIn}) {
         revalidate();
       },
     };
-  }, [stateId, b2b, loggedIn, revalidate]);
+  }, [stateId, b2b, loggedIn, wholesaleApproved, revalidate]);
 
   return (
     <AccountStateContext.Provider value={value}>

@@ -1,6 +1,7 @@
 import {useNonce, getShopAnalytics, Analytics, Script} from '@shopify/hydrogen';
 import {parseQuoteSummary} from '~/lib/quote-storage.js';
 import {DEMO_ROLE_SWITCHER, ENABLE_CART} from '~/lib/const.js';
+import {hasRequiredCustomerTags} from '~/lib/customer-tags.js';
 import {
   canSeePricesOnServer,
   gateDiscounts,
@@ -17,7 +18,7 @@ import {
   useMatches,
   isRouteErrorResponse,
 } from '@remix-run/react';
-import favicon from './assets/favicon.svg';
+import favicon from './assets/favicon.png';
 import appStyles from './styles/global.scss?url';
 import {PageLayout} from '~/components/PageLayout/PageLayout.jsx';
 import {HEADER_QUERY} from '~/graphql/header/menuQueries.js';
@@ -55,7 +56,10 @@ export function links() {
       rel: 'preconnect',
       href: 'https://shop.app',
     },
-    {rel: 'icon', type: 'image/svg+xml', href: favicon},
+    // El isotipo de Picafili, el mismo que usa picafili.com.ar. El anterior era
+    // el del skeleton de Hydrogen: la pestaña del portal mayorista no se
+    // parecía en nada a la de la tienda.
+    {rel: 'icon', type: 'image/png', href: favicon},
   ];
 }
 
@@ -127,6 +131,11 @@ async function loadCriticalData({context, request}) {
       ? readCookie(request, 'demoAccountState')
       : null,
     loggedIn,
+    // Lo MISMO que decidió el gate, no una segunda opinión. Mientras la UI
+    // derivaba el estado de la company y el gate miraba los tags, la sala de
+    // espera se pintaba con un banner verde de "Cuenta aprobada" arriba del
+    // texto que explica que la cuenta no lo está.
+    wholesaleApproved: hasRequiredCustomerTags(context.customerTags),
     // Contexto B2B real, **sin el buyer**. Es null mientras la tienda no tenga
     // B2B habilitado o el visitante no sea contacto de una company.
     b2b: publicB2B(context.b2b),

@@ -114,6 +114,25 @@ export const REQUIRE_B2B_COMPANY = false;
 export const REQUIRE_CUSTOMER_TAGS = ['mayorista', 'mayorista-aprobado'];
 
 /**
+ * ¿El portal junta el alta mayorista con su propio formulario?
+ *
+ * **Apagado en Picafili**, porque el alta la junta **Shopify Forms** en
+ * `picafili.com.ar` y ese formulario ya crea la company. Encendido, la sala de
+ * espera le pide razón social, CUIT y dirección a alguien que acaba de darlos:
+ * pedir dos veces el mismo dato no es un detalle de UX, es la señal de que hay
+ * dos altas distintas y nadie sabe cuál manda.
+ *
+ * Se sigue mostrando la pantalla de estado —qué falta y a quién escribirle—,
+ * que es lo único útil mientras la aprobación no llega.
+ *
+ * En `true` vuelve el formulario, que es lo que necesita una tienda **sin**
+ * Forms: ahí el portal es el único lugar donde el comprador puede dejar sus
+ * datos. Aun encendido, a quien ya tiene company no se le pide nada: el alta
+ * ya ocurrió, venga de donde venga.
+ */
+export const B2B_REQUEST_FORM_ENABLED = false;
+
+/**
  * Carrito de compra directa.
  *
  * **Decisión revisada: la única salida es el presupuesto → draft order.**
