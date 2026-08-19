@@ -99,8 +99,22 @@
     padding: 0 0.6875rem;
   }
 }
+/* Bloque de acciones de MOBILE.
+ *
+ * Faltaba esconderlo en escritorio, y `.productActions` —el de escritorio—
+ * solo se esconde por debajo de `lg`: arriba de ese ancho se renderizaban los
+ * DOS. Cada uno con su propio estado, así que el comprador movía el stepper de
+ * un bloque y apretaba el botón del otro: elegía 4 y entraba 1. El síntoma se
+ * leía como "el carrito ignora la cantidad" y no tenía nada que ver con el
+ * carrito. */
 .mobileAddtoQuote {
   width: 100%;
+
+  /* Un pixel por encima del punto en que se esconde el de escritorio: con el
+     mismo valor, a exactamente 1200px no se mostraba ninguno de los dos. */
+  @media screen and (min-width: ($breakpoint-lg + 1px)) {
+    display: none;
+  }
 }
 
 /* Columna de acciones: parte de la fila, no una tarjeta aparte. El fondo
