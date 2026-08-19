@@ -16,7 +16,8 @@
     "prepare": "husky",
     "check:design": "node scripts/check-design-tokens.mjs",
     "doctor": "node scripts/doctor.mjs",
-    "setup:b2b": "node scripts/setup-b2b.mjs"
+    "setup:b2b": "node scripts/setup-b2b.mjs",
+    "precios:compare-at": "node scripts/precios-compare-at.mjs"
   },
   "prettier": "@shopify/prettier-config",
   "dependencies": {
