@@ -4,18 +4,24 @@
   }
 }
 
+/* Encabezado y filas comparten grilla y se leen como una tabla: una línea bajo
+   los rótulos y una entre pedidos. Sin eso eran bloques flotando en el crema y
+   costaba seguir una fila hasta su importe. */
 .headingRow {
   @media screen and (max-width: $breakpoint-sm) {
     grid-template-columns: repeat(5, 1fr);
-    padding: 0;
+    padding: 0 0 var(--space-2);
   }
   grid-template-columns: repeat(6, 1fr);
-  padding: var(--space-4);
-  border-radius: var(--radius-sm);
+  padding: 0 var(--space-4) var(--space-3);
   display: grid;
-  font-size: var(--text-base);
+  font-size: var(--text-sm);
   font-weight: bold;
-  margin-bottom: var(--space-3);
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: var(--brand-petrol);
+  border-bottom: 1px solid var(--color-grey-alt);
+  margin-bottom: 0;
 }
 
 .headingCell {
@@ -25,15 +31,25 @@
 .fieldsContainer {
   @media screen and (max-width: $breakpoint-sm) {
     grid-template-columns: repeat(5, 1fr);
-    padding: 0;
+    padding: var(--space-3) 0;
   }
   grid-template-columns: repeat(6, 1fr);
   display: grid;
-  background-color: var(--color-grey-soft);
-  border-radius: var(--radius-sm);
+  align-items: center;
+  /* El fondo gris de cada fila competía con las píldoras de estado y con el
+     crema de la página. La separación la hace la línea, no un bloque. */
+  border-bottom: 1px solid var(--color-grey-alt);
   padding: var(--space-4);
   font-size: var(--text-base);
-  margin-bottom: var(--space-3);
+  margin-bottom: 0;
+
+  &:hover {
+    background-color: color-mix(
+      in srgb,
+      var(--brand-cream-deep) 45%,
+      transparent
+    );
+  }
   @media (max-width: $breakpoint-sm) {
     &.desktop {
       display: none;

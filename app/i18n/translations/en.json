@@ -61,7 +61,12 @@
     "phone": "Phone",
     "no-addresses": "You have no addresses saved.",
     "create-address": "Create address",
-    "existing-addresses": "Existing addresses"
+    "existing-addresses": "Existing addresses",
+    "set-default": "Use as default address",
+    "create": "Create address",
+    "creating": "Creating…",
+    "saving": "Saving…",
+    "profile-updated": "Details updated"
   },
   "order": {
     "order": "Order",

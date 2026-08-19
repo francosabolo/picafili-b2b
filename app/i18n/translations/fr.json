@@ -60,7 +60,12 @@
     "phone": "Téléphone",
     "no-addresses": "Vous n'avez aucune adresse enregistrée.",
     "create-address": "Créer une adresse",
-    "existing-addresses": "Adresses enregistrées"
+    "existing-addresses": "Adresses enregistrées",
+    "set-default": "Utiliser comme adresse par défaut",
+    "create": "Créer une adresse",
+    "creating": "Création…",
+    "saving": "Enregistrement…",
+    "profile-updated": "Données mises à jour"
   },
   "promo": {
     "best-seller": "Meilleures ventes",

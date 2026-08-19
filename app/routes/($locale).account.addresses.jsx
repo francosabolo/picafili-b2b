@@ -274,6 +274,7 @@ export default function Addresses() {
 }
 
 function NewAddressForm() {
+  const {t} = useTranslation();
   const newAddress = {
     address1: '',
     address2: '',
@@ -303,7 +304,9 @@ function NewAddressForm() {
             type="submit"
             className="accountBtnSubmit"
           >
-            {stateForMethod('POST') !== 'idle' ? 'Creating' : 'Create'}
+            {stateForMethod('POST') !== 'idle'
+              ? t('account.creating')
+              : t('account.create')}
           </button>
         </div>
       )}
@@ -538,7 +541,7 @@ export function AddressForm({
                   defaultValue={address?.territoryCode ?? ''}
                   id="territoryCode"
                   name="territoryCode"
-                  placeholder="Country"
+                  placeholder={t('account.country')}
                   required
                   type="text"
                   maxLength={2}
@@ -547,9 +550,9 @@ export function AddressForm({
                 />
               </div>
               <div className={`field ${address.phoneNumber ? 'active' : ''}`}>
-                <label htmlFor="phoneNumber">Phone</label>
+                <label htmlFor="phoneNumber">{t('account.phone')}</label>
                 <input
-                  aria-label="Phone Number"
+                  aria-label={t('account.phone')}
                   autoComplete="tel"
                   defaultValue={address?.phoneNumber ?? ''}
                   id="phoneNumber"
@@ -569,7 +572,7 @@ export function AddressForm({
                 name="defaultAddress"
                 type="checkbox"
               />
-              <label htmlFor="defaultAddress">Set as default address</label>
+              <label htmlFor="defaultAddress">{t('account.set-default')}</label>
             </div>
             {error && message ? (
               <a className="message error">
@@ -580,7 +583,7 @@ export function AddressForm({
               message && (
                 <a className="message success">
                   <IconSuccess className="icon"></IconSuccess>
-                  {t('Profile updated')}
+                  {t('account.profile-updated')}
                 </a>
               )
             )}

@@ -60,7 +60,12 @@
     "phone": "Teléfono",
     "no-addresses": "Todavía no guardaste ninguna dirección.",
     "create-address": "Crear dirección",
-    "existing-addresses": "Direcciones guardadas"
+    "existing-addresses": "Direcciones guardadas",
+    "set-default": "Usar como dirección principal",
+    "create": "Crear dirección",
+    "creating": "Creando…",
+    "saving": "Guardando…",
+    "profile-updated": "Datos actualizados"
   },
   "promo": {
     "best-seller": "Más vendido",
