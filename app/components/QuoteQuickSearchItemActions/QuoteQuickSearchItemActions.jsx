@@ -1,5 +1,5 @@
 import React, {useEffect, useRef, useState} from 'react';
-import {ENABLE_CART} from '~/lib/const.js';
+import {ENABLE_CART, ENABLE_QUOTE} from '~/lib/const.js';
 import {AddToCartButton} from '~/components/AddToCartButton/AddToCartButton.jsx';
 import {IconCartPlus} from '~/components/Icon/Icon.jsx';
 import {useQuote} from '~/context/QuoteContext.jsx';
@@ -258,17 +258,33 @@ export const QuoteItemActions = ({
           </button>
         </div>
 
-        <button
-          type="button"
-          className={`${styles.addToQuoteButton} ${
-            isInQuote ? styles.inQuote : ''
-          }`}
-          onClick={() => addQuoteItem({...quoteItem, quantity: inputQuantity})}
-        >
-          {isInQuote
-            ? `${t('quoting.in-quote')} ${displayQuantity}`
-            : t('quoting.add-to-quote')}
-        </button>
+        {/* Un solo camino para pedir: o el presupuesto propio o el carrito de
+            Shopify, nunca los dos. Ver ENABLE_QUOTE en app/lib/const.js. */}
+        {ENABLE_QUOTE ? (
+          <button
+            type="button"
+            className={`${styles.addToQuoteButton} ${
+              isInQuote ? styles.inQuote : ''
+            }`}
+            onClick={() =>
+              addQuoteItem({...quoteItem, quantity: inputQuantity})
+            }
+          >
+            {isInQuote
+              ? `${t('quoting.in-quote')} ${displayQuantity}`
+              : t('quoting.add-to-quote')}
+          </button>
+        ) : (
+          <AddToCartButton
+            lines={[{merchandiseId: quoteItem.id, quantity: displayQuantity}]}
+            buttonClassName={styles.addToQuoteButton}
+            title={t('cart.add')}
+            productTitle={quoteItem?.product?.title}
+            addedClassName={styles.inQuote}
+          >
+            {t('cart.add')}
+          </AddToCartButton>
+        )}
 
         {sellsByBulk && (
           <span className={styles.bulkNote}>
@@ -278,7 +294,7 @@ export const QuoteItemActions = ({
           </span>
         )}
 
-        {isInQuote && (
+        {ENABLE_QUOTE && isInQuote && (
           <button
             type="button"
             className={styles.deleteButton}
@@ -293,7 +309,7 @@ export const QuoteItemActions = ({
             el mismo selector. Presupuesto y carrito CONVIVEN: el presupuesto
             es para lo que se negocia, el carrito para lo que ya tiene precio
             cerrado. Solo si la tienda habilito el carrito. */}
-        {ENABLE_CART && quoteItem?.availableForSale && (
+        {ENABLE_QUOTE && ENABLE_CART && quoteItem?.availableForSale && (
           <AddToCartButton
             lines={[{merchandiseId: quoteItem.id, quantity: displayQuantity}]}
             buttonClassName={styles.cartButton}

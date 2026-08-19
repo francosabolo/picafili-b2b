@@ -1,6 +1,7 @@
 import {json, redirect} from '@shopify/remix-oxygen';
 import {
   ENABLE_CART,
+  ENABLE_QUOTE,
   REQUIRE_LOGIN,
   REQUIRE_B2B_COMPANY,
   STORE_LANGUAGES,
@@ -71,6 +72,14 @@ const PUBLIC_PATHS = new Set([
  * ninguna pantalla. Esconder el ícono del carrito no lo desactiva.
  */
 const CART_PATTERNS = [/^\/cart(\/|$)/, /^\/api\/cart(\/|$)/];
+
+/**
+ * Todo lo del flujo propio de presupuesto. Mismo criterio que el carrito: con
+ * `ENABLE_QUOTE` apagado no alcanza con esconder los botones — la pantalla
+ * sigue respondiendo y el endpoint sigue emitiendo draft orders a espaldas del
+ * checkout, que es justo la segunda forma de pedir que no queremos.
+ */
+const QUOTE_PATTERNS = [/^\/presupuesto(\/|$)/, /^\/api\/draft-order(\/|$)/];
 
 /**
  * Prefijos que no son páginas: assets del build, internos de Vite en
@@ -195,6 +204,10 @@ export async function checkAccess({request, context}) {
   // para todo el mundo.
   if (!ENABLE_CART && CART_PATTERNS.some((pattern) => pattern.test(path))) {
     return deny(url, path, `${prefix}/presupuesto`);
+  }
+
+  if (!ENABLE_QUOTE && QUOTE_PATTERNS.some((pattern) => pattern.test(path))) {
+    return deny(url, path, `${prefix}/cart`);
   }
 
   if (!REQUIRE_LOGIN) return null;

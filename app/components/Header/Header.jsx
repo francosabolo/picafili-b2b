@@ -27,7 +27,7 @@ import {
   ACCOUNT_STATES,
   useAccountState,
 } from '~/context/AccountStateContext.jsx';
-import {ENABLE_CART, STORE_LANGUAGES} from '~/lib/const.js';
+import {ENABLE_CART, ENABLE_QUOTE, STORE_LANGUAGES} from '~/lib/const.js';
 import {IconCart} from '~/components/Icon/Icon.jsx';
 /**
  * Marca del storefront: la tienda manda, el sello mayorista firma al lado.
@@ -358,7 +358,8 @@ function HeaderIcons({cart}) {
       {/* Carrito de compra directa. Convive con el presupuesto solo si la
           tienda lo habilita: ver ENABLE_CART en app/lib/const.js. */}
       {ENABLE_CART && <CartLink cart={cart} />}
-      <Quote />
+      {/* El presupuesto propio y el carrito nunca conviven: ver ENABLE_QUOTE. */}
+      {ENABLE_QUOTE && <Quote />}
       <NavLink
         className={styles.accountIcon + ' ' + activeStyle('/account', pathname)}
         prefetch="intent"

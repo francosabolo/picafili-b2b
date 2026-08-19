@@ -133,21 +133,38 @@ export const REQUIRE_CUSTOMER_TAGS = ['mayorista', 'mayorista-aprobado'];
 export const B2B_REQUEST_FORM_ENABLED = false;
 
 /**
- * Carrito de compra directa.
+ * Carrito y checkout de Shopify.
  *
- * **Decisión revisada: la única salida es el presupuesto → draft order.**
- * Antes convivían dos caminos —presupuesto para lo que se negocia, carrito con
- * checkout de Shopify para lo que ya tenía precio cerrado— con el presupuesto
- * como acción primaria. En un portal donde el precio sale del catálogo de la
- * company y todo pedido lo revisa el equipo comercial, el checkout directo no
- * es un atajo: es una segunda forma de comprar que se saltea la revisión.
+ * **Decisión revisada otra vez, y esta vez hacia el lado nativo.** El portal
+ * nació con la única salida "presupuesto → draft order por Admin API", para que
+ * todo pedido pasara por revisión comercial. Resulta que **B2B ya hace eso
+ * solo**: con `checkoutToDraft` encendido en la company location, el comprador
+ * completa el checkout y el pedido entra como **borrador para revisión**. La
+ * revisión no se pierde; la hace Shopify.
  *
- * En `false` no se renderiza ni el ícono ni el drawer ni las acciones de
- * carrito, **y las rutas `/cart` y `/api/cart/*` quedan cerradas**. Lo segundo
- * importa tanto como lo primero: esconder el botón deja el checkout a un
- * pegado de URL de distancia, y `checkoutUrl` viaja en el payload del carrito.
+ * Lo que se gana no es solo ahorrarse una app: el `ADMIN_API_ACCESS_TOKEN` sale
+ * del camino crítico. Pedir deja de depender de una credencial nuestra que, si
+ * falta o vence, tira el sitio entero.
+ *
+ * Y los precios los liquida quien los define: el catálogo de la company
+ * location. Ver `ENABLE_QUOTE` acá abajo.
  */
-export const ENABLE_CART = false;
+export const ENABLE_CART = true;
+
+/**
+ * Flujo propio de presupuesto (nota de pedido → draft order por Admin API).
+ *
+ * En `false` desaparecen el drawer de presupuesto, la barra inferior, la
+ * pantalla `/presupuesto` y el endpoint que emite el draft order; las tarjetas
+ * y la ficha pasan a agregar **al carrito**.
+ *
+ * Sigue existiendo el código porque es la única forma de cotizar en una tienda
+ * **sin** B2B —sin company no hay catálogo, y sin catálogo un carrito muestra
+ * precios de retail—, que es el caso de cualquier tienda donde esta plantilla
+ * se instale antes de tener companies cargadas. Los dos flujos nunca conviven
+ * encendidos: dos formas de pedir es dos formas de que el total no coincida.
+ */
+export const ENABLE_QUOTE = false;
 
 /**
  * ────────────────────────────────────────────────────────────────────────────
@@ -174,20 +191,21 @@ export const ENABLE_CART = false;
  *     Ausente = nadie lo edita a mano.
  *
  * Sacar un slot de esta lista lo saca de la UI, del cálculo y del pedido.
+ *
+ * **Vacío por decisión de negocio (2026-08-19): Picafili trabaja con precios de
+ * catálogo y nada más.** El descuento del mayorista ES el catálogo "Precios
+ * Mayoristas" de su company location, así que no hay porcentaje que aplicarle
+ * encima. Además, con el checkout de Shopify liquidando el pedido, un
+ * porcentaje calculado por el storefront no tendría dónde aplicarse: lo que se
+ * cobra sale del catálogo, y un total mostrado que no coincida con el cobrado
+ * es peor que no mostrar ninguno.
+ *
+ * La maquinaria queda porque otra tienda sí puede necesitarla —acuerdos por
+ * cliente encima de la lista— y encenderla es agregar slots acá.
  */
-export const DISCOUNT_SLOTS = [
-  {id: 'discount-1', labelKey: 'discounts.discount-1', source: 'customer'},
-  {id: 'discount-2', labelKey: 'discounts.discount-2', source: 'customer'},
-  {
-    id: 'discount-3',
-    labelKey: 'discounts.discount-3',
-    source: 'quote',
-    editableBy: 'sales_rep',
-  },
-];
+export const DISCOUNT_SLOTS = [];
 
-/** ¿La tienda aplica descuentos por categoría de producto? */
-export const CATEGORY_DISCOUNTS_ENABLED = true;
+export const CATEGORY_DISCOUNTS_ENABLED = false;
 
 /**
  * De dónde sale la "categoría" de un producto.
