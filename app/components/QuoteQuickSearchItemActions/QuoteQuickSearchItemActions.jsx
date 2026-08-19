@@ -281,6 +281,8 @@ export const QuoteItemActions = ({
             buttonClassName={styles.addToQuoteButton}
             productTitle={quoteItem?.product?.title}
             addedClassName={styles.addedToCart}
+            /* En la tabla no entra el texto: alcanza el tilde. */
+            confirmedLabel={compact ? null : t('cart.add')}
             /* Lo que no se puede vender no se ofrece. Sin esto el comprador
                apretaba, veía "agregado" y el carrito le quedaba igual. */
             disabled={!quoteItem?.availableForSale}

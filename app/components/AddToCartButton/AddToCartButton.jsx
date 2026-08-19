@@ -27,6 +27,7 @@ export function AddToCartButton({
   title,
   productTitle,
   addedClassName,
+  confirmedLabel,
 }) {
   // Confirmacion EN EL BOTON, ademas del aviso.
   //
@@ -166,11 +167,22 @@ export function AddToCartButton({
                 disabled={disabled ?? busy}
               >
                 {confirming ? (
+                  // Sin número. Mostraba las unidades que YA hay en el
+                  // carrito, al lado de un stepper que muestra las que se van
+                  // a agregar: dos números pegados queriendo decir cosas
+                  // distintas, y el comprador leía que había elegido 4 y le
+                  // habían entrado 1. La cuenta del carrito vive en el ícono
+                  // del header, que es donde se la busca.
                   <span className={styles.confirmed}>
                     <IconCheck />
-                    {inCart > 0 && (
-                      <span className={styles.confirmedCount}>{inCart}</span>
-                    )}
+                    {/* El texto del botón NO cambia: la acción sigue siendo
+                        agregar —un mayorista suma unidades de tanto en tanto—
+                        y un botón que pasa a decir "en el carrito" deja de
+                        explicar qué hace al apretarlo. El tilde alcanza para
+                        decir que ya hay algo de este producto adentro. */}
+                    {confirmedLabel === null
+                      ? null
+                      : confirmedLabel ?? children}
                   </span>
                 ) : children ? (
                   children
