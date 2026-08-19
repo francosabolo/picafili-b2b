@@ -213,7 +213,16 @@ function loadDeferredData({context}) {
  */
 export function Layout({children}) {
   const matches = useMatches();
-  const currentLocation = matches[matches.length - 1];
+  // `handle` arrancó siendo una string: la clase que va al <body>. Ahora
+  // algunas rutas necesitan además marcar cosas de layout (ver `bareLayout`
+  // en PageLayout), así que se aceptan las dos formas — string suelta u
+  // objeto con `bodyClass`. Sin esto un handle objeto pintaba
+  // `[object Object]` como clase, y uno ausente, la palabra `undefined`.
+  const routeHandle = matches[matches.length - 1]?.handle;
+  const bodyClass =
+    typeof routeHandle === 'string'
+      ? routeHandle
+      : routeHandle?.bodyClass ?? '';
   const nonce = useNonce();
   /** @type {RootLoader} */
   const data = useRouteLoaderData('root');
@@ -256,7 +265,7 @@ export function Layout({children}) {
         )}
       </head>
       <body
-        className={`${currentLocation.handle}
+        className={`${bodyClass}
             ${errorNotFound ? 'not-found-404' : ''}
           `}
       >

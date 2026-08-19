@@ -1087,3 +1087,10 @@ body.account main:not(aside main) {
 main:not(aside main) {
   padding-bottom: 6rem;
 }
+
+/* La pantalla de acceso va sin cromo (`handle.bareLayout` en la ruta): no hay
+   barra fija de presupuesto abajo que despejar, y esos 96px dejaban una franja
+   crema muerta al pie de la puerta de entrada. */
+body.login main:not(aside main) {
+  padding-bottom: 0;
+}

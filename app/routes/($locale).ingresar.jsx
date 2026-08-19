@@ -7,6 +7,14 @@ import {seoMeta} from '~/lib/seo.js';
 import styles from '~/styles/pages/Login.module.scss';
 
 /**
+ * Sin cromo: ni barra de estado, ni header, ni banner de cuenta, ni pie. Lo
+ * lee `PageLayout`. Esta ruta es una puerta —el visitante todavía no puede
+ * navegar a ningún lado— y el header ofrecía justamente lo que acá está
+ * cerrado.
+ */
+export const handle = {bodyClass: 'login', bareLayout: true};
+
+/**
  * Puerta de entrada al portal mayorista — la pantalla "intranet".
  *
  * NO es un formulario de usuario y contraseña, y no puede serlo: con Customer

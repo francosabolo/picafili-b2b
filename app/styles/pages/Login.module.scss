@@ -6,9 +6,9 @@
   display: grid;
   grid-template-columns: 45fr 55fr;
   align-items: stretch;
-  /* Descuenta el header para que las dos columnas llenen la ventana sin
-     empujar el footer dentro del pliegue. */
-  min-height: 70vh;
+  /* Sin header ni pie (la ruta se declara `bareLayout`), las dos columnas son
+     la pantalla entera: 70vh dejaba una franja crema muerta abajo. */
+  min-height: 100dvh;
 }
 
 /* ---------------------------------------------------------------- panel */

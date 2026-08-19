@@ -1,4 +1,4 @@
-import {Await, useNavigation} from '@remix-run/react';
+import {Await, useMatches, useNavigation} from '@remix-run/react';
 import {ENABLE_CART} from '~/lib/const.js';
 import {Suspense} from 'react';
 import {Aside} from '~/components/Aside/Aside.jsx';
@@ -41,6 +41,16 @@ export function PageLayout({
 }) {
   const navigation = useNavigation();
 
+  // Hay pantallas que son una **puerta** y no una página del portal: el login
+  // no tiene adónde navegar —el visitante todavía no puede ver catálogo ni
+  // precios— así que el cromo (barra de estado, header, banner de cuenta y
+  // pie) es ruido que compite con lo único que se puede hacer ahí.
+  //
+  // Se marca con `export const handle = {bareLayout: true}` en la ruta y no
+  // con un `if` sobre el pathname: así una ruta nueva lo pide sola, sin tocar
+  // este archivo ni acordarse del prefijo de idioma.
+  const bareLayout = useMatches().some((match) => match.handle?.bareLayout);
+
   // El loader se DERIVA del estado de navegacion. Antes era estado propio y un
   // setTimeout lo apagaba **1 segundo despues de que la navegacion ya habia
   // terminado**: un segundo entero de loader sobre una pagina que ya estaba
@@ -65,31 +75,42 @@ export function PageLayout({
                   initialSummary={quoteSummary}
                   discountContext={discountContext}
                 >
-                  {/* En false no se renderiza: ver ENABLE_CART en app/lib/const.js */}
-                  {ENABLE_CART && <CartAside cart={cart} />}
-                  <SearchAside />
-                  <MobileMenuAside menu={header?.menu} shop={header?.shop} />
-                  <AccountStateBar />
-                  {header && (
-                    <Header
-                      header={header}
-                      cart={cart}
-                      publicStoreDomain={publicStoreDomain}
-                    />
+                  {/* Los drawers los abre el header: sin header no hay quien
+                      los abra, así que en pantalla desnuda tampoco van. */}
+                  {!bareLayout && (
+                    <>
+                      {/* En false no se renderiza: ver ENABLE_CART en app/lib/const.js */}
+                      {ENABLE_CART && <CartAside cart={cart} />}
+                      <SearchAside />
+                      <MobileMenuAside
+                        menu={header?.menu}
+                        shop={header?.shop}
+                      />
+                      <AccountStateBar />
+                      {header && (
+                        <Header
+                          header={header}
+                          cart={cart}
+                          publicStoreDomain={publicStoreDomain}
+                        />
+                      )}
+                      <SalesRepBar />
+                    </>
                   )}
-                  <SalesRepBar />
                   <main>
-                    <AccountStateBanner />
+                    {!bareLayout && <AccountStateBanner />}
                     {children}
                   </main>
                   <Toaster />
-                  <Suspense>
-                    <Await resolve={footer}>
-                      {(footer) => (
-                        <Footer menu={footer?.menu} shop={header?.shop} />
-                      )}
-                    </Await>
-                  </Suspense>
+                  {!bareLayout && (
+                    <Suspense>
+                      <Await resolve={footer}>
+                        {(footer) => (
+                          <Footer menu={footer?.menu} shop={header?.shop} />
+                        )}
+                      </Await>
+                    </Suspense>
+                  )}
                 </QuoteProvider>
               </ConsultListProvider>
             </DiscountContextProvider>
