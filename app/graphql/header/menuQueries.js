@@ -48,7 +48,7 @@ export const FALLBACK_HEADER_MENU = {
  * @param {Array<{id: string, title: string, handle: string}>} collections
  * @param {number} [limit] cuántas entran en la barra antes de que no quepan
  */
-export function collectionsHeaderMenu(collections, limit = 5) {
+export function collectionsHeaderMenu(collections, limit = 4) {
   const items = (collections ?? []).slice(0, limit).map((collection) => ({
     id: collection.id,
     url: `/collections/${collection.handle}`,
@@ -57,9 +57,12 @@ export function collectionsHeaderMenu(collections, limit = 5) {
 
   if (!items.length) return null;
 
+  // Inicio y Catálogo primero: las colecciones son atajos a partes del
+  // catálogo, no lo reemplazan. Sin "Catálogo" no queda ninguna entrada que
+  // lleve al listado completo, que es donde están los filtros y la búsqueda.
   return {
     id: 'collections-header-menu',
-    items: [FALLBACK_HEADER_MENU.items[0], ...items],
+    items: [...FALLBACK_HEADER_MENU.items, ...items],
   };
 }
 

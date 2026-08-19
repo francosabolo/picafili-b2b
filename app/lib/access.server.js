@@ -30,6 +30,14 @@ export const PENDING_PATH = '/cuenta-en-revision';
 export const REQUEST_API_PATH = '/api/solicitud-acceso';
 
 /**
+ * Diagnóstico del contexto B2B de la propia sesión. Entra en la allowlist de
+ * la sala de espera porque el caso que hay que diagnosticar es justamente el
+ * de alguien que el gate rebota: si no se puede abrir sin pasar el gate, no
+ * sirve para averiguar por qué el gate lo rebotó.
+ */
+export const B2B_STATUS_API_PATH = '/api/b2b-estado';
+
+/**
  * Lo único que alcanza una sesión **sin company**: la sala de espera y el
  * endpoint que recibe su solicitud.
  *
@@ -37,7 +45,11 @@ export const REQUEST_API_PATH = '/api/solicitud-acceso';
  * que puede usarlo — y como es un `fetch()`, el fallo se ve como un formulario
  * que no hace nada, no como una pantalla de error.
  */
-const PENDING_ALLOWED = new Set([PENDING_PATH, REQUEST_API_PATH]);
+const PENDING_ALLOWED = new Set([
+  PENDING_PATH,
+  REQUEST_API_PATH,
+  B2B_STATUS_API_PATH,
+]);
 
 /**
  * Rutas que tienen que responder sin sesión, sin excepción: son las que

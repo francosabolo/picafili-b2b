@@ -30,7 +30,7 @@ import {
   ACCOUNT_STATES,
   useAccountState,
 } from '~/context/AccountStateContext.jsx';
-import {ENABLE_CART} from '~/lib/const.js';
+import {ENABLE_CART, STORE_LANGUAGES} from '~/lib/const.js';
 import {IconCart} from '~/components/Icon/Icon.jsx';
 /**
  * Marca del storefront: la tienda manda, el sello mayorista firma al lado.
@@ -432,8 +432,46 @@ function HeaderMenuMobileToggle() {
  * @param {string} linkUrl
  * @param {string} pathname
  */
+/**
+ * ¿Este link del menú apunta a la página que se está viendo?
+ *
+ * Era `linkUrl.includes(pathname)`, y eso **marcaba TODO el menú como activo en
+ * la home**: ahí `pathname` es `/`, y toda URL contiene una barra. Con dos
+ * items pasaba desapercibido; con las colecciones adentro, el header se pintó
+ * entero de rosa.
+ *
+ * Ahora compara rutas de verdad: el prefijo de idioma no cuenta —`/es/baberos`
+ * y `/baberos` son la misma página— y un link solo se enciende con su propia
+ * ruta o con una hija (`/collections/baberos` sigue activo dentro de un
+ * producto de esa colección). La home, exacta: si no, se encendería siempre.
+ *
+ * @param {string} linkUrl
+ * @param {string} pathname
+ */
 function activeStyle(linkUrl, pathname) {
-  return linkUrl.includes(pathname) ? styles.active : '';
+  const current = stripLocale(pathname);
+  const target = stripLocale(linkUrl);
+
+  const isActive =
+    target === '/'
+      ? current === '/'
+      : current === target || current.startsWith(`${target}/`);
+
+  return isActive ? styles.active : '';
+}
+
+/**
+ * Saca el prefijo de idioma y la barra final, para poder comparar.
+ *
+ * @param {string} pathname
+ */
+function stripLocale(pathname) {
+  const [, first, ...rest] = (pathname || '/').split('/');
+  const withoutLocale = STORE_LANGUAGES.includes(first?.toUpperCase())
+    ? `/${rest.join('/')}`
+    : pathname;
+
+  return withoutLocale.replace(/\/+$/, '') || '/';
 }
 
 /** @typedef {Pick<LayoutProps, 'header' | 'cart' | 'isLoggedIn'>} HeaderProps */
