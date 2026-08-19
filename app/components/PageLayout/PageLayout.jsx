@@ -3,7 +3,11 @@ import {ENABLE_CART} from '~/lib/const.js';
 import {Suspense} from 'react';
 import {Aside} from '~/components/Aside/Aside.jsx';
 import {Footer} from '~/components/Footer/Footer.jsx';
-import {Header, MobileAsideContent} from '~/components/Header/Header.jsx';
+import {
+  Header,
+  MobileAsideContent,
+  resolveHeaderMenu,
+} from '~/components/Header/Header.jsx';
 import {CartMain} from '~/components/Cart/Cart.jsx';
 import {
   PredictiveSearchForm,
@@ -85,7 +89,7 @@ export function PageLayout({
                       {ENABLE_CART && <CartAside cart={cart} />}
                       <SearchAside />
                       <MobileMenuAside
-                        menu={header?.menu}
+                        menu={resolveHeaderMenu(header)}
                         shop={header?.shop}
                       />
                       <AccountStateBar />

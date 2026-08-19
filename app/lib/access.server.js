@@ -123,12 +123,39 @@ function normalize(pathname) {
  * solicitud: en vez del error en el campo salía "Algo falló de nuestro lado".
  * La convención del repo ya era `fetch` (ver `QuoteContext.jsx`).
  *
+ * ⚠️ **Las navegaciones de Remix piden datos, no documentos.** Una request con
+ * `?_data=` es un `fetch` que espera el protocolo de Remix, y un 302 común lo
+ * rompe de una forma que no se parece a su causa: el fetch sigue el redirect
+ * solo, trae el payload de OTRA ruta, y el árbol termina renderizando sin los
+ * datos del root. El síntoma real, visto al cerrar sesión: "i18n was not
+ * returned from the root layout loader" — el primer componente que pide el
+ * locale explota, y el error de verdad no aparece por ningún lado.
+ *
+ * Remix resuelve esto con un 204 y `X-Remix-Redirect`, que el cliente sigue a
+ * mano. Nosotros corremos ANTES de Remix, así que ese sobre lo tenemos que
+ * armar nosotros — misma razón por la que `/api/*` recibe un 401 y no un
+ * redirect.
+ *
+ * @param {URL} url URL completa de la request
  * @param {string} path ruta sin prefijo de idioma
  * @param {string} destination a dónde mandar a un navegador
  */
-function deny(path, destination) {
+function deny(url, path, destination) {
   if (path.startsWith('/api/')) {
     return json({error: 'Unauthorized'}, {status: 401});
+  }
+
+  if (url.searchParams.has('_data')) {
+    return new Response(null, {
+      status: 204,
+      headers: {
+        'X-Remix-Redirect': destination,
+        'X-Remix-Status': '302',
+        // La sesión cambió (por eso lo estamos rebotando): sin esto el cliente
+        // reusa datos de loaders de la sesión anterior.
+        'X-Remix-Revalidate': 'yes',
+      },
+    });
   }
 
   return redirect(destination);
@@ -155,7 +182,7 @@ export async function checkAccess({request, context}) {
   // porque no es una cuestión de permisos: esa funcionalidad está apagada
   // para todo el mundo.
   if (!ENABLE_CART && CART_PATTERNS.some((pattern) => pattern.test(path))) {
-    return deny(path, `${prefix}/presupuesto`);
+    return deny(url, path, `${prefix}/presupuesto`);
   }
 
   if (!REQUIRE_LOGIN) return null;
@@ -169,7 +196,7 @@ export async function checkAccess({request, context}) {
     // que quien entró por un link a un producto vuelve a ese producto y no a
     // la home.
     const returnTo = encodeURIComponent(url.pathname + url.search);
-    return deny(path, `${prefix}${LOGIN_PATH}?return_to=${returnTo}`);
+    return deny(url, path, `${prefix}${LOGIN_PATH}?return_to=${returnTo}`);
   }
 
   // La aprobación mayorista de esta tienda es un TAG del cliente, no una
@@ -183,12 +210,12 @@ export async function checkAccess({request, context}) {
   // pasa ve lo mismo pase lo que pase.
   if (!hasRequiredCustomerTags(context.customerTags)) {
     if (PENDING_ALLOWED.has(path)) return null;
-    return deny(path, `${prefix}${PENDING_PATH}`);
+    return deny(url, path, `${prefix}${PENDING_PATH}`);
   }
 
   if (REQUIRE_B2B_COMPANY && !context.b2b?.companyId) {
     if (PENDING_ALLOWED.has(path)) return null;
-    return deny(path, `${prefix}${PENDING_PATH}`);
+    return deny(url, path, `${prefix}${PENDING_PATH}`);
   }
 
   // Con company asignada la pantalla de espera ya no describe nada.

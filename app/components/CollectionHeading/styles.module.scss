@@ -38,18 +38,12 @@
   padding: var(--space-12) var(--space-4);
   background-size: cover;
   background-repeat: no-repeat;
-  /* Degradé de marca: crema cálido con un lavado magenta/ámbar */
-  background-image: radial-gradient(
-      120% 90% at 12% 0%,
-      rgb(255 187 89 / 45%) 0%,
-      rgb(255 187 89 / 0%) 60%
-    ),
-    radial-gradient(
-      110% 100% at 95% 100%,
-      rgb(231 36 117 / 30%) 0%,
-      rgb(231 36 117 / 0%) 55%
-    ),
-    linear-gradient(180deg, var(--brand-cream) 0%, var(--brand-cream-deep) 100%);
+  /* Sin degradé: la banda es el mismo crema que el resto de la página.
+     El lavado magenta/ámbar decoraba una franja que no tiene nada que decir
+     —un título— y le ponía un borde de color en medio del catálogo, que es
+     donde el ojo tiene que estar mirando producto. Cuando la colección SÍ
+     tiene imagen, la imagen sigue mandando (se setea inline). */
+  background-color: var(--brand-cream);
 }
 
 .collectionTitle {

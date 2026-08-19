@@ -20,15 +20,20 @@ export const LIST_VIEWS = {CARDS: 'tarjetas', TABLE: 'tabla'};
 const VIEW_PARAM = 'vista';
 
 /**
- * Vista activa según la URL. Cualquier valor desconocido cae en tarjetas: la
- * vista por defecto es la que funciona en cualquier ancho.
+ * Vista activa según la URL. **El default es la tabla**, y cualquier valor
+ * desconocido cae ahí.
+ *
+ * Un comprador mayorista no navega vitrina: compara SKU, specs, stock y precio
+ * de varios productos y carga cantidades. Esa es la tabla. Las tarjetas —que
+ * eran el default heredado de un storefront de retail— obligan a recorrer el
+ * listado de a un producto para hacer lo mismo.
  *
  * @param {URLSearchParams} searchParams
  */
 export function getListView(searchParams) {
-  return searchParams?.get(VIEW_PARAM) === LIST_VIEWS.TABLE
-    ? LIST_VIEWS.TABLE
-    : LIST_VIEWS.CARDS;
+  return searchParams?.get(VIEW_PARAM) === LIST_VIEWS.CARDS
+    ? LIST_VIEWS.CARDS
+    : LIST_VIEWS.TABLE;
 }
 
 export function ListViewToggle() {

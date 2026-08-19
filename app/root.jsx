@@ -21,7 +21,10 @@ import {
 import favicon from './assets/favicon.png';
 import appStyles from './styles/global.scss?url';
 import {PageLayout} from '~/components/PageLayout/PageLayout.jsx';
-import {HEADER_QUERY} from '~/graphql/header/menuQueries.js';
+import {
+  HEADER_COLLECTIONS_QUERY,
+  HEADER_QUERY,
+} from '~/graphql/header/menuQueries.js';
 import {FOOTER_QUERY} from '~/graphql/footer/footerQueries.js';
 import {UserProvider} from '~/context/UserContext.jsx';
 import {useTranslation} from '~/i18n/index.jsx';
@@ -102,17 +105,27 @@ async function loadCriticalData({context, request}) {
   // un `await` de una promesa acá abajo llegaría tarde. Es barato — lee la
   // sesión, no la red: el refresh de token ya corrió al armar el contexto.
   const loggedIn = await context.customerAccount.isLoggedIn();
-  const [header] = await Promise.all([
+  const [header, collections] = await Promise.all([
     storefront.query(HEADER_QUERY, {
       cache: storefront.CacheLong(),
       variables: {
         headerMenuHandle: 'header-menu', // Adjust to your header menu handle
       },
     }),
+    // Las colecciones son el menú cuando la tienda no tiene `header-menu`
+    // cargado — que es el caso de Picafili. Se cachea: son títulos y handles,
+    // no lleva precios (ver la invariante de caché en AGENTS.md).
+    storefront.query(HEADER_COLLECTIONS_QUERY, {
+      cache: storefront.CacheLong(),
+      variables: {first: 10},
+    }),
   ]);
 
   return {
-    header,
+    header: {
+      ...header,
+      collections: collections?.collections?.nodes ?? [],
+    },
     i18n,
     // Origen absoluto de esta request. Las funciones `meta` de Remix no ven la
     // request, y el canonical, las alternas por idioma y las tarjetas sociales
