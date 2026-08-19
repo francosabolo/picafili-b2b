@@ -43,13 +43,9 @@ export default function AccountMenu() {
       >
         <span>{t('account.addresses')}</span>
       </NavLink>
-      <NavLink
-        className={styles.menuPill}
-        to="/blogs/wikiHER"
-        style={isActiveStyle}
-      >
-        <span>{t('account.wiki')}</span>
-      </NavLink>
+      {/* Acá había un link a `/blogs/wikiHER` — la wiki de la marca del fork,
+          un blog que esta tienda no tiene: llevaba a un 404 desde el menú de
+          cuenta de todos los clientes. */}
       <div className={styles.menuPill__right}></div>
       <LogoutButton />
     </nav>

@@ -1,9 +1,8 @@
+/* Ficha de pedido. Los grises del fork (#f9f9f9, #f1f1f1, #ddd) se cambian por
+   los tokens de la marca: en una página crema, tres grises distintos hacen que
+   la tabla parezca pegada de otro sitio. */
 .account-order {
-  padding: var(--space-6);
-  background-color: #f9f9f9;
-  border-radius: var(--radius-sm);
   width: 100%;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 }
 
 .fieldsContainer {
@@ -37,16 +36,50 @@ th,
 td {
   padding: var(--space-3);
   text-align: left;
-  border-bottom: 1px solid #ddd;
+  border-bottom: 1px solid var(--color-grey-alt);
 }
 
-th {
-  background-color: #f1f1f1;
+thead th {
+  background-color: transparent;
+  font-size: var(--text-sm);
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: var(--brand-petrol);
+  border-bottom-width: 2px;
 }
 
 tfoot tr th,
 tfoot tr td {
   font-weight: bold;
+  border-bottom: none;
+}
+
+/* Los importes en columna, a la derecha y con cifras de ancho fijo: comparar
+   dos números es mirar, no contar dígitos. */
+.amountCell {
+  text-align: right;
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+}
+
+.quantityCell {
+  text-align: center;
+  font-variant-numeric: tabular-nums;
+  width: 6rem;
+}
+
+/* El total cierra el bloque: una línea arriba lo separa de subtotal e
+   impuesto, que son el camino hasta él. */
+.totalRow th,
+.totalRow td {
+  border-top: 2px solid var(--brand-petrol);
+  font-size: var(--text-lg);
+  padding-top: var(--space-4);
+}
+
+.placedOn {
+  color: var(--brand-petrol);
+  opacity: 0.7;
 }
 
 .menuPill {

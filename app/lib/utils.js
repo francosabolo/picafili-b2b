@@ -493,3 +493,32 @@ export function formatOptionName(name) {
   if (!text) return '';
   return text.charAt(0).toUpperCase() + text.slice(1);
 }
+
+/**
+ * Fecha larga en el idioma del portal.
+ *
+ * Existe porque `toDateString()` devuelve "Wed Apr 23 2025" —en inglés
+ * siempre, sin importar el idioma ni el país de la tienda— y estaba escrito en
+ * dos pantallas distintas. Mes en palabra a propósito: 4/23 y 23/4 son la
+ * misma fecha escrita para dos países, y en un historial de pedidos esa
+ * ambigüedad se paga preguntando por teléfono.
+ *
+ * @param {string} value fecha ISO
+ * @param {string} [language] `ES`, `EN`, `FR`
+ */
+export function formatLongDate(value, language) {
+  if (!value) return '';
+
+  const date = new Date(value);
+  if (Number.isNaN(date.getTime())) return '';
+
+  try {
+    return new Intl.DateTimeFormat(language?.toLowerCase() || 'es', {
+      day: 'numeric',
+      month: 'long',
+      year: 'numeric',
+    }).format(date);
+  } catch (error) {
+    return date.toISOString().slice(0, 10);
+  }
+}
