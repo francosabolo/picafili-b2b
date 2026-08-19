@@ -156,8 +156,6 @@
     "po-placeholder": "Nº de OC de tu empresa",
     "download-quote": "Descargar cotización (CSV)",
     "download-price-list": "Descargar lista de precios (CSV)",
-    "email-label": "Email para recibir el pedido",
-    "email-placeholder": "compras@tucomercio.com",
     "articles-one": "1 artículo en el presupuesto",
     "articles-many": "{{count}} artículos en el presupuesto",
     "po-toggle": "+ Agregar N° de orden de compra",
@@ -171,7 +169,9 @@
     "quote": "Cotización",
     "placed_on": "Emitida el",
     "discounted_price": "Precio con descuento",
-    "name": "Nombre"
+    "name": "Nombre",
+    "email-sent-to": "Te lo enviamos a",
+    "email-missing": "Iniciá sesión para recibir el presupuesto."
   },
   "price": {
     "from": "Desde",

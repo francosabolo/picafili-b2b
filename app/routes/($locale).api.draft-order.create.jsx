@@ -26,8 +26,13 @@ export async function action({request, context}) {
     return json({error: 'Invalid JSON'}, {status: 400});
   }
 
+  // El email del pedido sale de la SESIÓN, no del cuerpo. Antes lo escribía el
+  // navegador: cualquiera podía emitir un presupuesto a nombre de otra
+  // casilla, y el comprador tenía que tipear un dato que el portal ya sabe.
+  const email = context.customerEmail ?? body?.email;
+
   const {input, error} = buildDraftOrderInput(
-    body,
+    {...body, email},
     canApplyRepDiscounts(request),
   );
 

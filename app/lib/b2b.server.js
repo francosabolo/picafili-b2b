@@ -20,11 +20,11 @@ import {CUSTOMER_COMPANY_QUERY} from '~/graphql/customer-account/CustomerCompany
  * red no puede convertirse en un portal abierto.
  *
  * @param {import('@shopify/remix-oxygen').AppLoadContext} context
- * @returns {Promise<{tags: string[], b2b: object|null}>}
+ * @returns {Promise<{tags: string[], email: string|null, b2b: object|null}>}
  */
 export async function getCustomerContext(context) {
   const {customerAccount} = context;
-  const empty = {tags: [], b2b: null};
+  const empty = {tags: [], email: null, b2b: null};
 
   try {
     const loggedIn = await customerAccount.isLoggedIn();
@@ -36,14 +36,34 @@ export async function getCustomerContext(context) {
 
     const tags = data?.customer?.tags ?? [];
 
-    const company =
-      data?.customer?.companyContacts?.edges?.[0]?.node?.company ?? null;
+    // El email de la sesión. Es el que manda para emitir el presupuesto: el
+    // que viajaba en el formulario lo escribía el navegador, así que no era
+    // dato de identidad sino un campo de texto.
+    const email = data?.customer?.emailAddress?.emailAddress ?? null;
 
-    if (!company) return {tags, b2b: null};
+    const contact = data?.customer?.companyContacts?.edges?.[0]?.node ?? null;
+    const company = contact?.company ?? null;
 
-    const locations = (company.locations?.edges ?? [])
+    if (!company) return {tags, email, b2b: null};
+
+    // Primero las ubicaciones DEL CONTACTO —las que esta persona puede
+    // usar— y recién después las de la empresa. La distinción no es teórica:
+    // un contacto sin rol asignado ve la empresa y ninguna ubicación, que es
+    // el estado en el que el portal deja entrar y no muestra un solo precio.
+    const locations = (
+      contact?.locations?.edges?.length
+        ? contact.locations.edges
+        : company.locations?.edges ?? []
+    )
       .map((edge) => edge?.node)
       .filter(Boolean);
+
+    if (!locations.length) {
+      // eslint-disable-next-line no-console
+      console.warn(
+        `[b2b] "${company.name}" no expone ninguna company location para este contacto: sin ubicación no hay buyer context y el portal no puede mostrar precios. Suele ser un contacto sin rol asignado en la ubicación (Clientes → Empresas → ubicación → roles).`,
+      );
+    }
 
     // ⚠️ Con varias locations se toma la PRIMERA, y eso es un default, no una
     // decisión: cada company location puede tener su catálogo y su lista de
@@ -61,6 +81,7 @@ export async function getCustomerContext(context) {
 
     return {
       tags,
+      email,
       b2b: {
         companyId: company.id,
         companyName: company.name,

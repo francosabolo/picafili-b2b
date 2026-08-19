@@ -6,10 +6,7 @@ import {
 } from '@remix-run/react';
 import {Suspense, useEffect, useState} from 'react';
 import styles from './styles.module.scss';
-import {
-  collectionsHeaderMenu,
-  FALLBACK_HEADER_MENU,
-} from '~/graphql/header/menuQueries.js';
+import {FALLBACK_HEADER_MENU} from '~/graphql/header/menuQueries.js';
 import {
   IconAccount,
   IconCaret,
@@ -72,26 +69,22 @@ export function BrandMark() {
  * @param {HeaderProps}
  */
 /**
- * El menú que se muestra, en orden de preferencia: el que cargó la tienda, las
- * colecciones de la tienda, y recién después los dos links de emergencia.
+ * El menú que se muestra: el que cargó la tienda o, si no hay ninguno, dos
+ * links de emergencia.
  *
- * El del medio es el que cambia el resultado acá: Picafili no tiene
- * `header-menu`, así que el header mostraba "Inicio · Catálogo" y ninguna
- * categoría — y el menú **mobile no se renderizaba en absoluto**, porque su
- * condición era tener menú de Shopify.
+ * Estuvieron un rato las **colecciones de la tienda** acá y se sacaron a
+ * propósito: las categorías ya viven en el listado —con filtros, orden y
+ * conteo— así que en la barra eran una segunda navegación que decía lo mismo,
+ * partida en dos filas y comiéndose el primer pliegue de cada página.
  *
  * Vive exportada y no dentro del componente porque el drawer mobile la
- * necesita igual, y dos derivaciones distintas del mismo menú es cómo se
- * termina con un menú en escritorio y otro en el teléfono.
+ * necesita igual, y dos derivaciones del mismo menú es cómo se termina con un
+ * menú en escritorio y otro en el teléfono.
  *
- * @param {{menu?: object|null, collections?: Array}|null} header
+ * @param {{menu?: object|null}|null} header
  */
 export function resolveHeaderMenu(header) {
-  return (
-    header?.menu ??
-    collectionsHeaderMenu(header?.collections) ??
-    FALLBACK_HEADER_MENU
-  );
+  return header?.menu ?? FALLBACK_HEADER_MENU;
 }
 
 export function Header({header, cart, publicStoreDomain, user = null}) {

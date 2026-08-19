@@ -147,3 +147,11 @@
   background: var(--surface-error);
   color: var(--text-error);
 }
+
+/* A dónde llega el presupuesto. Es una línea de texto y no un campo porque el
+   email sale de la sesión — ver EmailRecipient en QuoteSubmitForm.jsx. */
+.recipient {
+  font-size: var(--text-sm);
+  color: var(--brand-petrol);
+  margin: 0 0 var(--space-3);
+}

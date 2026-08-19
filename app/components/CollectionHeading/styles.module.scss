@@ -26,7 +26,10 @@
   height: 100%;
   width: 100%;
   justify-content: center;
-  align-items: center;
+  /* A la izquierda, alineado con la descripción y con los filtros. Centrado,
+     el título quedaba flotando solo en el medio de una banda vacía y no
+     compartía eje con nada de lo que sigue. */
+  align-items: flex-start;
   left: 0;
   top: 0;
   /* 48vh de degrade sin imagen es media pantalla de nada antes del catalogo.
@@ -49,7 +52,7 @@
 .collectionTitle {
   color: var(--brand-petrol);
   margin-top: auto;
-  text-align: center;
+  text-align: left;
   font-weight: 800;
   /* Sin override de tamaño: usa el h1 de la escala (--text-display, fluido).
      Habia aca un `font-size: 3.75rem` SOLO para mobile, puesto para achicar el

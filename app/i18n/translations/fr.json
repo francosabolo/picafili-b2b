@@ -155,8 +155,6 @@
     "po-placeholder": "N° de BC de votre entreprise",
     "download-quote": "Télécharger le devis (CSV)",
     "download-price-list": "Télécharger le tarif (CSV)",
-    "email-label": "Email pour recevoir la commande",
-    "email-placeholder": "achats@votreentreprise.com",
     "articles-one": "1 article dans le devis",
     "articles-many": "{{count}} articles dans le devis",
     "po-toggle": "+ Ajouter un n° de bon de commande",
@@ -170,7 +168,9 @@
     "quote": "Devis",
     "placed_on": "Émis le",
     "discounted_price": "Prix remisé",
-    "name": "Nom"
+    "name": "Nom",
+    "email-sent-to": "Nous l’envoyons à",
+    "email-missing": "Connectez-vous pour recevoir le devis."
   },
   "price": {
     "from": "à partir de",

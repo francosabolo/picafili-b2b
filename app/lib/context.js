@@ -60,7 +60,11 @@ export async function createAppLoadContext(request, env, executionContext) {
   // `customerTags` es la puerta (quien entra) y `b2b` es el precio (de que
   // catalogo sale cada importe). Van separados porque hoy la tienda tiene lo
   // primero y no lo segundo — ver app/lib/customer-tags.js.
-  const {tags: customerTags, b2b} = await getCustomerContext(hydrogenContext);
+  const {
+    tags: customerTags,
+    email: customerEmail,
+    b2b,
+  } = await getCustomerContext(hydrogenContext);
 
   // Los descuentos de acuerdo y categoria se resuelven en el SERVIDOR, una vez
   // por request. Nunca en el navegador: un porcentaje que llega del cliente y
@@ -72,6 +76,7 @@ export async function createAppLoadContext(request, env, executionContext) {
     adminApiClient: shopifyAdminApiClient,
     b2b,
     customerTags,
+    customerEmail,
     discountContext,
     // declare additional Remix loader context
   };

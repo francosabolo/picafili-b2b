@@ -1,5 +1,6 @@
 import {useEffect, useRef, useState} from 'react';
 import {Link} from '@remix-run/react';
+import {useRootLoaderData} from '~/lib/root-data.js';
 import {useQuote} from '~/context/QuoteContext.jsx';
 import {useTranslation} from '~/i18n/index.jsx';
 import {MAX_PO_LENGTH} from '~/lib/draft-order.js';
@@ -48,7 +49,7 @@ export function QuoteSubmitForm({compact = false}) {
       className={`${styles.form} ${compact ? styles.compact : ''}`}
       onSubmit={handleSubmit}
     >
-      <EmailField onChange={setQuoteEmail} />
+      <EmailRecipient onChange={setQuoteEmail} />
       <PoField onChange={setQuotePoNumber} />
 
       {quoteResponse?.type === 'error' && (
@@ -64,36 +65,41 @@ export function QuoteSubmitForm({compact = false}) {
   );
 }
 
-function EmailField({onChange}) {
+/**
+ * A dónde llega el presupuesto.
+ *
+ * **Era un campo de texto obligatorio, y no tenía por qué serlo.** El portal es
+ * cerrado: para llegar hasta acá la persona ya inició sesión, así que el email
+ * lo sabe el servidor. Pedirlo de nuevo es trabajo para el comprador, un lugar
+ * más donde equivocarse de tecla, y —lo peor— hacía que el destinatario del
+ * pedido fuera un dato escrito en el navegador en vez de la identidad de la
+ * sesión.
+ *
+ * Se sigue empujando al contexto del presupuesto para no cambiar el payload;
+ * el que manda igual es el servidor, que lo pisa con el de la sesión al emitir
+ * el draft order.
+ *
+ * @param {{onChange: (email: string) => void}}
+ */
+function EmailRecipient({onChange}) {
   const {t} = useTranslation();
+  const data = useRootLoaderData();
+  const email = data?.customerEmail ?? null;
 
-  // El email es donde llega el presupuesto: sin etiqueta ni icono se leía como
-  // un campo de notas opcional.
+  useEffect(() => {
+    if (email) onChange(email);
+  }, [email, onChange]);
+
+  if (!email) {
+    // Sin sesión no debería llegar acá, pero si llega, mejor un aviso honesto
+    // que un formulario que va a fallar del lado del servidor.
+    return <p className={styles.fieldLabel}>{t('quoting.email-missing')}</p>;
+  }
+
   return (
-    <label className={styles.field}>
-      <span className={styles.fieldLabel}>{t('quoting.email-label')}</span>
-      <span className={styles.emailControl}>
-        <svg
-          className={styles.emailIcon}
-          viewBox="0 0 20 20"
-          aria-hidden="true"
-          fill="none"
-          stroke="currentColor"
-          strokeWidth="1.6"
-        >
-          <rect x="2" y="4" width="16" height="12" rx="2" />
-          <path d="m2.5 5.5 7.5 5.5 7.5-5.5" />
-        </svg>
-        <input
-          className={styles.fieldInput}
-          name="email"
-          type="email"
-          required
-          placeholder={t('quoting.email-placeholder')}
-          onChange={(event) => onChange(event.target.value)}
-        />
-      </span>
-    </label>
+    <p className={styles.recipient}>
+      {t('quoting.email-sent-to')} <strong>{email}</strong>
+    </p>
   );
 }
 

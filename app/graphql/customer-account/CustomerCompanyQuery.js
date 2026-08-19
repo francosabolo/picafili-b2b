@@ -24,6 +24,24 @@ export const CUSTOMER_COMPANY_QUERY = `#graphql
       companyContacts(first: 1) {
         edges {
           node {
+            # Las ubicaciones a las que **este contacto** pertenece. Es la
+            # fuente correcta y no company.locations: la API expone la
+            # empresa entera, pero solo las ubicaciones donde la persona tiene
+            # rol. Un contacto sin rol devuelve la empresa con cero ubicaciones
+            # — y sin ubicación no hay buyer context, o sea que el portal entra
+            # pero no muestra un solo precio.
+            locations(first: 10) {
+              edges {
+                node {
+                  id
+                  name
+                  shippingAddress {
+                    countryCode
+                    formattedAddress
+                  }
+                }
+              }
+            }
             company {
               id
               name
