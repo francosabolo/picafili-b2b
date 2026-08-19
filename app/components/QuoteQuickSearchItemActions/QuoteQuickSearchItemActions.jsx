@@ -417,23 +417,42 @@ export const QuoteItemActions = ({
             <IconClose viewBox="0 0 20 20"></IconClose>
           </button>
         </div>
-        <button
-          className={styles.addToQuoteButton}
-          onClick={handleAdd}
-          style={
-            viewport === 'desktop'
-              ? {
-                  animationName: animation,
-                  visibility: selectorIsOpen ? 'hidden' : 'visible',
-                }
-              : {
-                  visibility:
-                    selectorIsOpen && !selectorIsHidden ? 'hidden' : 'visible',
-                }
-          }
-        >
-          {viewport === 'mobile' ? '+' : t('quoting.add-to-quote')}
-        </button>
+        {/* Con el presupuesto apagado este botón agregaba a una nota de pedido
+            que ya no se puede emitir: en mobile el producto entraba a un lugar
+            sin salida. Va al carrito, como en escritorio. */}
+        {ENABLE_QUOTE ? (
+          <button
+            className={styles.addToQuoteButton}
+            onClick={handleAdd}
+            style={
+              viewport === 'desktop'
+                ? {
+                    animationName: animation,
+                    visibility: selectorIsOpen ? 'hidden' : 'visible',
+                  }
+                : {
+                    visibility:
+                      selectorIsOpen && !selectorIsHidden
+                        ? 'hidden'
+                        : 'visible',
+                  }
+            }
+          >
+            {viewport === 'mobile' ? '+' : t('quoting.add-to-quote')}
+          </button>
+        ) : (
+          <AddToCartButton
+            lines={[{merchandiseId: quoteItem.id, quantity: inputQuantity}]}
+            wrapperClassName={styles.cartActionWrap}
+            buttonClassName={styles.addToQuoteButton}
+            productTitle={quoteItem?.product?.title}
+            addedClassName={styles.addedToCart}
+            confirmedLabel={null}
+            disabled={!quoteItem?.availableForSale}
+          >
+            {viewport === 'mobile' ? '+' : t('cart.add')}
+          </AddToCartButton>
+        )}
       </>
     </div>
   );

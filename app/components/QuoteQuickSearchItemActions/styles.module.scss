@@ -402,11 +402,21 @@
   .addedToCart {
     background: var(--brand-cream);
     color: var(--b2b-savings);
-    border: 1px solid color-mix(in srgb, var(--b2b-savings) 45%, transparent);
-    /* Cuadrado: solo lleva el tilde y con el padding del texto quedaba un
-       botón ancho con un icono perdido en el medio. */
-    width: 2rem;
-    padding: 0;
+    border: 1px solid var(--b2b-savings);
+    /* `min-width` y no `width`: con ancho fijo, cualquier variante que sí
+       muestre texto se desbordaba del botón — pasó en la compra rápida, donde
+       el rótulo salía por el costado. Así el botón crece si hay que crecer. */
+    min-width: 2.25rem;
+    padding: 0 var(--space-2);
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+
+    /* El tilde a 12px del texto compacto era una mancha. */
+    svg {
+      width: 1.1rem;
+      height: 1.1rem;
+    }
   }
 }
 
