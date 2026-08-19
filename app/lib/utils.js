@@ -522,3 +522,33 @@ export function formatLongDate(value, language) {
     return date.toISOString().slice(0, 10);
   }
 }
+
+/**
+ * Cuántas unidades se pueden comprar de una variante, o `null` si no hay tope
+ * conocido.
+ *
+ * Dos fuentes, y se toma la más chica:
+ *
+ * - `quantityRule.maximum` — el máximo por pedido del catálogo B2B. Es un
+ *   límite comercial: "de este producto, hasta 12 por pedido".
+ * - `quantityAvailable` — el stock. **Hoy llega siempre `null`**: pedirlo exige
+ *   el scope `unauthenticated_read_product_inventory` en el token de
+ *   Storefront, y sin él Shopify responde ACCESS_DENIED y ensucia la query
+ *   entera, así que el campo ni se pide (E7 del backlog). El día que el scope
+ *   exista, esto empieza a funcionar sin tocar una línea.
+ *
+ * @param {{quantityRule?: {maximum?: number|string}, quantityAvailable?: number|null}|null} variant
+ * @returns {number|null}
+ */
+export function getPurchaseCeiling(variant) {
+  const limits = [
+    Number(variant?.quantityRule?.maximum) || null,
+    Number.isFinite(Number(variant?.quantityAvailable))
+      ? Number(variant.quantityAvailable)
+      : null,
+  ].filter((value) => Number.isFinite(value) && value > 0);
+
+  if (!limits.length) return null;
+
+  return Math.min(...limits);
+}

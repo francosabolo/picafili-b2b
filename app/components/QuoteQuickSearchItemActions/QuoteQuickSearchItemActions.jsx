@@ -4,6 +4,8 @@ import {CartForm} from '@shopify/hydrogen';
 import {useFetcher} from '@remix-run/react';
 import {useCartLine} from '~/context/CartLinesContext.jsx';
 import {useCartQuantityLimit} from '~/hooks/useCartQuantityLimit.jsx';
+import {getPurchaseCeiling} from '~/lib/utils.js';
+import {useToast} from '~/context/ToastContext.jsx';
 import {AddToCartButton} from '~/components/AddToCartButton/AddToCartButton.jsx';
 import {IconCartPlus} from '~/components/Icon/Icon.jsx';
 import {useQuote} from '~/context/QuoteContext.jsx';
@@ -35,6 +37,7 @@ export const QuoteItemActions = ({
 
   // La línea del carrito de esta variante, si está. Con el presupuesto
   // encendido no se mira: ahí manda la nota de pedido y el carrito no existe.
+  const {push} = useToast();
   const cartLine = useCartLine(ENABLE_QUOTE ? null : quoteItem?.id);
   const cartFetcher = useFetcher();
   const [requestedQuantity, setRequestedQuantity] = useState(null);
@@ -248,7 +251,10 @@ export const QuoteItemActions = ({
     const rule = quoteItem?.quantityRule ?? {};
     const min = Number(rule.minimum) || 1;
     const step = Number(rule.increment) || 1;
-    const max = rule.maximum ? Number(rule.maximum) : null;
+    // El techo: lo que permita el catálogo y, cuando el scope de inventario
+    // exista, lo que haya en stock. Ver `getPurchaseCeiling`.
+    const ceiling = getPurchaseCeiling(quoteItem);
+    const max = ceiling;
     const sellsByBulk = step > 1 || min > 1;
 
     /** Ajusta al múltiplo válido más cercano dentro del rango permitido. */
@@ -272,6 +278,17 @@ export const QuoteItemActions = ({
 
     const setQuantity = (next) => {
       const value = clamp(next);
+
+      // Avisar ANTES de pedirlo. El aviso reactivo —comparar lo que volvió
+      // contra lo pedido— llega después de una vuelta de red y solo cuando
+      // Shopify recorta; con un tope conocido, el stepper puede decirlo en el
+      // momento en que la persona intenta pasarse.
+      if (next > value && ceiling && value >= ceiling) {
+        push({
+          title: t('cart.max-quantity'),
+          detail: t('cart.max-quantity-detail', {quantity: ceiling}),
+        });
+      }
 
       if (isInQuote) {
         updateQuoteItem(quoteItem, value);

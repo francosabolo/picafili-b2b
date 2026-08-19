@@ -5,7 +5,11 @@ import {Link} from '@remix-run/react';
 import {useVariantUrl} from '~/lib/variants';
 import {IconRemoveItem} from '~/components/Icon/Icon.jsx';
 import styles from './styles.module.scss';
-import {formatOptionName, getSavingsPercent} from '~/lib/utils.js';
+import {
+  formatOptionName,
+  getPurchaseCeiling,
+  getSavingsPercent,
+} from '~/lib/utils.js';
 import {useCartQuantityLimit} from '~/hooks/useCartQuantityLimit.jsx';
 import {MinimumOrderNotice} from '~/components/Quote/MinimumOrderNotice.jsx';
 
@@ -341,6 +345,12 @@ function CartLineQuantity({line}) {
   const prevQuantity = Number(Math.max(0, quantity - 1).toFixed(0));
   const nextQuantity = Number((quantity + 1).toFixed(0));
 
+  // Tope de compra conocido: máximo por pedido del catálogo y —cuando el token
+  // tenga el scope de inventario— stock disponible. Con el tope alcanzado el
+  // "+" se apaga en vez de mandar una operación que Shopify va a recortar.
+  const ceiling = getPurchaseCeiling(line.merchandise);
+  const atCeiling = Boolean(ceiling && quantity >= ceiling);
+
   return (
     <div className={styles.quantity}>
       <div className={styles.stepper}>
@@ -364,8 +374,9 @@ function CartLineQuantity({line}) {
             <button
               type="submit"
               aria-label={t('cart.increase')}
-              disabled={busy}
+              disabled={busy || atCeiling}
               aria-busy={busy || undefined}
+              title={atCeiling ? t('cart.max-quantity') : undefined}
               name="increase-quantity"
               value={nextQuantity}
             >
@@ -375,6 +386,11 @@ function CartLineQuantity({line}) {
         </CartLineUpdateButton>
       </div>
       <CartLineRemoveButton lineIds={[lineId]} />
+      {atCeiling && (
+        <span className={styles.ceilingNote}>
+          {t('cart.max-quantity-detail', {quantity: ceiling})}
+        </span>
+      )}
     </div>
   );
 }

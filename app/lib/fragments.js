@@ -26,6 +26,15 @@ export const CART_QUERY_FRAGMENT = `#graphql
       ... on ProductVariant {
         id
         availableForSale
+        # Máximo por pedido del catálogo B2B: lo usa el stepper para apagar el
+        # "+" antes de mandar una operación que Shopify va a recortar.
+        #
+        # quantityAvailable NO se pide: exige el scope
+        # unauthenticated_read_product_inventory en el token de Storefront y sin
+        # él Shopify responde ACCESS_DENIED y ensucia la query entera (E7).
+        quantityRule {
+          maximum
+        }
         compareAtPrice {
           ...Money
         }

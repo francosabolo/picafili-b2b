@@ -192,6 +192,7 @@ export type CartLineFragment = Pick<
     StorefrontAPI.ProductVariant,
     'id' | 'availableForSale' | 'requiresShipping' | 'title'
   > & {
+    quantityRule: Pick<StorefrontAPI.QuantityRule, 'maximum'>;
     compareAtPrice?: StorefrontAPI.Maybe<
       Pick<StorefrontAPI.MoneyV2, 'currencyCode' | 'amount'>
     >;
@@ -239,6 +240,7 @@ export type CartApiQueryFragment = Pick<
           StorefrontAPI.ProductVariant,
           'id' | 'availableForSale' | 'requiresShipping' | 'title'
         > & {
+          quantityRule: Pick<StorefrontAPI.QuantityRule, 'maximum'>;
           compareAtPrice?: StorefrontAPI.Maybe<
             Pick<StorefrontAPI.MoneyV2, 'currencyCode' | 'amount'>
           >;
