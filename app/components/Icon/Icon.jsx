@@ -214,15 +214,36 @@ export function IconCart({stroke = 'currentColor', count, styles, ...props}) {
     <div className={styles.iconCartWrapper}>
       <Icon
         {...props}
-        fill="transparent"
+        viewBox="0 0 24 24"
+        fill="none"
         className={`${count !== 0 ? 'cartFilled' : 'cartEmpty'} ${
           styles.iconCart
         }`}
         stroke={stroke}
       >
+        {/* Tomado del theme de la tienda retail: trazo de 1.5 y
+            `currentColor`, como el resto de esa familia. El portal y la tienda
+            son la misma marca vista por el mismo comprador. */}
         <path
-          d="M11.0058 0.333332C14.1324 0.333332 16.7029 2.79023 16.8333 5.90338H16.8028C16.8065 5.99387 16.7891 6.08398 16.752 6.16667H16.9342C18.354 6.16667 19.8408 7.15076 20.437 9.52644L20.5018 9.80675L21.3988 17.0339C22.0444 21.6434 19.5225 23.5818 16.0822 23.6639L15.8516 23.6667H6.17995C2.68374 23.6667 -0.010365 22.3926 0.581994 17.3475L0.622389 17.0339L1.52975 9.80675C1.97716 7.24838 3.47921 6.23929 4.92647 6.17047L5.087 6.16667H5.1782C5.16282 6.07957 5.16282 5.99047 5.1782 5.90338C5.30868 2.79023 7.87916 0.333332 11.0058 0.333332ZM7.61316 10.0508C7.04371 10.0508 6.58208 10.526 6.58208 11.1121C6.58208 11.6982 7.04371 12.1733 7.61316 12.1733C8.18262 12.1733 8.64425 11.6982 8.64425 11.1121L8.63622 10.979C8.57259 10.4557 8.13881 10.0508 7.61316 10.0508ZM14.3668 10.0508C13.7973 10.0508 13.3357 10.526 13.3357 11.1121C13.3357 11.6982 13.7973 12.1733 14.3668 12.1733C14.9362 12.1733 15.3979 11.6982 15.3979 11.1121C15.3979 10.526 14.9362 10.0508 14.3668 10.0508ZM10.96 1.85278C8.71525 1.85278 6.89548 3.66629 6.89548 5.90338C6.91086 5.99047 6.91086 6.07957 6.89548 6.16667H15.0754C15.0429 6.0826 15.0257 5.99345 15.0246 5.90338C15.0246 3.66629 13.2048 1.85278 10.96 1.85278Z"
-          fill="currentColor"
+          d="M2.5 3.5h1.9l2.72 11.9a1.9 1.9 0 0 0 1.85 1.47h8.36a1.9 1.9 0 0 0 1.85-1.45L21 8.4H5.75"
+          stroke="currentColor"
+          strokeWidth="1.5"
+          strokeLinecap="round"
+          strokeLinejoin="round"
+        />
+        <path
+          d="M9.2 21.3a1.55 1.55 0 1 1 0-3.1 1.55 1.55 0 0 1 0 3.1Z"
+          stroke="currentColor"
+          strokeWidth="1.5"
+          strokeLinecap="round"
+          strokeLinejoin="round"
+        />
+        <path
+          d="M17 21.3a1.55 1.55 0 1 1 0-3.1 1.55 1.55 0 0 1 0 3.1Z"
+          stroke="currentColor"
+          strokeWidth="1.5"
+          strokeLinecap="round"
+          strokeLinejoin="round"
         />
       </Icon>
       {count !== 0 ? <div className={styles.cartBubble}>{count}</div> : null}
@@ -285,11 +306,22 @@ export function IconLogin(props) {
  */
 export function IconAccount(props) {
   return (
-    <Icon {...props}>
+    <Icon {...props} viewBox="0 0 24 24" fill="none">
       <title>Account</title>
+      {/* Mismo ícono de cuenta que el theme de la tienda retail. */}
       <path
-        d="M9.99996 15.7029C15.0617 15.7029 19.3333 16.5254 19.3333 19.6988C19.3333 22.8733 15.0337 23.6667 9.99996 23.6667C4.93939 23.6667 0.666626 22.8442 0.666626 19.6708C0.666626 16.4963 4.96624 15.7029 9.99996 15.7029ZM9.99996 0.333332C13.4289 0.333332 16.1763 3.07969 16.1763 6.50623C16.1763 9.93276 13.4289 12.6803 9.99996 12.6803C6.57217 12.6803 3.82364 9.93276 3.82364 6.50623C3.82364 3.07969 6.57217 0.333332 9.99996 0.333332Z"
-        fill="currentColor"
+        d="M5 20V19C5 15.134 8.13401 12 12 12V12C15.866 12 19 15.134 19 19V20"
+        stroke="currentColor"
+        strokeWidth="1.5"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      />
+      <path
+        d="M12 12C14.2091 12 16 10.2091 16 8C16 5.79086 14.2091 4 12 4C9.79086 4 8 5.79086 8 8C8 10.2091 9.79086 12 12 12Z"
+        stroke="currentColor"
+        strokeWidth="1.5"
+        strokeLinecap="round"
+        strokeLinejoin="round"
       />
     </Icon>
   );
@@ -325,11 +357,23 @@ export function IconSearch(props) {
   const {t} = useTranslation();
 
   return (
-    <Icon {...props}>
+    <Icon {...props} viewBox="0 0 24 24" fill="none">
       <title>{t('general.search')}</title>
+      {/* La lupa del theme de la tienda: contorno, no silueta rellena. La
+          anterior era una masa negra que en el header se leía como un botón. */}
       <path
-        d="M18.5575 18.5967C19.0085 18.1488 19.7313 18.1488 20.1823 18.5967L23.1627 21.0025H23.2145C23.8175 21.612 23.8175 22.6001 23.2145 23.2096C22.6115 23.819 21.6339 23.819 21.0309 23.2096L18.5575 20.3749L18.4637 20.269C18.2888 20.0477 18.1923 19.7718 18.1923 19.4858C18.1923 19.1521 18.3237 18.8322 18.5575 18.5967ZM10.3406 0.333332C12.9947 0.333332 15.5401 1.39901 17.4168 3.29592C19.2935 5.19284 20.3479 7.7656 20.3479 10.4482C20.3479 16.0346 15.8675 20.5632 10.3406 20.5632C4.81377 20.5632 0.333374 16.0346 0.333374 10.4482C0.333374 4.86193 4.81377 0.333332 10.3406 0.333332Z"
-        fill="currentColor"
+        d="M17 17L21 21"
+        stroke="currentColor"
+        strokeWidth="1.5"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      />
+      <path
+        d="M3 11C3 15.4183 6.58172 19 11 19C13.213 19 15.2161 18.1015 16.6644 16.6493C18.1077 15.2022 19 13.2053 19 11C19 6.58172 15.4183 3 11 3C6.58172 3 3 6.58172 3 11Z"
+        stroke="currentColor"
+        strokeWidth="1.5"
+        strokeLinecap="round"
+        strokeLinejoin="round"
       />
     </Icon>
   );
