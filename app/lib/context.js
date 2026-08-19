@@ -1,6 +1,6 @@
 import {createHydrogenContext} from '@shopify/hydrogen';
 import {AppSession} from '~/lib/session';
-import {CART_QUERY_FRAGMENT} from '~/lib/fragments';
+import {CART_MUTATE_FRAGMENT, CART_QUERY_FRAGMENT} from '~/lib/fragments';
 import {getLocaleFromRequest} from '~/lib/i18n';
 import {adminApiClient} from '~/lib/admin-api-client.server.js';
 import {getCustomerContext} from '~/lib/b2b.server.js';
@@ -38,12 +38,12 @@ export async function createAppLoadContext(request, env, executionContext) {
     i18n: getLocaleFromRequest(request),
     cart: {
       queryFragment: CART_QUERY_FRAGMENT,
-      // Las mutaciones devuelven por defecto solo `id` y `totalQuantity`. Con
-      // eso no se puede saber si la línea entró de verdad — y sin saberlo, el
-      // botón confirma un alta que Shopify pudo haber rechazado (una variante
-      // sin stock vuelve sin error y sin línea). Pedimos el carrito completo:
-      // cuesta una respuesta más grande y evita mentir.
-      mutateFragment: CART_QUERY_FRAGMENT,
+      // Las mutaciones devuelven por defecto solo `id` y `totalQuantity`, y con
+      // eso no se puede saber si la línea entró de verdad. Este fragmento suma
+      // las líneas y NADA más — reusar el de la query rompía el carrito
+      // entero, porque pide `lines(first: $numCartLines)` y las mutaciones no
+      // declaran esa variable.
+      mutateFragment: CART_MUTATE_FRAGMENT,
     },
     customerAccount: {
       // Enciende el B2B de Hydrogen. Lo que agrega es lo que hace funcionar

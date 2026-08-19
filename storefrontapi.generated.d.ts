@@ -276,6 +276,22 @@ export type CartApiQueryFragment = Pick<
   >;
 };
 
+export type CartMutateFragment = Pick<
+  StorefrontAPI.Cart,
+  'id' | 'totalQuantity'
+> & {
+  lines: {
+    nodes: Array<
+      | (Pick<StorefrontAPI.CartLine, 'id' | 'quantity'> & {
+          merchandise: Pick<StorefrontAPI.ProductVariant, 'id'>;
+        })
+      | (Pick<StorefrontAPI.ComponentizableCartLine, 'id' | 'quantity'> & {
+          merchandise: Pick<StorefrontAPI.ProductVariant, 'id'>;
+        })
+    >;
+  };
+};
+
 export type StoreRobotsQueryVariables = StorefrontAPI.Exact<{
   country?: StorefrontAPI.InputMaybe<StorefrontAPI.CountryCode>;
   language?: StorefrontAPI.InputMaybe<StorefrontAPI.LanguageCode>;
