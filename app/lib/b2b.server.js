@@ -100,7 +100,19 @@ async function resolveBuyer(customerAccount, companyLocationId) {
 
   const buyer = await customerAccount.UNSTABLE_getBuyer();
 
-  if (!buyer?.customerAccessToken) return null;
+  if (!buyer?.customerAccessToken) {
+    // Sin esto el síntoma es mudo: hay company, la UI dice "no podés pedir" y
+    // no hay nada en ningún lado que explique por qué. El token lo emite
+    // Hydrogen en `authorize()` y al refrescar; una sesión abierta desde antes
+    // de que `unstableB2b` estuviera encendido no lo tiene, y tampoco lo tiene
+    // si esa mutation falló en silencio. Queda en los logs de Oxygen.
+    // eslint-disable-next-line no-console
+    console.warn(
+      '[b2b] company location resuelta pero SIN customerAccessToken de storefront: no se puede pedir el precio de esa company. La sesión tiene que volver a autorizar (logout + login).',
+    );
+
+    return null;
+  }
 
   return {
     companyLocationId,
