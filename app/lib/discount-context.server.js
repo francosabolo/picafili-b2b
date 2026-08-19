@@ -24,7 +24,7 @@ import {EMPTY_DISCOUNT_CONTEXT} from '~/lib/discounts.js';
  *
  * ## Contrato que hay que respetar cuando se complete
  *
- * - **Nunca lanzar.** Mismo criterio que `getB2BContext()`: una API caída o un
+ * - **Nunca lanzar.** Mismo criterio que `getCustomerContext()`: una API caída o un
  *   catálogo mal configurado no pueden tumbar el storefront.
  * - **Fail-closed.** Ante cualquier fallo, `EMPTY_DISCOUNT_CONTEXT`. Sin
  *   descuentos es un problema comercial; un descuento inventado es plata.

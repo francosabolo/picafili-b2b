@@ -86,11 +86,22 @@ Shopify caiga en silencio al primario y los precios dejen de ser los que esperá
 
 ### Portal cerrado
 
-| Constante             | Qué decide                        | Cuidado                                                                             |
-| --------------------- | --------------------------------- | ----------------------------------------------------------------------------------- |
-| `REQUIRE_LOGIN`       | Si hay navegación anónima         | En `true` el catálogo **deja de ser indexable** y `robots.txt` pasa a `Disallow: /` |
-| `REQUIRE_B2B_COMPANY` | Si hace falta company para entrar | En `true` **sin companies cargadas nadie entra**, ni la demo                        |
-| `ENABLE_CART`         | Si hay checkout directo           | En `false` se cierran `/cart` y `/api/cart/*`. **No alcanza**: ver paso 4           |
+| Constante               | Qué decide                        | Cuidado                                                                             |
+| ----------------------- | --------------------------------- | ----------------------------------------------------------------------------------- |
+| `REQUIRE_LOGIN`         | Si hay navegación anónima         | En `true` el catálogo **deja de ser indexable** y `robots.txt` pasa a `Disallow: /` |
+| `REQUIRE_CUSTOMER_TAGS` | Qué tags hacen falta para entrar  | Los pide **todos**. Lista vacía = apagado. Abre la puerta, **no habilita precios**  |
+| `REQUIRE_B2B_COMPANY`   | Si hace falta company para entrar | En `true` **sin companies cargadas nadie entra**, ni la demo                        |
+| `ENABLE_CART`           | Si hay checkout directo           | En `false` se cierran `/cart` y `/api/cart/*`. **No alcanza**: ver paso 4           |
+
+**Las dos del medio son excluyentes en la práctica y hoy manda la de tags** (`mayorista` +
+`mayorista-aprobado`), con `REQUIRE_B2B_COMPANY` en `false`, porque esta tienda no tiene companies.
+Es una chapuza consciente: aprobar es poner un tag en el admin —un click— en vez de crear company +
+location + meterla en el B2B market.
+
+> **Lo que la chapuza NO resuelve:** el precio. Un tag no elige catálogo; los catálogos cuelgan de
+> la company location. Quien entra por tag ve el catálogo **sin importes**, porque el servidor
+> prefiere no mostrar precio antes que mostrar el del mercado por defecto. Si el cliente tiene que
+> ver precios mayoristas, hay que crear la company — no hay atajo por tags.
 
 ### Plata
 

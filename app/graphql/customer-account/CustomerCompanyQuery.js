@@ -13,6 +13,14 @@ export const CUSTOMER_COMPANY_QUERY = `#graphql
       emailAddress {
         emailAddress
       }
+      # La aprobación mayorista de esta tienda es un tag, no una company: ver
+      # app/lib/customer-tags.js. Viaja acá y no en una query aparte para que
+      # el gate no cueste una segunda llamada a Customer Account en cada
+      # request. Sí, la Customer Account API expone tags — no hace falta Admin
+      # API para leerlos. (Sin backticks en este comentario a propósito: el
+      # documento es un template literal y un backtick acá cierra el string y
+      # rompe el archivo entero. Ver AGENTS.md → Gotchas.)
+      tags
       companyContacts(first: 1) {
         edges {
           node {

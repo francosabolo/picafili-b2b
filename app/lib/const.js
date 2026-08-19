@@ -72,8 +72,46 @@ export const REQUIRE_LOGIN = true;
  * gate — ni la de la demo. `npm run doctor` chequea exactamente eso y grita
  * si la combinación es imposible; corrélo después de apuntar el `.env` a una
  * tienda nueva y antes de dar por buena esta configuración.
+ *
+ * **Apagada a propósito hoy, y esto es el corazón de la chapuza:** Picafili no
+ * tiene una sola company cargada, así que en `true` el portal queda cerrado
+ * para todo el mundo. La aprobación pasó a ser `REQUIRE_CUSTOMER_TAGS` (acá
+ * abajo). Es un reemplazo **de la puerta, no del precio**: la company sigue
+ * siendo lo único que le da a Shopify de dónde sacar un precio mayorista.
+ * Cuando existan companies, esto vuelve a `true` y la lista de tags se vacía.
  */
-export const REQUIRE_B2B_COMPANY = true;
+export const REQUIRE_B2B_COMPANY = false;
+
+/**
+ * Tags de cliente que hacen falta para entrar al portal — **todos**, no
+ * alguno.
+ *
+ * ⚠️ **Esto es una chapuza deliberada, y conviene saber exactamente qué es y
+ * qué no es.**
+ *
+ * Es una **puerta**, no un precio. Shopify no sabe darle un catálogo B2B a un
+ * cliente por su tag: los catálogos cuelgan de la **company location** (en
+ * planes no-Plus, vía el B2B market; en Plus, directo a la location). Un
+ * cliente con `mayorista-aprobado` y sin company sigue sin tener de dónde
+ * sacar un precio mayorista — ver `resolveBuyer` en `b2b.server.js`, y
+ * `docs/puesta-en-marcha.md` §4.2.
+ *
+ * Existe porque el alta mayorista de esta tienda hoy termina en tags y no en
+ * una company: la aprobación la hace una persona en el admin poniendo el tag,
+ * que es un click, contra crear company + location + meterla en el market. El
+ * costo de esa comodidad es que la aprobación **no trae el precio con ella**.
+ *
+ * Lo que la reemplaza cuando existan companies cargadas: `REQUIRE_B2B_COMPANY`
+ * con esta lista vacía. Las dos son ANDs, así que mientras las dos estén
+ * encendidas hay que cumplir las dos, y una tienda sin companies deja afuera
+ * hasta al que tiene los dos tags.
+ *
+ * Comparación sin distinguir mayúsculas ni espacios sobrantes: Shopify
+ * conserva cómo se escribió el tag pero deduplica sin mirar el caso, así que
+ * `Mayorista` y `mayorista` son el mismo tag y el gate no puede opinar
+ * distinto que el admin. Lista vacía = chequeo apagado.
+ */
+export const REQUIRE_CUSTOMER_TAGS = ['mayorista', 'mayorista-aprobado'];
 
 /**
  * Carrito de compra directa.

@@ -1,31 +1,45 @@
 import {CUSTOMER_COMPANY_QUERY} from '~/graphql/customer-account/CustomerCompanyQuery.js';
 
 /**
- * Contexto B2B del cliente logueado: company, locations y **buyer context**.
+ * Todo lo que el portal necesita saber del cliente logueado, de una sola
+ * query: sus **tags** y su contexto **B2B** (company, locations y buyer).
  *
- * Devuelve `null` en todos los caminos donde no hay nada que mostrar —
+ * Son dos cosas distintas y conviene no mezclarlas: los tags son la *puerta*
+ * (quién entra — ver `app/lib/customer-tags.js`) y el contexto B2B es el
+ * *precio* (de qué catálogo sale cada importe). Hoy la tienda tiene lo primero
+ * y no lo segundo, así que se resuelven por separado aunque viajen juntas.
+ *
+ * `b2b` es `null` en todos los caminos donde no hay nada que mostrar —
  * visitante anónimo, tienda sin B2B habilitado, cliente que no es contacto de
  * ninguna company— para que la UI no tenga que distinguir entre "todavía no
  * cargó", "falló" y "no aplica". Nunca lanza: si B2B está apagado la query
  * devuelve errores y eso NO puede tumbar el storefront entero.
  *
+ * **Falla cerrado.** Ante cualquier problema devuelve `tags: []`, que para el
+ * gate significa "no entra". Es la dirección correcta del error: un fallo de
+ * red no puede convertirse en un portal abierto.
+ *
  * @param {import('@shopify/remix-oxygen').AppLoadContext} context
+ * @returns {Promise<{tags: string[], b2b: object|null}>}
  */
-export async function getB2BContext(context) {
+export async function getCustomerContext(context) {
   const {customerAccount} = context;
+  const empty = {tags: [], b2b: null};
 
   try {
     const loggedIn = await customerAccount.isLoggedIn();
-    if (!loggedIn) return null;
+    if (!loggedIn) return empty;
 
     const {data, errors} = await customerAccount.query(CUSTOMER_COMPANY_QUERY);
 
-    if (errors?.length) return null;
+    if (errors?.length) return empty;
+
+    const tags = data?.customer?.tags ?? [];
 
     const company =
       data?.customer?.companyContacts?.edges?.[0]?.node?.company ?? null;
 
-    if (!company) return null;
+    if (!company) return {tags, b2b: null};
 
     const locations = (company.locations?.edges ?? [])
       .map((edge) => edge?.node)
@@ -46,15 +60,18 @@ export async function getB2BContext(context) {
     }
 
     return {
-      companyId: company.id,
-      companyName: company.name,
-      locations,
-      activeLocationId,
-      buyer: await resolveBuyer(customerAccount, activeLocationId),
+      tags,
+      b2b: {
+        companyId: company.id,
+        companyName: company.name,
+        locations,
+        activeLocationId,
+        buyer: await resolveBuyer(customerAccount, activeLocationId),
+      },
     };
   } catch (error) {
     // B2B apagado, permisos faltantes o API caída: la tienda sigue andando.
-    return null;
+    return empty;
   }
 }
 

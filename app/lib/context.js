@@ -3,7 +3,7 @@ import {AppSession} from '~/lib/session';
 import {CART_QUERY_FRAGMENT} from '~/lib/fragments';
 import {getLocaleFromRequest} from '~/lib/i18n';
 import {adminApiClient} from '~/lib/admin-api-client.server.js';
-import {getB2BContext} from '~/lib/b2b.server.js';
+import {getCustomerContext} from '~/lib/b2b.server.js';
 import {getDiscountContext} from '~/lib/discount-context.server.js';
 
 /**
@@ -50,12 +50,17 @@ export async function createAppLoadContext(request, env, executionContext) {
     },
   });
 
-  // El contexto B2B se resuelve una vez por request y viaja en el contexto:
-  // el gating de precios corre en varios loaders y el loader del root tambien
-  // lo necesita. Resolviendolo en cada lugar habria dos fuentes de verdad —y
-  // varias queries a Customer Account por pagina. `getB2BContext` nunca lanza:
-  // devuelve null si la tienda no tiene B2B o el visitante no esta logueado.
-  const b2b = await getB2BContext(hydrogenContext);
+  // El contexto del cliente se resuelve una vez por request y viaja en el
+  // contexto: el gating de precios corre en varios loaders, el gate de acceso
+  // corre antes que Remix y el loader del root tambien lo necesita.
+  // Resolviendolo en cada lugar habria dos fuentes de verdad —y varias queries
+  // a Customer Account por pagina. `getCustomerContext` nunca lanza: ante
+  // cualquier problema devuelve tags vacios y b2b null, que es cerrado.
+  //
+  // `customerTags` es la puerta (quien entra) y `b2b` es el precio (de que
+  // catalogo sale cada importe). Van separados porque hoy la tienda tiene lo
+  // primero y no lo segundo — ver app/lib/customer-tags.js.
+  const {tags: customerTags, b2b} = await getCustomerContext(hydrogenContext);
 
   // Los descuentos de acuerdo y categoria se resuelven en el SERVIDOR, una vez
   // por request. Nunca en el navegador: un porcentaje que llega del cliente y
@@ -66,6 +71,7 @@ export async function createAppLoadContext(request, env, executionContext) {
     ...hydrogenContext,
     adminApiClient: shopifyAdminApiClient,
     b2b,
+    customerTags,
     discountContext,
     // declare additional Remix loader context
   };

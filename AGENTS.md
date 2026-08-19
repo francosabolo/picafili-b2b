@@ -42,14 +42,31 @@
 
 ## Portal cerrado — solo mercado B2B
 
-Este storefront **no tiene navegación anónima ni compra directa**. Tres interruptores en
+Este storefront **no tiene navegación anónima ni compra directa**. Cuatro interruptores en
 `app/lib/const.js` lo definen, y un solo archivo los aplica:
 
-| Constante             | En true                                                                       |
-| --------------------- | ----------------------------------------------------------------------------- |
-| `REQUIRE_LOGIN`       | todo redirige a `/ingresar` salvo el flujo de login                           |
-| `REQUIRE_B2B_COMPANY` | sin company de Shopify → `/cuenta-en-revision`, sin catálogo ni precios       |
-| `ENABLE_CART` (false) | se van el drawer, `/cart`, `/cart/$lines` y `/api/cart/*` — solo draft orders |
+| Constante                             | Qué hace                                                                      |
+| ------------------------------------- | ----------------------------------------------------------------------------- |
+| `REQUIRE_LOGIN` (true)                | todo redirige a `/ingresar` salvo el flujo de login                           |
+| `REQUIRE_CUSTOMER_TAGS`               | sin **todos** esos tags de cliente → `/cuenta-en-revision`                    |
+| `REQUIRE_B2B_COMPANY` (**false** hoy) | en true, sin company de Shopify → `/cuenta-en-revision`                       |
+| `ENABLE_CART` (false)                 | se van el drawer, `/cart`, `/cart/$lines` y `/api/cart/*` — solo draft orders |
+
+### La aprobación por tag es una chapuza consciente
+
+Hoy la puerta la abre `REQUIRE_CUSTOMER_TAGS = ['mayorista', 'mayorista-aprobado']` (AND, sin
+distinguir mayúsculas) y **no** la company: Picafili no tiene una sola company cargada, así que
+`REQUIRE_B2B_COMPANY` en `true` dejaba el portal cerrado para todo el mundo. Los tags salen de
+`customer.tags` de la **Customer Account API** —sí, los expone; no hace falta Admin API— y viajan en
+la misma query que ya pedía la company, así que el gate no cuesta una llamada extra. La lógica está
+en `app/lib/customer-tags.js` y ahí está explicado el porqué entero.
+
+⚠️ **Un tag es una puerta, no un precio.** Shopify no sabe darle un catálogo B2B a un cliente por su
+tag: los catálogos cuelgan de la **company location** (en Basic vía el B2B market; en Plus, directo
+a la location). Quien entra por tag y no tiene company **no tiene de dónde salga un precio
+mayorista**, y `canSeePricesOnServer` lo trata como tal — prefiere no mostrar precio antes que
+mostrar el del mercado por defecto. Consecuencia visible: navega el catálogo sin importes y la UI lo
+sigue tratando como "cuenta en revisión". Eso se arregla creando companies, no tocando el gate.
 
 **El gate vive en `app/lib/access.server.js` y corre en `server.js`, antes que Remix.** Está ahí y
 no en los loaders para que **una ruta nueva nazca cerrada**: olvidarse de una guarda no abre un
@@ -57,7 +74,7 @@ agujero, porque no hay guarda que copiar. Abrir algo es escribirlo en `PUBLIC_PA
 Para documentos devuelve un redirect con `return_to`; para `/api/*`, un 401 — un redirect a HTML le
 llega al `fetch()` del navegador como un 200 con un cuerpo que no puede parsear.
 
-**El buyer context es lo que hace que el mercado sea el B2B.** `getB2BContext` resuelve la company
+**El buyer context es lo que hace que el mercado sea el B2B.** `getCustomerContext` resuelve la company
 y guarda la location con `setBuyer`; `getBuyerVariables(context)` se spreadea en las `variables` de
 **toda query de catálogo**, que declara `$buyer: BuyerInput` y lo pasa por
 `@inContext(country:, language:, buyer:)`. Sin eso Shopify contesta con los precios del mercado por

@@ -5,6 +5,7 @@ import {
   REQUIRE_B2B_COMPANY,
   STORE_LANGUAGES,
 } from '~/lib/const.js';
+import {hasRequiredCustomerTags} from '~/lib/customer-tags.js';
 
 /**
  * Gate de acceso del portal — **el único**.
@@ -169,6 +170,20 @@ export async function checkAccess({request, context}) {
     // la home.
     const returnTo = encodeURIComponent(url.pathname + url.search);
     return deny(path, `${prefix}${LOGIN_PATH}?return_to=${returnTo}`);
+  }
+
+  // La aprobación mayorista de esta tienda es un TAG del cliente, no una
+  // company. Es una chapuza consciente y está explicada entera en
+  // `app/lib/customer-tags.js`: acá alcanza con saber que decide **quién
+  // entra** y que no decide nada sobre precios.
+  //
+  // Va antes del chequeo de company porque es el que está activo: hoy
+  // `REQUIRE_B2B_COMPANY` está apagado justamente porque no hay companies
+  // cargadas. Los dos mandan a la misma pantalla de espera, así que quien no
+  // pasa ve lo mismo pase lo que pase.
+  if (!hasRequiredCustomerTags(context.customerTags)) {
+    if (PENDING_ALLOWED.has(path)) return null;
+    return deny(path, `${prefix}${PENDING_PATH}`);
   }
 
   if (REQUIRE_B2B_COMPANY && !context.b2b?.companyId) {

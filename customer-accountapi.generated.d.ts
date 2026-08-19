@@ -71,7 +71,7 @@ export type CustomerCompanyQueryVariables = CustomerAccountAPI.Exact<{
 }>;
 
 export type CustomerCompanyQuery = {
-  customer: Pick<CustomerAccountAPI.Customer, 'id'> & {
+  customer: Pick<CustomerAccountAPI.Customer, 'id' | 'tags'> & {
     emailAddress?: CustomerAccountAPI.Maybe<
       Pick<CustomerAccountAPI.CustomerEmailAddress, 'emailAddress'>
     >;
@@ -687,7 +687,7 @@ export type CustomerUpdateMutation = {
 };
 
 interface GeneratedQueryTypes {
-  '#graphql\n  query CustomerCompany {\n    customer {\n      id\n      emailAddress {\n        emailAddress\n      }\n      companyContacts(first: 1) {\n        edges {\n          node {\n            company {\n              id\n              name\n              locations(first: 10) {\n                edges {\n                  node {\n                    id\n                    name\n                    shippingAddress {\n                      countryCode\n                      formattedAddress\n                    }\n                  }\n                }\n              }\n            }\n          }\n        }\n      }\n    }\n  }\n': {
+  '#graphql\n  query CustomerCompany {\n    customer {\n      id\n      emailAddress {\n        emailAddress\n      }\n      # La aprobación mayorista de esta tienda es un tag, no una company: ver\n      # app/lib/customer-tags.js. Viaja acá y no en una query aparte para que\n      # el gate no cueste una segunda llamada a Customer Account en cada\n      # request. Sí, la Customer Account API expone tags — no hace falta Admin\n      # API para leerlos. (Sin backticks en este comentario a propósito: el\n      # documento es un template literal y un backtick acá cierra el string y\n      # rompe el archivo entero. Ver AGENTS.md → Gotchas.)\n      tags\n      companyContacts(first: 1) {\n        edges {\n          node {\n            company {\n              id\n              name\n              locations(first: 10) {\n                edges {\n                  node {\n                    id\n                    name\n                    shippingAddress {\n                      countryCode\n                      formattedAddress\n                    }\n                  }\n                }\n              }\n            }\n          }\n        }\n      }\n    }\n  }\n': {
     return: CustomerCompanyQuery;
     variables: CustomerCompanyQueryVariables;
   };
