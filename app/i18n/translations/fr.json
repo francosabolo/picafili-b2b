@@ -438,5 +438,28 @@
     "title": "Une erreur est survenue de notre côté",
     "lead": "Réessayez dans un instant. Si cela persiste, écrivez-nous.",
     "detail": "Détail technique"
+  },
+  "status": {
+    "fulfillment": {
+      "success": "Livré",
+      "open": "En préparation",
+      "pending": "En préparation",
+      "in-progress": "En cours",
+      "on-hold": "En attente",
+      "scheduled": "Programmé",
+      "cancelled": "Annulé",
+      "error": "Erreur",
+      "failure": "Échec"
+    },
+    "financial": {
+      "paid": "Payé",
+      "authorized": "Autorisé",
+      "partially-paid": "Paiement partiel",
+      "pending": "Paiement en attente",
+      "partially-refunded": "Remboursement partiel",
+      "refunded": "Remboursé",
+      "expired": "Expiré",
+      "voided": "Annulé"
+    }
   }
 }

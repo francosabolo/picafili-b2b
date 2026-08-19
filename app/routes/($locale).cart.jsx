@@ -62,6 +62,29 @@ export async function action({request, context}) {
       throw new Error(`${action} cart action is not defined`);
   }
 
+  // Shopify puede rechazar una mutación y devolver `cart: null` con los
+  // motivos adentro de `errors`. Leer `result.cart.id` en ese caso lanzaba, y
+  // la acción respondía **500 sin decir nada**: el comprador veía "Algo falló
+  // de nuestro lado" y en el log no quedaba la causa. Un rechazo del carrito es
+  // un resultado posible, no un error del servidor.
+  if (!result?.cart?.id) {
+    // eslint-disable-next-line no-console
+    console.error(
+      `[cart] ${action} sin carrito en la respuesta:`,
+      JSON.stringify(result?.errors ?? result),
+    );
+
+    return json(
+      {
+        cart: null,
+        errors: result?.errors?.length
+          ? result.errors
+          : [{message: 'Shopify no devolvió el carrito'}],
+      },
+      {status: 400},
+    );
+  }
+
   const cartId = result.cart.id;
   const headers = cart.setCartId(result.cart.id);
   const {cart: cartResult, errors} = result;

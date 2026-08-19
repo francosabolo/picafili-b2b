@@ -440,5 +440,28 @@
     "title": "Something failed on our side",
     "lead": "Please try again in a moment. If it keeps happening, get in touch and we will look into it.",
     "detail": "Technical detail"
+  },
+  "status": {
+    "fulfillment": {
+      "success": "Fulfilled",
+      "open": "Preparing",
+      "pending": "Preparing",
+      "in-progress": "In progress",
+      "on-hold": "On hold",
+      "scheduled": "Scheduled",
+      "cancelled": "Cancelled",
+      "error": "Error",
+      "failure": "Failed"
+    },
+    "financial": {
+      "paid": "Paid",
+      "authorized": "Authorized",
+      "partially-paid": "Partially paid",
+      "pending": "Payment pending",
+      "partially-refunded": "Partially refunded",
+      "refunded": "Refunded",
+      "expired": "Expired",
+      "voided": "Voided"
+    }
   }
 }

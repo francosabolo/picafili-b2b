@@ -1,4 +1,5 @@
 import {Link, useLoaderData} from '@remix-run/react';
+import {useTranslation} from '~/i18n/index.jsx';
 import {pageTitle} from '~/lib/utils.js';
 import OrdersTable from '~/components/OrdersTable/OrdersTable';
 import {getPaginationVariables} from '@shopify/hydrogen';
@@ -49,12 +50,14 @@ export default function Orders() {
 }
 
 function EmptyOrders() {
+  const {t} = useTranslation();
+
   return (
     <div className="page-width">
-      <p>You haven&apos;t placed any orders yet.</p>
+      <p>{t('orders.no_orders')}</p>
       <br />
       <p>
-        <Link to="/collections">Start Shopping →</Link>
+        <Link to="/collections/all">{t('orders.start_shopping')} →</Link>
       </p>
     </div>
   );

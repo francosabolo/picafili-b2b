@@ -256,6 +256,14 @@ function AddedToCartToast({
       );
 
     if (!result || result.errors?.length || rejected) {
+      // El motivo, en la consola del navegador. El aviso que ve el comprador
+      // tiene que ser corto y en su idioma; el texto de Shopify sirve para
+      // diagnosticar y no para leerlo en una tarjeta.
+      if (result?.errors?.length) {
+        // eslint-disable-next-line no-console
+        console.error('[cart] alta rechazada:', result.errors);
+      }
+
       // Fallo: el boton vuelve a su estado normal en vez de quedar confirmando
       // algo que no paso.
       onAdded?.(false);

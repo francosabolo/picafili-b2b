@@ -439,5 +439,28 @@
     "title": "Algo falló de nuestro lado",
     "lead": "Volvé a intentar en un momento. Si sigue pasando, escribinos y lo miramos.",
     "detail": "Detalle técnico"
+  },
+  "status": {
+    "fulfillment": {
+      "success": "Entregado",
+      "open": "En preparación",
+      "pending": "En preparación",
+      "in-progress": "En curso",
+      "on-hold": "En espera",
+      "scheduled": "Programado",
+      "cancelled": "Cancelado",
+      "error": "Con error",
+      "failure": "Falló"
+    },
+    "financial": {
+      "paid": "Pagado",
+      "authorized": "Autorizado",
+      "partially-paid": "Pago parcial",
+      "pending": "Pendiente de pago",
+      "partially-refunded": "Reembolso parcial",
+      "refunded": "Reembolsado",
+      "expired": "Vencido",
+      "voided": "Anulado"
+    }
   }
 }
