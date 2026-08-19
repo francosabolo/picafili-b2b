@@ -207,7 +207,9 @@
     "table": {
       "product": "Produit"
     },
-    "count": "{{count}} produits"
+    "count": "{{count}} produits",
+    "index-title": "Catégories",
+    "load-previous": "↑ Charger les précédents"
   },
   "footer": {
     "contact-us": "Contactez-nous",
@@ -407,7 +409,9 @@
     "discount-placeholder": "Code de réduction",
     "added": "Ajouté au panier",
     "added-detail": "{{quantity}} unité(s)",
-    "view": "Voir le panier"
+    "view": "Voir le panier",
+    "add-failed": "Ajout impossible",
+    "add-failed-detail": "Shopify a refusé la ligne : rupture de stock ou indisponible pour votre compte."
   },
   "quote-page": {
     "title": "Devis",

@@ -1,5 +1,6 @@
 import styles from './styles.module.scss';
 import {CollectionNavigationBar} from '../CollectionNavigationBar/CollectionNavigationBar';
+import {PageWidthContainer} from '~/components/PageWidthContainer/PageWidthContainer';
 
 /**
  * @param {{
@@ -32,12 +33,16 @@ export function CollectionHeading({collection, menu, bannerTitle}) {
     >
       {/* Sin banner propio de la colección, cae en el degradé de marca Picafili
           (definido en el SCSS), no en el fondo azul de PowerB2X. */}
-      <div className={styles.bannerContent}>
+      {/* La banda va de borde a borde —para cuando la colección tiene imagen—
+          pero su CONTENIDO comparte el ancho del resto de la página. Sin esto,
+          al alinear el título a la izquierda quedó pegado al borde del
+          viewport mientras los filtros y la tabla arrancaban 40px adentro. */}
+      <PageWidthContainer className={styles.bannerContent}>
         <h1 className={styles.collectionTitle}>
           {bannerTitle ? bannerTitle : collection?.title}
         </h1>
         <CollectionNavigationBar menu={menu} styles={styles} />
-      </div>
+      </PageWidthContainer>
     </div>
   );
 }

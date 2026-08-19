@@ -208,7 +208,9 @@
     "table": {
       "product": "Producto"
     },
-    "count": "{{count}} productos"
+    "count": "{{count}} productos",
+    "index-title": "Categorías",
+    "load-previous": "↑ Cargar anteriores"
   },
   "footer": {
     "contact-us": "Contáctanos",
@@ -408,7 +410,9 @@
     "discount-placeholder": "Código de descuento",
     "added": "Agregado al carrito",
     "added-detail": "{{quantity}} unidad(es)",
-    "view": "Ver carrito"
+    "view": "Ver carrito",
+    "add-failed": "No se pudo agregar",
+    "add-failed-detail": "Shopify no aceptó la línea: puede estar sin stock o no disponible para tu cuenta."
   },
   "quote-page": {
     "title": "Presupuesto",

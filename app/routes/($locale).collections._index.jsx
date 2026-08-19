@@ -2,6 +2,7 @@ import {Link, useLoaderData, useNavigation} from '@remix-run/react';
 import {defer} from '@shopify/remix-oxygen';
 import {Pagination, getPaginationVariables, Image} from '@shopify/hydrogen';
 import {useEffect, useState} from 'react';
+import {PageWidthContainer} from '~/components/PageWidthContainer/PageWidthContainer.jsx';
 import {SkeletonGridItems} from '~/components/Skeleton/Skeleton.jsx';
 import {useTranslation} from '~/i18n/index.jsx';
 
@@ -62,8 +63,12 @@ export default function Collections() {
   const isLoading = navigation.state === 'loading';
 
   return (
-    <div className="collections">
-      <h1>Collections</h1>
+    // Sin contenedor de ancho, la grilla arrancaba pegada al borde izquierdo y
+    // se cortaba contra el derecho: es la única pantalla del portal que no
+    // pasaba por `PageWidthContainer`. El título además estaba en inglés y
+    // escrito a mano.
+    <PageWidthContainer className="collections">
+      <h1>{t('collections.index-title')}</h1>
       {isLoading && collections?.nodes?.length ? (
         <SkeletonGridItems qty={collections?.nodes?.length} />
       ) : (
@@ -71,12 +76,16 @@ export default function Collections() {
           {({nodes, isLoading, PreviousLink, NextLink}) => (
             <div>
               <PreviousLink>
-                {isLoading ? 'Loading...' : <span>↑ Load previous</span>}
+                {isLoading ? (
+                  t('general.loading')
+                ) : (
+                  <span>{t('collections.load-previous')}</span>
+                )}
               </PreviousLink>
               <CollectionsGrid collections={nodes} />
               <NextLink>
                 {isLoading ? (
-                  'Loading...'
+                  t('general.loading')
                 ) : (
                   <span>{t('general.load-more')} ↓</span>
                 )}
@@ -85,7 +94,7 @@ export default function Collections() {
           )}
         </Pagination>
       )}
-    </div>
+    </PageWidthContainer>
   );
 }
 

@@ -231,3 +231,24 @@
     text-decoration: underline;
   }
 }
+
+/* Precio de la línea: precio pagado, precio de lista tachado y ahorro.
+   Mismo lenguaje que la tarjeta del catálogo — un mayorista compara contra el
+   precio público, y en el carrito es donde decide. */
+.linePriceRow {
+  display: flex;
+  align-items: baseline;
+  flex-wrap: wrap;
+  gap: var(--space-2);
+}
+
+.lineCompareAt {
+  color: var(--color-grey-strong);
+  font-size: var(--text-sm);
+}
+
+.lineSavings {
+  font-size: var(--text-xs);
+  font-weight: 700;
+  color: var(--brand-magenta);
+}

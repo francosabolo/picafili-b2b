@@ -379,3 +379,27 @@
   white-space: nowrap;
   border: 0;
 }
+
+/* El botón de carrito dentro de la fila de acciones.
+ *
+ * `AddToCartButton` viene envuelto en un div propio —y adentro, en el <form>
+ * de `CartForm`—, así que sin esto la fila tenía tres cajas anidadas: el
+ * wrapper dibujaba su propio botón (esa caja oscura alrededor del botón
+ * magenta) y empujaba el CTA a un renglón aparte en vez de dejarlo al lado del
+ * selector de cantidad. `display: contents` hace que el wrapper y el form no
+ * existan para el layout: el botón pasa a ser hijo directo de la fila. */
+.quickOrderRow {
+  .cartActionWrap,
+  .cartActionWrap > form {
+    display: contents;
+  }
+
+  /* Ya está en el carrito. Antes reusaba el verde de "en el presupuesto", que
+     adentro del botón magenta se veía como un semáforo. Mismo botón, en
+     versión secundaria: el producto ya está adentro, no hay que gritarlo. */
+  .addedToCart {
+    background: var(--brand-cream);
+    color: var(--brand-magenta);
+    border: 1px solid var(--brand-magenta);
+  }
+}

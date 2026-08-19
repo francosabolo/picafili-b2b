@@ -209,7 +209,9 @@
     "table": {
       "product": "Product"
     },
-    "count": "{{count}} products"
+    "count": "{{count}} products",
+    "index-title": "Categories",
+    "load-previous": "↑ Load previous"
   },
   "footer": {
     "contact-us": "Contact Us",
@@ -409,7 +411,9 @@
     "discount-placeholder": "Discount code",
     "added": "Added to cart",
     "added-detail": "{{quantity}} unit(s)",
-    "view": "View cart"
+    "view": "View cart",
+    "add-failed": "Could not be added",
+    "add-failed-detail": "Shopify rejected the line: it may be out of stock or unavailable for your account."
   },
   "quote-page": {
     "title": "Quote",

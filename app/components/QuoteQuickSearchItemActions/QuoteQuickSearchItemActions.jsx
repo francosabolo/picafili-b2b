@@ -277,12 +277,17 @@ export const QuoteItemActions = ({
         ) : (
           <AddToCartButton
             lines={[{merchandiseId: quoteItem.id, quantity: displayQuantity}]}
+            wrapperClassName={styles.cartActionWrap}
             buttonClassName={styles.addToQuoteButton}
-            title={t('cart.add')}
             productTitle={quoteItem?.product?.title}
-            addedClassName={styles.inQuote}
+            addedClassName={styles.addedToCart}
+            /* Lo que no se puede vender no se ofrece. Sin esto el comprador
+               apretaba, veía "agregado" y el carrito le quedaba igual. */
+            disabled={!quoteItem?.availableForSale}
           >
-            {t('cart.add')}
+            {quoteItem?.availableForSale
+              ? t('cart.add')
+              : t('availability.not-available')}
           </AddToCartButton>
         )}
 

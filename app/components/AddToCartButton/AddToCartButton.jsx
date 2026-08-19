@@ -108,6 +108,15 @@ export function AddToCartButton({
     });
   }
 
+  // La línea que se envía. Con el selector interno apagado —el caso de la
+  // tarjeta y de la tabla— manda **el stepper de afuera**, sin pasar por el
+  // estado interno: ese estado se sincronizaba por efecto, y cualquier render
+  // que llegara en el medio dejaba la cantidad vieja adentro del formulario.
+  // El comprador elegía 4 y entraba 1.
+  const activeLine = showQuantitySelector
+    ? newLine
+    : {merchandiseId: productId, quantity: requestedQuantity};
+
   return (
     <div className={wrapperClassName ?? styles.addToCart}>
       {showQuantitySelector ? <QuantitySelector /> : null}
@@ -116,8 +125,8 @@ export function AddToCartButton({
         inputs={{
           lines: [
             {
-              merchandiseId: newLine.merchandiseId,
-              quantity: newLine.quantity,
+              merchandiseId: activeLine.merchandiseId,
+              quantity: activeLine.quantity,
             },
           ],
         }}
@@ -136,8 +145,9 @@ export function AddToCartButton({
             <>
               <AddedToCartToast
                 fetcher={fetcher}
-                quantity={newLine.quantity}
+                quantity={activeLine.quantity}
                 productTitle={productTitle}
+                merchandiseId={activeLine.merchandiseId}
                 onAdded={setJustAdded}
               />
               <input
@@ -190,7 +200,13 @@ export function AddToCartButton({
  * `fetcher.data` presente: ese dato queda pegado despues de resolver y
  * dispararia un aviso en cada re-render de la tarjeta.
  */
-function AddedToCartToast({fetcher, quantity, productTitle, onAdded}) {
+function AddedToCartToast({
+  fetcher,
+  quantity,
+  productTitle,
+  merchandiseId,
+  onAdded,
+}) {
   const {push} = useToast();
   const {t} = useTranslation();
   const wasBusy = useRef(false);
@@ -209,10 +225,28 @@ function AddedToCartToast({fetcher, quantity, productTitle, onAdded}) {
     // `errors` lo devuelve la accion del carrito cuando Shopify rechaza la
     // linea. Sin resultado tampoco hay nada que confirmar.
     const result = fetcher.data;
-    if (!result || result.errors?.length) {
+
+    // Que Shopify no devuelva errores NO significa que haya agregado la
+    // línea. Con una variante sin stock la mutación responde limpia y el
+    // carrito vuelve sin esa línea: el botón decía "agregado" y el carrito
+    // mostraba cantidad 0. La única prueba de que entró es encontrarla en el
+    // carrito que devolvió la respuesta.
+    const added = (result?.cart?.lines?.nodes ?? []).some(
+      (node) => node?.merchandise?.id === merchandiseId && node?.quantity > 0,
+    );
+
+    if (!result || result.errors?.length || !added) {
       // Fallo: el boton vuelve a su estado normal en vez de quedar confirmando
       // algo que no paso.
       onAdded?.(false);
+
+      push({
+        title: t('cart.add-failed'),
+        detail: productTitle
+          ? `${productTitle} — ${t('cart.add-failed-detail')}`
+          : t('cart.add-failed-detail'),
+      });
+
       return;
     }
 

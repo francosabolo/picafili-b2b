@@ -5,7 +5,7 @@ import {Link} from '@remix-run/react';
 import {useVariantUrl} from '~/lib/variants';
 import {IconRemoveItem} from '~/components/Icon/Icon.jsx';
 import styles from './styles.module.scss';
-import {formatOptionName} from '~/lib/utils.js';
+import {formatOptionName, getSavingsPercent} from '~/lib/utils.js';
 
 /**
  * @param {CartMainProps}
@@ -242,9 +242,32 @@ function CartLinePrice({line, priceType = 'regular', ...passthroughProps}) {
     return null;
   }
 
+  // El ahorro se calcula por UNIDAD y no sobre el total de la línea: el total
+  // ya está multiplicado por la cantidad y el porcentaje sale igual, pero
+  // comparar dos magnitudes distintas es la clase de cuenta que un día cambia
+  // de significado sin que nadie lo note.
+  const savings = getSavingsPercent(
+    line.cost.amountPerQuantity,
+    line.cost.compareAtAmountPerQuantity,
+  );
+
   return (
-    <div>
+    <div className={styles.linePriceRow}>
       <Price withoutTrailingZeros {...passthroughProps} data={moneyV2} />
+      {/* Lo mismo que muestra la tarjeta: el precio de lista tachado y cuánto
+          se ahorra. En el carrito faltaba, así que el mayorista perdía de
+          vista su ventaja justo en la pantalla donde decide comprar. */}
+      {savings && (
+        <>
+          <s className={styles.lineCompareAt}>
+            <Price
+              withoutTrailingZeros
+              data={line.cost.compareAtAmountPerQuantity}
+            />
+          </s>
+          <span className={styles.lineSavings}>−{savings}%</span>
+        </>
+      )}
     </div>
   );
 }
