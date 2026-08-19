@@ -1,4 +1,8 @@
-import {CUSTOMER_COMPANY_QUERY} from '~/graphql/customer-account/CustomerCompanyQuery.js';
+import {
+  CUSTOMER_COMPANY_QUERY,
+  customerCompanyVariables,
+} from '~/graphql/customer-account/CustomerCompanyQuery.js';
+import {MINIMUM_ORDER_METAFIELD} from '~/lib/const.js';
 
 /**
  * Todo lo que el portal necesita saber del cliente logueado, de una sola
@@ -30,7 +34,9 @@ export async function getCustomerContext(context) {
     const loggedIn = await customerAccount.isLoggedIn();
     if (!loggedIn) return empty;
 
-    const {data, errors} = await customerAccount.query(CUSTOMER_COMPANY_QUERY);
+    const {data, errors} = await customerAccount.query(CUSTOMER_COMPANY_QUERY, {
+      variables: customerCompanyVariables(),
+    });
 
     if (errors?.length) return empty;
 
@@ -72,6 +78,12 @@ export async function getCustomerContext(context) {
     // guarda con `setBuyer` y esta línea pasa a ser solo el valor inicial.
     const activeLocationId = locations[0]?.id ?? null;
 
+    // El pedido mínimo de ESTA ubicación, si lo tiene cargado. Es dato del
+    // acuerdo con ese cliente, no del código.
+    const minimumOrderAmount = readMinimumOrder(
+      locations.find((location) => location.id === activeLocationId),
+    );
+
     if (activeLocationId) {
       // Persiste la location en la sesión. Hydrogen la mezcla con lo que ya
       // hay guardado (no pisa el token), y es de ahí de donde sale el buyer
@@ -87,6 +99,7 @@ export async function getCustomerContext(context) {
         companyName: company.name,
         locations,
         activeLocationId,
+        minimumOrderAmount,
         buyer: await resolveBuyer(customerAccount, activeLocationId),
       },
     };
@@ -94,6 +107,34 @@ export async function getCustomerContext(context) {
     // B2B apagado, permisos faltantes o API caída: la tienda sigue andando.
     return empty;
   }
+}
+
+/**
+ * El pedido mínimo cargado en la company location, en número.
+ *
+ * `null` si no está cargado o si lo que hay no es un número — ahí manda el
+ * piso general de la tienda (`MINIMUM_ORDER_AMOUNT`). Un metafield es texto
+ * libre: alguien puede escribir "150.000" o dejarlo vacío, y un mínimo que
+ * termina en `NaN` haría desaparecer el aviso sin explicación.
+ *
+ * @param {{metafields?: Array<{key: string, value: string}|null>}|undefined} location
+ * @returns {number|null}
+ */
+function readMinimumOrder(location) {
+  const raw = (location?.metafields ?? []).find(
+    (metafield) => metafield?.key === MINIMUM_ORDER_METAFIELD.key,
+  )?.value;
+
+  if (!raw) return null;
+
+  // Se aceptan "150000", "150000.00" y "150.000" — el separador de miles es lo
+  // que cualquiera escribe sin pensar.
+  const normalized = String(raw)
+    .trim()
+    .replace(/\.(?=\d{3}\b)/g, '');
+  const amount = Number(normalized.replace(',', '.'));
+
+  return Number.isFinite(amount) && amount > 0 ? amount : null;
 }
 
 /**

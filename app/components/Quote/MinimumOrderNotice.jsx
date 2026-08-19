@@ -1,6 +1,7 @@
 import {useFormatPrice} from '~/components/Price/Price.jsx';
 import {getMinimumOrderStatus} from '~/lib/quote.js';
 import {useTranslation} from '~/i18n/index.jsx';
+import {useAccountState} from '~/context/AccountStateContext.jsx';
 import styles from './minimumOrder.module.scss';
 
 /**
@@ -11,7 +12,9 @@ import styles from './minimumOrder.module.scss';
 export function MinimumOrderNotice({total, compact = false}) {
   const {t} = useTranslation();
   const formatPrice = useFormatPrice();
-  const status = getMinimumOrderStatus(total);
+  // El mínimo de la company location del comprador, si lo tiene cargado.
+  const {minimumOrderAmount} = useAccountState();
+  const status = getMinimumOrderStatus(total, minimumOrderAmount);
 
   if (!status) return null;
 

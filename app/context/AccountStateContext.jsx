@@ -116,6 +116,7 @@ function resolveRealState(b2b, loggedIn, wholesaleApproved) {
       companyId: b2b.companyId,
       locations: b2b.locations,
       activeLocationId: b2b.activeLocationId,
+      minimumOrderAmount: b2b.minimumOrderAmount ?? null,
       priceList: null,
       isReal: true,
     };

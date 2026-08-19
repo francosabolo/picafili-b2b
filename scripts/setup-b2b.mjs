@@ -67,6 +67,19 @@ function declaredFields() {
   return {namespace: namespace ? namespace[1] : 'b2b', fields};
 }
 
+/**
+ * La key del pedido mínimo, leída de `const.js`. No se escribe acá: el
+ * storefront la pide con ese nombre exacto, y dos copias es una que un día deja
+ * de coincidir sin que nada falle — el metafield queda cargado y el portal
+ * sigue mostrando el piso viejo.
+ */
+function minimumOrderKey() {
+  const src = readSource('app/lib/const.js');
+  const match = /MINIMUM_ORDER_METAFIELD = \{[^}]*key:\s*'([^']+)'/s.exec(src);
+
+  return match ? match[1] : 'pedido_minimo';
+}
+
 function env() {
   const raw = readFileSync(new URL('../.env', import.meta.url), 'utf8');
   const out = {};
@@ -143,8 +156,20 @@ async function main() {
   let skipped = 0;
   let failed = 0;
 
-  for (const field of fields) {
-    if (present.has(field.key)) {
+  // El pedido mínimo NO cuelga del cliente sino de la company location: es una
+  // condición del acuerdo con ese comercio, y un mismo cliente puede comprar
+  // para dos sucursales con pisos distintos. Por eso viaja aparte, con su
+  // propio ownerType.
+  const locationFields = [
+    {
+      key: minimumOrderKey(),
+      name: 'Pedido mínimo',
+      ownerType: 'COMPANY_LOCATION',
+    },
+  ];
+
+  for (const field of [...fields, ...locationFields]) {
+    if (field.ownerType !== 'COMPANY_LOCATION' && present.has(field.key)) {
       console.log(
         `${YELLOW}·${OFF} ${field.key.padEnd(16)} ya existe como "${present.get(
           field.key,
@@ -167,7 +192,7 @@ async function main() {
           name: field.name,
           namespace,
           key: field.key,
-          ownerType: 'CUSTOMER',
+          ownerType: field.ownerType ?? 'CUSTOMER',
           // Texto de una línea para todo, incluida la fecha: el valor lo lee un
           // humano en el admin, no se filtra ni se ordena por él.
           type: 'single_line_text_field',

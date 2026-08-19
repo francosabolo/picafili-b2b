@@ -170,17 +170,22 @@ export function getQuoteTotal(
  * @returns {{meetsMinimum: boolean, missing: {amount: string, currencyCode: string}|null,
  *   minimum: {amount: string, currencyCode: string}}|null}
  */
-export function getMinimumOrderStatus(total) {
-  if (!MINIMUM_ORDER_AMOUNT) return null;
+export function getMinimumOrderStatus(total, amount = null) {
+  // El de la company location si lo tiene; si no, el piso de la tienda. Ver
+  // MINIMUM_ORDER_METAFIELD en const.js: el mínimo es una condición del
+  // acuerdo con cada cliente, no un número del código.
+  const threshold = Number(amount) > 0 ? Number(amount) : MINIMUM_ORDER_AMOUNT;
+
+  if (!threshold) return null;
 
   const currencyCode = total?.currencyCode ?? STORE_CURRENCY;
   const minimum = {
-    amount: MINIMUM_ORDER_AMOUNT.toFixed(2),
+    amount: threshold.toFixed(2),
     currencyCode,
   };
 
   const current = Number(total?.amount ?? 0);
-  const missingAmount = MINIMUM_ORDER_AMOUNT - current;
+  const missingAmount = threshold - current;
 
   if (missingAmount <= 0) {
     return {meetsMinimum: true, missing: null, minimum};

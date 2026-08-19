@@ -19,6 +19,9 @@ export const LIST_VIEWS = {CARDS: 'tarjetas', TABLE: 'tabla'};
 
 const VIEW_PARAM = 'vista';
 
+/** La vista que se muestra sin parámetro en la URL. */
+const DEFAULT_VIEW = LIST_VIEWS.TABLE;
+
 /**
  * Vista activa según la URL. **El default es la tabla**, y cualquier valor
  * desconocido cae ahí.
@@ -33,7 +36,7 @@ const VIEW_PARAM = 'vista';
 export function getListView(searchParams) {
   return searchParams?.get(VIEW_PARAM) === LIST_VIEWS.CARDS
     ? LIST_VIEWS.CARDS
-    : LIST_VIEWS.TABLE;
+    : DEFAULT_VIEW;
 }
 
 export function ListViewToggle() {
@@ -53,7 +56,12 @@ export function ListViewToggle() {
     next.delete('cursor');
     next.delete('direction');
 
-    if (view === LIST_VIEWS.CARDS) {
+    // El default cambió a tabla, así que **el que se omite ahora es ese**.
+    // Mientras el que se omitía era `tarjetas`, tocar "Tarjetas" borraba el
+    // parámetro y la URL volvía al default… que ya era la tabla: el botón no
+    // hacía nada. La regla es una sola —no escribir el valor por defecto— y
+    // tiene que salir de `getListView`, no repetirse acá.
+    if (view === DEFAULT_VIEW) {
       next.delete(VIEW_PARAM);
     } else {
       next.set(VIEW_PARAM, view);

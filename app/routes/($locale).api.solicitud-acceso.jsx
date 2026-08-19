@@ -1,7 +1,10 @@
 import {json} from '@shopify/remix-oxygen';
 import {B2B_REQUEST_NAMESPACE, B2B_REQUEST_TAG} from '~/data/b2b-request.js';
 import {B2B_REQUEST_SUBMIT_MUTATION} from '~/graphql/b2b/b2bRequest.js';
-import {CUSTOMER_COMPANY_QUERY} from '~/graphql/customer-account/CustomerCompanyQuery.js';
+import {
+  CUSTOMER_COMPANY_QUERY,
+  customerCompanyVariables,
+} from '~/graphql/customer-account/CustomerCompanyQuery.js';
 import {buildB2BRequest} from '~/lib/b2b-request.js';
 
 /**
@@ -27,6 +30,7 @@ export async function action({request, context}) {
   // que ir a buscarlo igual: es el dueño de los metafields que se escriben.
   const {data, errors: customerErrors} = await context.customerAccount.query(
     CUSTOMER_COMPANY_QUERY,
+    {variables: customerCompanyVariables()},
   );
 
   const customerId = data?.customer?.id;

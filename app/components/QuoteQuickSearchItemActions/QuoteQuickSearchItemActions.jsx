@@ -3,6 +3,7 @@ import {ENABLE_CART, ENABLE_QUOTE} from '~/lib/const.js';
 import {CartForm} from '@shopify/hydrogen';
 import {useFetcher} from '@remix-run/react';
 import {useCartLine} from '~/context/CartLinesContext.jsx';
+import {useCartQuantityLimit} from '~/hooks/useCartQuantityLimit.jsx';
 import {AddToCartButton} from '~/components/AddToCartButton/AddToCartButton.jsx';
 import {IconCartPlus} from '~/components/Icon/Icon.jsx';
 import {useQuote} from '~/context/QuoteContext.jsx';
@@ -36,6 +37,13 @@ export const QuoteItemActions = ({
   // encendido no se mira: ahí manda la nota de pedido y el carrito no existe.
   const cartLine = useCartLine(ENABLE_QUOTE ? null : quoteItem?.id);
   const cartFetcher = useFetcher();
+  const [requestedQuantity, setRequestedQuantity] = useState(null);
+
+  // Mismo aviso que en el drawer: si Shopify recortó por stock, decirlo.
+  useCartQuantityLimit(cartFetcher, {
+    lineId: cartLine?.lineId,
+    requested: requestedQuantity,
+  });
 
   /**
    * Corrige la cantidad de la línea que ya está en el carrito.
@@ -49,6 +57,7 @@ export const QuoteItemActions = ({
     if (!cartLine?.lineId) return;
 
     const remove = quantity <= 0;
+    setRequestedQuantity(remove ? null : quantity);
 
     cartFetcher.submit(
       {

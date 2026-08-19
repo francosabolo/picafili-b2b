@@ -1,3 +1,15 @@
+import {MINIMUM_ORDER_METAFIELD} from '~/lib/const.js';
+
+/**
+ * Variables de `CUSTOMER_COMPANY_QUERY`.
+ *
+ * Existe para que los tres lugares que corren esta query no repitan —ni
+ * desincronicen— la lista de metafields que hay que pedir.
+ */
+export const customerCompanyVariables = () => ({
+  minimumOrderIdentifiers: [MINIMUM_ORDER_METAFIELD],
+});
+
 /**
  * Company y locations del cliente logueado (E3 del backlog).
  *
@@ -7,7 +19,7 @@
  * codegen los separa por proyecto GraphQL.
  */
 export const CUSTOMER_COMPANY_QUERY = `#graphql
-  query CustomerCompany {
+  query CustomerCompany($minimumOrderIdentifiers: [HasMetafieldsIdentifier!]!) {
     customer {
       id
       emailAddress {
@@ -38,6 +50,14 @@ export const CUSTOMER_COMPANY_QUERY = `#graphql
                   shippingAddress {
                     countryCode
                     formattedAddress
+                  }
+                  # El pedido mínimo de ESTA ubicación. Los identifiers entran
+                  # por variable y no escritos acá: la lista canónica está en
+                  # app/lib/const.js, y una key duplicada en un documento
+                  # GraphQL es una que un día deja de coincidir en silencio.
+                  metafields(identifiers: $minimumOrderIdentifiers) {
+                    key
+                    value
                   }
                 }
               }

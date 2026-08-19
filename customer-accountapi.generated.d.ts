@@ -67,7 +67,9 @@ export type CustomerAddressCreateMutation = {
 };
 
 export type CustomerCompanyQueryVariables = CustomerAccountAPI.Exact<{
-  [key: string]: never;
+  minimumOrderIdentifiers:
+    | Array<CustomerAccountAPI.HasMetafieldsIdentifier>
+    | CustomerAccountAPI.HasMetafieldsIdentifier;
 }>;
 
 export type CustomerCompanyQuery = {
@@ -85,6 +87,11 @@ export type CustomerCompanyQuery = {
                   Pick<
                     CustomerAccountAPI.CompanyAddress,
                     'countryCode' | 'formattedAddress'
+                  >
+                >;
+                metafields: Array<
+                  CustomerAccountAPI.Maybe<
+                    Pick<CustomerAccountAPI.Metafield, 'key' | 'value'>
                   >
                 >;
               };
@@ -699,7 +706,7 @@ export type CustomerUpdateMutation = {
 };
 
 interface GeneratedQueryTypes {
-  '#graphql\n  query CustomerCompany {\n    customer {\n      id\n      emailAddress {\n        emailAddress\n      }\n      # La aprobación mayorista de esta tienda es un tag, no una company: ver\n      # app/lib/customer-tags.js. Viaja acá y no en una query aparte para que\n      # el gate no cueste una segunda llamada a Customer Account en cada\n      # request. Sí, la Customer Account API expone tags — no hace falta Admin\n      # API para leerlos. (Sin backticks en este comentario a propósito: el\n      # documento es un template literal y un backtick acá cierra el string y\n      # rompe el archivo entero. Ver AGENTS.md → Gotchas.)\n      tags\n      companyContacts(first: 1) {\n        edges {\n          node {\n            # Las ubicaciones a las que **este contacto** pertenece. Es la\n            # fuente correcta y no company.locations: la API expone la\n            # empresa entera, pero solo las ubicaciones donde la persona tiene\n            # rol. Un contacto sin rol devuelve la empresa con cero ubicaciones\n            # — y sin ubicación no hay buyer context, o sea que el portal entra\n            # pero no muestra un solo precio.\n            locations(first: 10) {\n              edges {\n                node {\n                  id\n                  name\n                  shippingAddress {\n                    countryCode\n                    formattedAddress\n                  }\n                }\n              }\n            }\n            company {\n              id\n              name\n              locations(first: 10) {\n                edges {\n                  node {\n                    id\n                    name\n                    shippingAddress {\n                      countryCode\n                      formattedAddress\n                    }\n                  }\n                }\n              }\n            }\n          }\n        }\n      }\n    }\n  }\n': {
+  '#graphql\n  query CustomerCompany($minimumOrderIdentifiers: [HasMetafieldsIdentifier!]!) {\n    customer {\n      id\n      emailAddress {\n        emailAddress\n      }\n      # La aprobación mayorista de esta tienda es un tag, no una company: ver\n      # app/lib/customer-tags.js. Viaja acá y no en una query aparte para que\n      # el gate no cueste una segunda llamada a Customer Account en cada\n      # request. Sí, la Customer Account API expone tags — no hace falta Admin\n      # API para leerlos. (Sin backticks en este comentario a propósito: el\n      # documento es un template literal y un backtick acá cierra el string y\n      # rompe el archivo entero. Ver AGENTS.md → Gotchas.)\n      tags\n      companyContacts(first: 1) {\n        edges {\n          node {\n            # Las ubicaciones a las que **este contacto** pertenece. Es la\n            # fuente correcta y no company.locations: la API expone la\n            # empresa entera, pero solo las ubicaciones donde la persona tiene\n            # rol. Un contacto sin rol devuelve la empresa con cero ubicaciones\n            # — y sin ubicación no hay buyer context, o sea que el portal entra\n            # pero no muestra un solo precio.\n            locations(first: 10) {\n              edges {\n                node {\n                  id\n                  name\n                  shippingAddress {\n                    countryCode\n                    formattedAddress\n                  }\n                  # El pedido mínimo de ESTA ubicación. Los identifiers entran\n                  # por variable y no escritos acá: la lista canónica está en\n                  # app/lib/const.js, y una key duplicada en un documento\n                  # GraphQL es una que un día deja de coincidir en silencio.\n                  metafields(identifiers: $minimumOrderIdentifiers) {\n                    key\n                    value\n                  }\n                }\n              }\n            }\n            company {\n              id\n              name\n              locations(first: 10) {\n                edges {\n                  node {\n                    id\n                    name\n                    shippingAddress {\n                      countryCode\n                      formattedAddress\n                    }\n                  }\n                }\n              }\n            }\n          }\n        }\n      }\n    }\n  }\n': {
     return: CustomerCompanyQuery;
     variables: CustomerCompanyQueryVariables;
   };

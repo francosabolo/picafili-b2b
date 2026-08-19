@@ -261,12 +261,39 @@ export const DEMO_ROLE_SWITCHER = false;
 /**
  * Pedido mínimo de la nota de pedido, expresado en `STORE_CURRENCY`.
  *
- * ⚠️ Valor PROVISORIO para la demo. El monto real y si es global o por cuenta
- * son decisión del negocio (E13 del backlog). Poner en 0 o null lo desactiva.
+ * Es el piso **por defecto de la tienda**: se usa cuando la company location
+ * no tiene el suyo cargado (ver `MINIMUM_ORDER_METAFIELD`). Poner en 0 o null
+ * lo desactiva por completo.
+ *
+ * ⚠️ El valor de acá sigue siendo el de la demo. El piso real de Picafili es
+ * decisión del negocio, y ahora se puede cargar por cliente sin tocar código.
  *
  * Modo AVISO: se muestra cuánto falta pero no bloquea el envío.
  */
 export const MINIMUM_ORDER_AMOUNT = 150000;
+
+/**
+ * De dónde sale el mínimo de CADA cliente.
+ *
+ * Un metafield de la **company location**, porque el mínimo es una condición
+ * comercial y en mayorista rara vez es una sola para todos: el que compra por
+ * pallet y el kiosco de la esquina no tienen el mismo piso. Vive en la
+ * ubicación y no en el código para que lo edite quien negocia, en el admin,
+ * sin esperar un deploy.
+ *
+ * Se lee en la misma query que ya trae la company —`CompanyLocation` acepta
+ * metafields en la Customer Account API—, así que no cuesta una llamada más.
+ * Cuando la ubicación no lo tiene cargado, manda `MINIMUM_ORDER_AMOUNT` como
+ * piso general de la tienda.
+ *
+ * La definición se crea con `npm run setup:b2b`; sin ella el valor se guarda
+ * igual y el admin no lo muestra — el mismo problema que los metafields de la
+ * solicitud.
+ */
+export const MINIMUM_ORDER_METAFIELD = {
+  namespace: 'b2b',
+  key: 'pedido_minimo',
+};
 
 /**
  * Alícuota para discriminar el impuesto en el resumen del presupuesto.

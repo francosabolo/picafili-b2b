@@ -417,7 +417,9 @@
     "added-detail": "{{quantity}} unidad(es)",
     "view": "Ver carrito",
     "add-failed": "No se pudo agregar",
-    "add-failed-detail": "Shopify no aceptó la línea: puede estar sin stock o no disponible para tu cuenta."
+    "add-failed-detail": "Shopify no aceptó la línea: puede estar sin stock o no disponible para tu cuenta.",
+    "max-quantity": "Cantidad máxima",
+    "max-quantity-detail": "Solo quedan {{quantity}} unidades disponibles."
   },
   "quote-page": {
     "title": "Presupuesto",

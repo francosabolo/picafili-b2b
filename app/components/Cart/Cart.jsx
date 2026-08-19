@@ -6,6 +6,8 @@ import {useVariantUrl} from '~/lib/variants';
 import {IconRemoveItem} from '~/components/Icon/Icon.jsx';
 import styles from './styles.module.scss';
 import {formatOptionName, getSavingsPercent} from '~/lib/utils.js';
+import {useCartQuantityLimit} from '~/hooks/useCartQuantityLimit.jsx';
+import {MinimumOrderNotice} from '~/components/Quote/MinimumOrderNotice.jsx';
 
 /**
  * @param {CartMainProps}
@@ -154,6 +156,10 @@ export function CartSummary({cost, layout, children = null}) {
           )}
         </span>
       </div>
+      {/* El pedido mínimo vivía en la barra del presupuesto, que ya no existe:
+          quedó sin decirse en ningún lado. Va acá, pegado al subtotal, que es
+          contra lo que se compara. Avisa, no bloquea. */}
+      <MinimumOrderNotice total={cost?.subtotalAmount ?? null} compact />
       {children}
     </div>
   );
@@ -383,13 +389,29 @@ function CartLineUpdateButton({children, lines}) {
       action={CartForm.ACTIONS.LinesUpdate}
       inputs={{lines}}
     >
-      {(fetcher) =>
-        typeof children === 'function'
-          ? children(fetcher.state !== 'idle')
-          : children
-      }
+      {(fetcher) => (
+        <>
+          {/* Shopify recorta al stock disponible y responde sin errores: sin
+              esto, tocar "+" contra el tope deja el mismo número y ninguna
+              explicación. */}
+          <QuantityLimitWatcher
+            fetcher={fetcher}
+            lineId={lines?.[0]?.id}
+            requested={lines?.[0]?.quantity}
+          />
+          {typeof children === 'function'
+            ? children(fetcher.state !== 'idle')
+            : children}
+        </>
+      )}
     </CartForm>
   );
+}
+
+/** Solo escucha; no renderiza nada. */
+function QuantityLimitWatcher({fetcher, lineId, requested}) {
+  useCartQuantityLimit(fetcher, {lineId, requested});
+  return null;
 }
 
 /**

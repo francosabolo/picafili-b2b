@@ -9,7 +9,10 @@ import {
   B2B_REQUESTED_AT_KEY,
 } from '~/data/b2b-request.js';
 import {B2B_REQUEST_STATUS_QUERY} from '~/graphql/b2b/b2bRequest.js';
-import {CUSTOMER_COMPANY_QUERY} from '~/graphql/customer-account/CustomerCompanyQuery.js';
+import {
+  CUSTOMER_COMPANY_QUERY,
+  customerCompanyVariables,
+} from '~/graphql/customer-account/CustomerCompanyQuery.js';
 import {useTranslation} from '~/i18n/index.jsx';
 import {B2B_REQUEST_FORM_ENABLED, SALES_CONTACT} from '~/lib/const.js';
 import {seoMeta} from '~/lib/seo.js';
@@ -94,7 +97,9 @@ async function readRequestedAt(context, customerId) {
 export async function loader({context}) {
   // Se reusa la query de company en vez de escribir una nueva: lo único que
   // falta acá es el email y el id, y esa query ya los trae.
-  const {data} = await context.customerAccount.query(CUSTOMER_COMPANY_QUERY);
+  const {data} = await context.customerAccount.query(CUSTOMER_COMPANY_QUERY, {
+    variables: customerCompanyVariables(),
+  });
 
   const customerId = data?.customer?.id ?? null;
 
