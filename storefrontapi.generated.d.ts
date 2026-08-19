@@ -276,7 +276,7 @@ export type CartApiQueryFragment = Pick<
   >;
 };
 
-export type CartMutateFragment = Pick<
+export type CartApiMutationFragment = Pick<
   StorefrontAPI.Cart,
   'id' | 'totalQuantity'
 > & {

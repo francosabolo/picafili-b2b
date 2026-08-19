@@ -117,9 +117,16 @@ export const CART_QUERY_FRAGMENT = `#graphql
  *
  * Trae lo mínimo para verificar, no el carrito completo: quien pinta el drawer
  * es la query del root, no esta respuesta.
+ *
+ * ⚠️ **El nombre no es libre: tiene que ser `CartApiMutation`.** Hydrogen arma
+ * las mutaciones con `...CartApiMutation` adentro y le pega este texto al
+ * final; con cualquier otro nombre el spread apunta a un fragmento que no
+ * existe y **todas** las operaciones del carrito fallan a la vez — agregar,
+ * cambiar cantidad y borrar—, con un 500 que no dice nada. Lo mismo vale para
+ * el de la query, que tiene que llamarse `CartApiQuery`.
  */
 export const CART_MUTATE_FRAGMENT = `#graphql
-  fragment CartMutate on Cart {
+  fragment CartApiMutation on Cart {
     id
     totalQuantity
     lines(first: 100) {
