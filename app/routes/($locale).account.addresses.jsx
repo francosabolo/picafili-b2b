@@ -410,7 +410,7 @@ export function AddressForm({
         </div>
       )}
       {isFormVisible && (
-        <Form id={addressId}>
+        <Form id={addressId} className={styles.form}>
           <fieldset>
             <input type="hidden" name="addressId" defaultValue={addressId} />
             <div className={styles.grid}>
@@ -425,7 +425,6 @@ export function AddressForm({
                   defaultValue={address?.firstName ?? ''}
                   id="firstName"
                   name="firstName"
-                  placeholder={t('account.first-name')}
                   required
                   type="text"
                 />
@@ -441,7 +440,6 @@ export function AddressForm({
                   defaultValue={address?.lastName ?? ''}
                   id="lastName"
                   name="lastName"
-                  placeholder={t('account.last-name')}
                   required
                   type="text"
                 />
@@ -457,7 +455,6 @@ export function AddressForm({
                   defaultValue={address?.company ?? ''}
                   id="company"
                   name="company"
-                  placeholder={t('account.company')}
                   type="text"
                 />
               </div>
@@ -472,7 +469,6 @@ export function AddressForm({
                   defaultValue={address?.address1 ?? ''}
                   id="address1"
                   name="address1"
-                  placeholder={t('account.address-1')}
                   required
                   type="text"
                 />
@@ -488,7 +484,6 @@ export function AddressForm({
                   defaultValue={address?.address2 ?? ''}
                   id="address2"
                   name="address2"
-                  placeholder={t('account.address-2')}
                   type="text"
                 />
               </div>
@@ -503,7 +498,6 @@ export function AddressForm({
                   defaultValue={address?.city ?? ''}
                   id="city"
                   name="city"
-                  placeholder={t('account.city')}
                   required
                   type="text"
                 />
@@ -519,7 +513,6 @@ export function AddressForm({
                   defaultValue={address?.zoneCode ?? ''}
                   id="zoneCode"
                   name="zoneCode"
-                  placeholder={t('account.province')}
                   required
                   type="text"
                 />
@@ -535,7 +528,6 @@ export function AddressForm({
                   defaultValue={address?.zip ?? ''}
                   id="zip"
                   name="zip"
-                  placeholder={t('account.zip')}
                   required
                   type="text"
                 />
@@ -551,7 +543,6 @@ export function AddressForm({
                   defaultValue={address?.territoryCode ?? ''}
                   id="territoryCode"
                   name="territoryCode"
-                  placeholder={t('account.country')}
                   required
                   type="text"
                   maxLength={2}

@@ -107,12 +107,14 @@ function QuoteItem({order}) {
 }
 
 function EmptyDraftOrders() {
+  const {t} = useTranslation();
+
   return (
     <div>
-      <p>You haven\&apos;t placed any quotes yet.</p>
+      <p>{t('quoting.no-quotes')}</p>
       <br />
       <p>
-        <Link to="/collections">Start Shopping →</Link>
+        <Link to="/collections/all">{t('quoting.browse-catalog')} →</Link>
       </p>
     </div>
   );

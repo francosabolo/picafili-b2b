@@ -1,7 +1,28 @@
+/* Pestañas, no botones sueltos.
+ *
+ * Eran píldoras separadas flotando sobre el crema: nada decía que fueran las
+ * secciones de una misma cuenta ni que una estuviera activa por ser "la que
+ * estás viendo" — el pill oscuro se leía como un botón apretado. Ahora
+ * comparten una línea base y la activa se marca contra esa línea, que es lo que
+ * convierte varios links en un juego de pestañas. */
 .menuPill {
-  @include menu-pill(var(--color-grey-soft), var(--color-black));
-  @media (min-width: $breakpoint-md) {
-    margin-right: var(--space-4);
+  position: relative;
+  padding: var(--space-3) var(--space-4);
+  border-radius: 0;
+  color: var(--brand-petrol);
+  text-decoration: none;
+  font-size: var(--text-base);
+  white-space: nowrap;
+  border-bottom: 2px solid transparent;
+
+  &:hover {
+    border-bottom-color: var(--color-grey-alt);
+  }
+
+  &[aria-current='page'] {
+    font-weight: 700;
+    border-bottom-color: var(--brand-magenta);
+    color: var(--brand-magenta);
   }
 }
 
@@ -14,6 +35,8 @@
 .accountMenu {
   display: flex;
   align-items: center;
+  gap: var(--space-2);
+  border-bottom: 1px solid var(--color-grey-alt);
   @media (min-width: $breakpoint-md) {
     margin-bottom: var(--space-16);
   }

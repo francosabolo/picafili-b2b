@@ -151,7 +151,9 @@
     "discounted_price": "Discounted price",
     "name": "Name",
     "email-sent-to": "We will send it to",
-    "email-missing": "Sign in to receive the quote."
+    "email-missing": "Sign in to receive the quote.",
+    "no-quotes": "You haven't requested any quotes yet.",
+    "browse-catalog": "Browse catalog"
   },
   "product": {
     "main-features": "Main Features",

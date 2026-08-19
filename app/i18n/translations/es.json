@@ -176,7 +176,9 @@
     "discounted_price": "Precio con descuento",
     "name": "Nombre",
     "email-sent-to": "Te lo enviamos a",
-    "email-missing": "Iniciá sesión para recibir el presupuesto."
+    "email-missing": "Iniciá sesión para recibir el presupuesto.",
+    "no-quotes": "Todavía no tenés presupuestos.",
+    "browse-catalog": "Ver catálogo"
   },
   "price": {
     "from": "Desde",

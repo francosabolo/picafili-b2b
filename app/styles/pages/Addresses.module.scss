@@ -11,6 +11,13 @@
  * más aburrido y se completa sin pensar, que es lo que uno quiere de un
  * formulario de dirección. */
 
+/* El `<form>` de esta pantalla es flex por un estilo global heredado, y ahí la
+   grilla entraba como un ítem que se encoge al contenido: los diez campos
+   quedaban en una sola columna angosta, uno abajo del otro. */
+.form {
+  display: block;
+}
+
 .grid {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(14rem, 1fr));

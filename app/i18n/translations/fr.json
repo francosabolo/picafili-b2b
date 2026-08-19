@@ -175,7 +175,9 @@
     "discounted_price": "Prix remisé",
     "name": "Nom",
     "email-sent-to": "Nous l’envoyons à",
-    "email-missing": "Connectez-vous pour recevoir le devis."
+    "email-missing": "Connectez-vous pour recevoir le devis.",
+    "no-quotes": "Vous n'avez pas encore de devis.",
+    "browse-catalog": "Voir le catalogue"
   },
   "price": {
     "from": "à partir de",

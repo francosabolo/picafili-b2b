@@ -1,4 +1,5 @@
 import {Link, useLoaderData} from '@remix-run/react';
+import {useTranslation} from '~/i18n/index.jsx';
 import {pageTitle} from '~/lib/utils.js';
 import {
   Money,
@@ -60,12 +61,14 @@ export default function Quotes() {
 }
 
 function EmptyDraftOrders() {
+  const {t} = useTranslation();
+
   return (
     <div>
-      <p>You haven&apos;t placed any quotes yet.</p>
+      <p>{t('quoting.no-quotes')}</p>
       <br />
       <p>
-        <Link to="/collections">Start Shopping →</Link>
+        <Link to="/collections/all">{t('quoting.browse-catalog')} →</Link>
       </p>
     </div>
   );
