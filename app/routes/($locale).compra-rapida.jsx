@@ -1,6 +1,7 @@
 import {json} from '@shopify/remix-oxygen';
 import {useTranslation} from '~/i18n/index.jsx';
 import {canSeePricesOnServer, gatePrices} from '~/lib/price-gating.server.js';
+import {withRetailCompareAt} from '~/lib/retail-prices.server.js';
 import {pageTitle} from '~/lib/utils.js';
 import {Form, useLoaderData, useNavigation, useSubmit} from '@remix-run/react';
 import {Image} from '@shopify/hydrogen';
@@ -79,7 +80,10 @@ export async function loader({request, context}) {
   return json({
     searchTerm,
     rawFilters,
-    products: gatePrices(products, canSeePricesOnServer(request, context.b2b)),
+    products: await withRetailCompareAt(
+      context,
+      gatePrices(products, canSeePricesOnServer(request, context.b2b)),
+    ),
     filterGroups,
     // Cuántos resultados quedaron afuera del tope: mejor decirlo que hacer de
     // cuenta que el catálogo termina acá.

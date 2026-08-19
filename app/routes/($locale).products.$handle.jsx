@@ -1,5 +1,6 @@
 import {defer} from '@shopify/remix-oxygen';
 import {canSeePricesOnServer} from '~/lib/price-gating.server.js';
+import {withRetailCompareAt} from '~/lib/retail-prices.server.js';
 import {
   breadcrumbJsonLd,
   productJsonLd,
@@ -237,12 +238,17 @@ export async function loader({params, request, context}) {
   );
 
   return defer({
-    product,
+    // El tachado de la ficha tiene que ser el precio público, igual que en el
+    // listado: ver `app/lib/retail-prices.server.js`.
+    product: await withRetailCompareAt(context, product),
     filters,
     childProducts,
     productSku,
     appliedFilters,
-    recommendedProducts,
+    recommendedProducts: await withRetailCompareAt(
+      context,
+      recommendedProducts,
+    ),
     // Solo para decidir si el JSON-LD lleva `offers`. NO cambia lo que la
     // página muestra: el filtrado de precios de esta ruta sigue como estaba.
     canSeePrices: canSeePricesOnServer(request, context.b2b),

@@ -1,5 +1,6 @@
 import {json} from '@shopify/remix-oxygen';
 import {canSeePricesOnServer, gatePrices} from '~/lib/price-gating.server.js';
+import {withRetailCompareAt} from '~/lib/retail-prices.server.js';
 import {getBuyerVariables} from '~/lib/b2b.server.js';
 import {Link, useLoaderData} from '@remix-run/react';
 import {Image} from '@shopify/hydrogen';
@@ -71,7 +72,10 @@ export async function loader({request, context}) {
   return json({
     shop,
     collections: collections?.nodes ?? [],
-    products: gatePrices(products?.nodes ?? [], canSeePrices),
+    products: await withRetailCompareAt(
+      context,
+      gatePrices(products?.nodes ?? [], canSeePrices),
+    ),
   });
 }
 

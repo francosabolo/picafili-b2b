@@ -1,5 +1,6 @@
 import {json} from '@shopify/remix-oxygen';
 import {canSeePricesOnServer, gatePrices} from '~/lib/price-gating.server.js';
+import {withRetailCompareAt} from '~/lib/retail-prices.server.js';
 import {useLoaderData, useNavigation, useSearchParams} from '@remix-run/react';
 import {getPaginationVariables, Pagination} from '@shopify/hydrogen';
 import {CATALOG_FILTERED_QUERY} from '~/graphql/collections/collectionsQuery.js';
@@ -82,7 +83,10 @@ export async function loader({request, context}) {
 
   const user = session.get('user');
   return json({
-    products: gatePrices(search, canSeePrices),
+    products: await withRetailCompareAt(
+      context,
+      gatePrices(search, canSeePrices),
+    ),
     filters,
     appliedFilters,
     user,

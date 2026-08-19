@@ -1,5 +1,6 @@
 import {json, redirect} from '@shopify/remix-oxygen';
 import {canSeePricesOnServer, gatePrices} from '~/lib/price-gating.server.js';
+import {withRetailCompareAt} from '~/lib/retail-prices.server.js';
 import {seoMeta} from '~/lib/seo.js';
 import {useLoaderData, useNavigation, useSearchParams} from '@remix-run/react';
 import {getPaginationVariables, Pagination} from '@shopify/hydrogen';
@@ -161,9 +162,9 @@ export async function loader({request, params, context}) {
   );
 
   return json({
-    collection: gatePrices(
-      collection,
-      canSeePricesOnServer(request, context.b2b),
+    collection: await withRetailCompareAt(
+      context,
+      gatePrices(collection, canSeePricesOnServer(request, context.b2b)),
     ),
     appliedFilters,
     collectionsMenu,
