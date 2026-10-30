@@ -3,6 +3,10 @@ import {
   customerCompanyVariables,
 } from '~/graphql/customer-account/CustomerCompanyQuery.js';
 import {MINIMUM_ORDER_METAFIELD} from '~/lib/const.js';
+import {
+  RETAIL_SAMPLE_QUERY,
+  WHOLESALE_SAMPLE_QUERY,
+} from '~/graphql/products/wholesaleCheck.js';
 
 /**
  * Todo lo que el portal necesita saber del cliente logueado, de una sola
@@ -100,7 +104,11 @@ export async function getCustomerContext(context) {
         locations,
         activeLocationId,
         minimumOrderAmount,
-        buyer: await resolveBuyer(customerAccount, activeLocationId),
+        buyer: await checkWholesalePricing(
+          context.storefront,
+          await resolveBuyer(customerAccount, activeLocationId),
+          company.name,
+        ),
       },
     };
   } catch (error) {
@@ -180,6 +188,86 @@ async function resolveBuyer(customerAccount, companyLocationId) {
     companyLocationId,
     customerAccessToken: buyer.customerAccessToken,
   };
+}
+
+/**
+ * Devuelve el buyer solo si Shopify le está dando precio mayorista.
+ *
+ * Un buyer completo (location + token) no garantiza nada: si la company
+ * location no está en un mercado con catálogo, Shopify contesta con el precio
+ * de lista **sin avisar**, y el portal lo mostraba como si fuera el mayorista.
+ * Pasó en Picafili: 33 de 39 locations estaban fuera del mercado B2B, porque
+ * aprobar una cuenta crea la company pero no la suma al mercado.
+ *
+ * La prueba es empírica: una muestra de precios con buyer contra la misma sin
+ * buyer. Si ninguno baja, ese buyer no tiene catálogo y se devuelve `null`, que
+ * para `canSeePricesOnServer` es "no se muestran precios" — el mismo camino que
+ * una sesión sin token.
+ *
+ * Ante un error de red se queda con el buyer: un fallo pasajero no puede
+ * esconderle los precios a todos los mayoristas. Un catálogo que sube precios
+ * o los deja iguales en toda la muestra se leería como "sin catálogo"; con un
+ * catálogo por porcentaje de descuento eso no pasa.
+ *
+ * @param {import('@shopify/hydrogen').Storefront} storefront
+ * @param {{companyLocationId: string, customerAccessToken: string}|null} buyer
+ * @param {string} companyName
+ */
+async function checkWholesalePricing(storefront, buyer, companyName) {
+  if (!buyer || !storefront) return buyer;
+
+  try {
+    const [withBuyer, retail] = await Promise.all([
+      storefront.query(WHOLESALE_SAMPLE_QUERY, {
+        cache: storefront.CacheNone(),
+        variables: {buyer},
+      }),
+      storefront.query(RETAIL_SAMPLE_QUERY, {cache: storefront.CacheLong()}),
+    ]);
+
+    const retailPrices = new Map(
+      samplePrices(retail).map(({id, amount}) => [id, amount]),
+    );
+    const compared = samplePrices(withBuyer).filter(({id}) =>
+      retailPrices.has(id),
+    );
+
+    // Sin nada que comparar (tienda vacía, muestra rara) no hay evidencia
+    // para sacarle los precios a nadie.
+    if (!compared.length) return buyer;
+
+    const discounted = compared.some(
+      ({id, amount}) => amount < retailPrices.get(id),
+    );
+    if (discounted) return buyer;
+
+    // eslint-disable-next-line no-console
+    console.warn(
+      `[b2b] "${companyName}" (${buyer.companyLocationId}) recibe precios de lista: la company location no está en ningún mercado con catálogo B2B. Se ocultan los precios. Sumala al mercado B2B en Shopify (Configuración → Mercados).`,
+    );
+    return null;
+  } catch (error) {
+    // eslint-disable-next-line no-console
+    console.error('[b2b] checkWholesalePricing:', error);
+    return buyer;
+  }
+}
+
+/**
+ * Los precios de la muestra como `{id, amount}`, solo los mayores a cero.
+ *
+ * @param {any} data
+ * @returns {Array<{id: string, amount: number}>}
+ */
+function samplePrices(data) {
+  return (data?.products?.nodes ?? [])
+    .map((product) => product?.variants?.nodes?.[0])
+    .filter(Boolean)
+    .map((variant) => ({
+      id: variant.id,
+      amount: Number(variant.price?.amount),
+    }))
+    .filter(({amount}) => Number.isFinite(amount) && amount > 0);
 }
 
 /**

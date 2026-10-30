@@ -55,8 +55,8 @@ Este storefront **no tiene navegación anónima ni compra directa**. Cuatro inte
 ### La aprobación por tag es una chapuza consciente
 
 Hoy la puerta la abre `REQUIRE_CUSTOMER_TAGS = ['mayorista', 'mayorista-aprobado']` (AND, sin
-distinguir mayúsculas) y **no** la company: Picafili no tiene una sola company cargada, así que
-`REQUIRE_B2B_COMPANY` en `true` dejaba el portal cerrado para todo el mundo. Los tags salen de
+distinguir mayúsculas) y **no** la company: cuando se armó el gate Picafili no tenía una sola
+company cargada, así que `REQUIRE_B2B_COMPANY` en `true` dejaba el portal cerrado para todo el mundo. Los tags salen de
 `customer.tags` de la **Customer Account API** —sí, los expone; no hace falta Admin API— y viajan en
 la misma query que ya pedía la company, así que el gate no cuesta una llamada extra. La lógica está
 en `app/lib/customer-tags.js` y ahí está explicado el porqué entero.
@@ -91,20 +91,32 @@ Tres cosas que no son obvias y cuestan caro:
   autorizar el login y al refrescar el token**, no en cada request: una sesión abierta desde antes
   de encenderlo no lo tiene hasta que refresque. Por eso `resolveBuyer` devuelve `null` en vez de un
   buyer a medias, y sin buyer completo **no se muestran precios**.
+- **Un buyer completo no garantiza precio mayorista.** Si la company location no está en un
+  mercado con catálogo, Shopify devuelve el precio de lista sin error y el portal lo mostraba como
+  mayorista. `checkWholesalePricing` (en `b2b.server.js`) compara una muestra de precios con y sin
+  buyer: si ninguno baja, descarta el buyer y se ocultan los precios. El aviso queda en los logs de
+  Oxygen con el nombre de la company.
 - **Una query con `buyer` no se cachea.** El precio pasó a ser por company location: una entrada
   compartida de caché es la lista de precios de un cliente servida a otro. La home cachea el listado
   de categorías (sin precios) y NO los productos.
 - **`b2b` no viaja entero al cliente.** `publicB2B()` en `root.jsx` le saca el `buyer` antes de
   mandarlo: lleva el `customerAccessToken`, y el payload de Remix se lee en el código fuente.
 
-### Estado de la tienda Picafili (verificado por Admin API, 2026-08-10)
+### Estado de la tienda Picafili (verificado por Admin API, 2026-08-10; companies al 2026-10-30)
+
+- **39 companies cargadas** (las crea el formulario de solicitud). ⚠️ **Aprobar una cuenta no la
+  suma al mercado B2B.** Al 2026-10-30, 33 de las 39 locations estaban fuera y veían precio de lista;
+  se sumaron las 29 con `mayorista-aprobado`. Cada aprobación nueva necesita ese paso
+  (Configuración → Mercados → B2B → company locations), o se pasa el mercado a "todas las company
+  locations", que es una decisión de negocio: le da precio mayorista a cualquier company, aprobada
+  o no, en todos los canales con B2B.
 
 - **Plan: Basic.** B2B **sí** está disponible —dejó de ser exclusivo de Plus el 2026-04-02— pero con
   límites que mandan sobre el diseño: hasta **3 catálogos activos**, asignados **vía B2B markets**, y
   **no** se puede asignar un catálogo directo a una company location. Esto último decide que el
   endpoint de aprobación no pueda fijar el precio por sí solo: la location tiene que entrar al market.
-- **Ya existe un `MarketCatalog` llamado "Precios B2B"** (`gid://shopify/MarketCatalog/105634529468`,
-  ACTIVE). El catálogo B2B no hay que crearlo.
+- **Ya existe un `MarketCatalog` llamado "Precios Mayoristas"** (`gid://shopify/MarketCatalog/105634529468`,
+  ACTIVE, −35% sobre el precio de lista, en el market "B2B"). El catálogo B2B no hay que crearlo.
 - **Sin definiciones de metafield de cliente.** La solicitud de acceso se guardaría y el admin no la
   mostraría — ver `docs/puesta-en-marcha.md` §4.1.
 
